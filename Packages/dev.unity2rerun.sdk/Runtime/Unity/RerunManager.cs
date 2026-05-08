@@ -10,23 +10,26 @@ using UnityEngine;
 namespace Unity.RerunSDK.Unity
 {
     /// MonoBehaviour entry point for the Rerun SDK.
-    /// Configure via Inspector: application name, output path, record on start.
     [AddComponentMenu("Rerun/Rerun Manager")]
     public class RerunManager : MonoBehaviour
     {
         [SerializeField, Tooltip("Application name shown in Rerun Viewer.")]
         private string _applicationId = "unity_app";
 
-        [SerializeField, Tooltip(".rrd output file path. Use {TIMESTAMP} for auto-naming. Defaults to persistentDataPath.")]
+        [SerializeField, Tooltip(".rrd output file path. Use {PERSISTENT} and/or {TIMESTAMP}.")]
         private string _outputPath = "{PERSISTENT}/unity_recording.rrd";
 
-        [SerializeField, Tooltip("Automatically start recording when the component is enabled.")]
+        [SerializeField, Tooltip("Automatically start recording on Start.")]
         private bool _recordOnStart = true;
+
+        [SerializeField, Tooltip("Write ViewCoordinates on world entity at recording start.")]
+        private bool _writeViewCoordinates = true;
 
         private RerunRuntime _runtime;
         private RrdWriter _rrdWriter;
         private ManagedRerunEncoder _encoder;
-        private RrdBackend _backend;
+        private RrdRerunBackend _backend;
+        private string _resolvedPath;
 
         public bool IsRecording { get; private set; }
 
@@ -45,18 +48,40 @@ namespace Unity.RerunSDK.Unity
         {
             if (IsRecording) return;
 
-            var path = ResolvePath();
-            var dir = Path.GetDirectoryName(path);
+            _resolvedPath = ResolvePath();
+            var dir = Path.GetDirectoryName(_resolvedPath);
             if (!string.IsNullOrEmpty(dir))
                 Directory.CreateDirectory(dir);
 
-            var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
-            _rrdWriter = new RrdWriter(stream);
+            FileStream stream = null;
+            RrdWriter writer = null;
+            try
+            {
+                stream = new FileStream(_resolvedPath, FileMode.Create, FileAccess.Write, FileShare.Read);
+                writer = new RrdWriter(stream);
 
-            _backend = new RrdBackend(_rrdWriter, _encoder, _applicationId);
-            _runtime = new RerunRuntime(_applicationId, _backend);
-            _runtime.Start();
-            IsRecording = true;
+                _backend = new RrdRerunBackend(writer, _encoder, _applicationId);
+                _runtime = new RerunRuntime(_applicationId, _backend);
+                _runtime.Start();
+
+                if (_writeViewCoordinates)
+                {
+                    WriteViewCoordinates();
+                }
+
+                _rrdWriter = writer;
+                IsRecording = true;
+                Debug.Log($"[Rerun] Recording started → {_resolvedPath}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Rerun] Failed to start recording: {ex.Message}");
+                writer?.Dispose();
+                stream?.Dispose();
+                _rrdWriter = null;
+                _backend = null;
+                _runtime = null;
+            }
         }
 
         public void StopRecording()
@@ -69,27 +94,98 @@ namespace Unity.RerunSDK.Unity
             _backend = null;
             _runtime = null;
             IsRecording = false;
+            Debug.Log($"[Rerun] Recording stopped → {_resolvedPath}");
         }
 
-        /// Set the current timeline value (e.g. frame counter).
+        // ── Timeline API ──
+
+        public void SetTimeSequence(string name, long value)
+        {
+            if (_runtime == null || !IsRecording) return;
+            _runtime.SetTimeline(name, value, RerunTimelineKind.Sequence);
+        }
+
+        public void SetTimeTimestampNs(string name, long unixNs)
+        {
+            if (_runtime == null || !IsRecording) return;
+            _runtime.SetTimeline(name, unixNs, RerunTimelineKind.TimestampNs);
+        }
+
+        public void SetTimeDurationNs(string name, long durationNs)
+        {
+            if (_runtime == null || !IsRecording) return;
+            _runtime.SetTimeline(name, durationNs, RerunTimelineKind.DurationNs);
+        }
+
         public void SetTime(string timelineName, long value)
         {
+            if (_runtime == null || !IsRecording) return;
             _runtime.SetTime(new RerunTimeline(timelineName), value);
         }
 
-        /// Log a text message to the given entity path.
+        public void ResetTime(string name)
+        {
+            _runtime?.ResetTime(name);
+        }
+
+        public void ResetAllTimes()
+        {
+            _runtime?.ResetAllTimes();
+        }
+
+        // ── Logging API ──
+
         public void LogText(string entityPath, string text, string level = "INFO")
         {
-            if (!IsRecording) return;
-
-            var logTick = _runtime.GetTime(RerunTimeline.LogTick) + 1;
-            _runtime.SetTime(RerunTimeline.LogTick, logTick);
-
-            var payload = _encoder.EncodeTextLogChunk(
+            if (_runtime == null || !IsRecording) return;
+            var snapshot = _runtime.CaptureTimelineSnapshot();
+            var payload = _encoder.EncodeTextLogArrowMsg(
                 _runtime.RecordingId, _applicationId,
-                entityPath, text, level, logTick);
+                entityPath, text, level, snapshot.ToEntries());
+            _backend.WriteArrowMsg(payload);
+        }
 
-            _backend.WritePayloadUnchecked(payload);
+        public void LogScalar(string entityPath, double value)
+        {
+            if (_runtime == null || !IsRecording) return;
+            var snapshot = _runtime.CaptureTimelineSnapshot();
+            var payload = _encoder.EncodeScalarArrowMsg(
+                _runtime.RecordingId, _applicationId,
+                entityPath, value, snapshot.ToEntries());
+            _backend.WriteArrowMsg(payload);
+        }
+
+        public void LogTransform(string entityPath, Transform transform)
+        {
+            if (transform == null) return;
+            LogTransform(entityPath, transform.position, transform.rotation);
+        }
+
+        public void LogTransform(string entityPath, Vector3 position, Quaternion rotation)
+        {
+            if (_runtime == null || !IsRecording) return;
+
+            var pos = RerunCoordinateConverter.ToRerunPosition(position);
+            var rot = RerunCoordinateConverter.ToRerunRotation(rotation);
+
+            var snapshot = _runtime.CaptureTimelineSnapshot();
+            var payload = _encoder.EncodeTransform3DArrowMsg(
+                _runtime.RecordingId, _applicationId,
+                entityPath,
+                pos.x, pos.y, pos.z,
+                rot.x, rot.y, rot.z, rot.w,
+                snapshot.ToEntries());
+            _backend.WriteArrowMsg(payload);
+        }
+
+        // ── Internal ──
+
+        private void WriteViewCoordinates()
+        {
+            var payload = _encoder.EncodeViewCoordinatesArrowMsg(
+                _runtime.RecordingId, _applicationId,
+                "world", 3, 1, 6); // Right=3, Up=1, Back=6 = RIGHT_HAND_Y_UP
+            _backend.WriteArrowMsg(payload);
         }
 
         private string ResolvePath()
@@ -102,55 +198,6 @@ namespace Unity.RerunSDK.Unity
         private void OnDestroy()
         {
             if (IsRecording) StopRecording();
-        }
-    }
-
-    /// Backend that writes directly to an RRD file.
-    internal class RrdBackend : IRerunBackend
-    {
-        private readonly RrdWriter _writer;
-        private readonly ManagedRerunEncoder _encoder;
-        private readonly string _applicationId;
-        private RerunRuntime _runtime;
-        private bool _initialized;
-
-        public RrdBackend(RrdWriter writer, ManagedRerunEncoder encoder, string applicationId)
-        {
-            _writer = writer;
-            _encoder = encoder;
-            _applicationId = applicationId;
-        }
-
-        public void Initialize(RerunRuntime runtime)
-        {
-            _runtime = runtime;
-            _writer.WriteStreamHeader();
-
-            var setStoreInfo = _encoder.EncodeSetStoreInfo(runtime.RecordingId, _applicationId);
-            _writer.WriteMessage(RrdConstants.MsgKindSetStoreInfo, setStoreInfo);
-
-            _initialized = true;
-        }
-
-        public void WriteMessage(byte[] payload)
-        {
-            _writer.WriteMessage(RrdConstants.MsgKindArrowMsg, payload);
-        }
-
-        /// Direct write for TextLog payloads from the encoder.
-        public void WritePayloadUnchecked(byte[] payload)
-        {
-            _writer.WriteMessage(RrdConstants.MsgKindArrowMsg, payload);
-        }
-
-        public void Flush()
-        {
-            _writer.FinishNoFooter();
-        }
-
-        public void Shutdown()
-        {
-            _writer.FinishNoFooter();
         }
     }
 }

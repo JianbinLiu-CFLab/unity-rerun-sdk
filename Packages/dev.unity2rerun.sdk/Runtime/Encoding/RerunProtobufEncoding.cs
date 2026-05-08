@@ -6,14 +6,14 @@
 
 using System;
 using System.IO;
-using System.Text;
+using TxtEncoding = System.Text.Encoding;
 
 namespace Unity.RerunSDK.Encoding
 {
     /// Minimal hand-written protobuf encoder for Rerun RRD transport messages.
     /// Avoids external protobuf library dependency in the UPM package.
     /// Covers the exact field set needed for Phase 2: SetStoreInfo + ArrowMsg(TextLog).
-    public static class RerunProtobufEncoding
+    internal static class RerunProtobufEncoding
     {
         // ── Wire format helpers ──
 
@@ -54,7 +54,7 @@ namespace Unity.RerunSDK.Encoding
 
         private static void WriteString(Stream s, int field, string value)
         {
-            WriteLengthDelimited(s, field, Encoding.UTF8.GetBytes(value ?? ""));
+            WriteLengthDelimited(s, field, TxtEncoding.UTF8.GetBytes(value ?? ""));
         }
 
         private static byte[] EncodeVarint(ulong value)
@@ -114,7 +114,7 @@ namespace Unity.RerunSDK.Encoding
         private static byte[] EncodeStoreSourceExtra(string payload)
         {
             using var ms = new MemoryStream();
-            WriteLengthDelimited(ms, 1, Encoding.UTF8.GetBytes(payload));
+            WriteLengthDelimited(ms, 1, TxtEncoding.UTF8.GetBytes(payload));
             return ms.ToArray();
         }
 
