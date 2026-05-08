@@ -1,0 +1,19 @@
+{
+    "name": "Unity.RerunSDK",
+    "rootNamespace": "Unity.RerunSDK",
+    "references": [
+        "Apache.Arrow",
+        "Google.Protobuf"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [
+        "WebGL"
+    ],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
