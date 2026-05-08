@@ -5,14 +5,15 @@ using System.Collections.Generic;
 
 namespace Unity.RerunSDK.Core
 {
-    /// Top-level entry point. Owns the recording state, backend, and entity/timeline state.
     public class RerunRuntime : IDisposable
     {
         public string ApplicationId { get; }
         public string RecordingId { get; }
 
         private readonly IRerunBackend _backend;
-        private readonly Dictionary<RerunTimeline, long> _timelines = new();
+        private readonly Dictionary<string, (long Value, RerunTimelineKind Kind)> _timelines = new();
+        private long _logTickCounter;
+        private long _logTimeCounter;
 
         public bool IsRunning { get; private set; }
 
@@ -30,20 +31,52 @@ namespace Unity.RerunSDK.Core
             IsRunning = true;
         }
 
+        public void SetTimeline(string name, long value, RerunTimelineKind kind)
+        {
+            if (!IsRunning) return;
+            _timelines[name] = (value, kind);
+        }
+
         public void SetTime(RerunTimeline timeline, long value)
         {
-            _timelines[timeline] = value;
+            if (!IsRunning) return;
+            _timelines[timeline.Name] = (value, RerunTimelineKind.Sequence);
         }
 
         public long GetTime(RerunTimeline timeline)
         {
-            return _timelines.TryGetValue(timeline, out var v) ? v : 0;
+            return _timelines.TryGetValue(timeline.Name, out var v) ? v.Value : 0;
         }
 
-        /// Set all active timelines, then reset them after the batch.
-        internal void FlushTimelines()
+        public void ResetTime(string name)
+        {
+            _timelines.Remove(name);
+        }
+
+        public void ResetAllTimes()
         {
             _timelines.Clear();
+            _logTickCounter = 0;
+            _logTimeCounter = 0;
+        }
+
+        /// Snapshot all active timelines plus auto-maintained log_tick / log_time.
+        public RerunTimelineSnapshot CaptureTimelineSnapshot()
+        {
+            var snap = new RerunTimelineSnapshot();
+
+            // Auto timelines
+            _logTickCounter++;
+            snap.SetLogTick(_logTickCounter);
+
+            _logTimeCounter = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000; // Unix ns
+            snap.Set("log_time", _logTimeCounter, RerunTimelineKind.TimestampNs);
+
+            // User timelines
+            foreach (var kv in _timelines)
+                snap.Set(kv.Key, kv.Value.Value, kv.Value.Kind);
+
+            return snap;
         }
 
         public void Stop()

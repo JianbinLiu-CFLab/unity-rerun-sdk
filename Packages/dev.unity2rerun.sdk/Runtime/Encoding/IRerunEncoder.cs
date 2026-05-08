@@ -1,17 +1,29 @@
 // SPDX-License-Identifier: Apache-2.0
-//
-// Encoder interface for producing RRD transport messages.
+
+using System.Collections.Generic;
+using Unity.RerunSDK.Core;
 
 namespace Unity.RerunSDK.Encoding
 {
-    /// Produces bytes for a single RRD transport message
-    /// (MessageHeader + protobuf payload).
-    public interface IRerunEncoder
+    internal interface IRerunEncoder
     {
         byte[] EncodeSetStoreInfo(string recordingId, string applicationId);
-        byte[] EncodeTextLogChunk(
+        byte[] EncodeTextLogArrowMsg(
             string recordingId, string applicationId,
             string entityPath, string text, string level,
-            long logTick);
+            IReadOnlyList<RerunTimelineEntry> timelines);
+        byte[] EncodeScalarArrowMsg(
+            string recordingId, string applicationId,
+            string entityPath, double value,
+            IReadOnlyList<RerunTimelineEntry> timelines);
+        byte[] EncodeTransform3DArrowMsg(
+            string recordingId, string applicationId,
+            string entityPath,
+            float tx, float ty, float tz,
+            float qx, float qy, float qz, float qw,
+            IReadOnlyList<RerunTimelineEntry> timelines);
+        byte[] EncodeViewCoordinatesArrowMsg(
+            string recordingId, string applicationId,
+            string entityPath, byte x, byte y, byte z);
     }
 }

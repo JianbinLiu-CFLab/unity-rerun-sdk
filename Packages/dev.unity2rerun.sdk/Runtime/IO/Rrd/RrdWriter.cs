@@ -6,7 +6,6 @@
 
 using System;
 using System.IO;
-using Unity.RerunSDK.Util;
 
 namespace Unity.RerunSDK.IO.Rrd
 {
@@ -60,38 +59,12 @@ namespace Unity.RerunSDK.IO.Rrd
             _numWritten += header.Length + payload.Length;
         }
 
-        /// Write the End message + StreamFooter (no-footer mode).
-        /// Even with an empty RrdFooter, we compute the xxHash32 CRC so that
-        /// downstream tools that validate footer integrity don't reject the file.
+        /// Mark the stream as finished. In true no-footer mode, this is a no-op
+        /// — the stream simply ends after the last ArrowMsg, matching the Rust
+        /// encoder's do_not_emit_footer() path.
         public void FinishNoFooter()
         {
-            if (_finished) return;
             _finished = true;
-
-            var emptyFooter = Array.Empty<byte>();
-            uint crc = XxHash32.Compute(emptyFooter, seed: 7850921);
-
-            WriteMessage(RrdConstants.MsgKindEnd, emptyFooter);
-            WriteStreamFooter(_numWritten - emptyFooter.Length, emptyFooter.Length, crc);
-        }
-
-        private void WriteStreamFooter(long footerOffset, long footerLen, uint crc)
-        {
-            var buf = new byte[RrdConstants.StreamFooterFixedSize];
-            int pos = 0;
-
-            // Entry: offset(8 LE) + len(8 LE) + crc(4 LE)
-            BitConverter.GetBytes((ulong)footerOffset).CopyTo(buf, pos); pos += 8;
-            BitConverter.GetBytes((ulong)footerLen).CopyTo(buf, pos); pos += 8;
-            BitConverter.GetBytes(crc).CopyTo(buf, pos); pos += 4;
-
-            // Fixed part: "RRF2" + "FOOT" + count(4 LE)
-            buf[pos++] = (byte)'R'; buf[pos++] = (byte)'R'; buf[pos++] = (byte)'F'; buf[pos++] = (byte)'2';
-            buf[pos++] = (byte)'F'; buf[pos++] = (byte)'O'; buf[pos++] = (byte)'O'; buf[pos++] = (byte)'T';
-            BitConverter.GetBytes(1u).CopyTo(buf, pos);
-
-            _stream.Write(buf, 0, buf.Length);
-            _numWritten += buf.Length;
         }
 
         public void Dispose()

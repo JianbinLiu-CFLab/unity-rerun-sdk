@@ -3,10 +3,10 @@
 namespace Unity.RerunSDK.Core
 {
     /// Backend interface for output targets (.rrd file, gRPC live, etc.).
-    public interface IRerunBackend
+    internal interface IRerunBackend
     {
         void Initialize(RerunRuntime runtime);
-        void WriteMessage(byte[] payload);
+        void WriteArrowMsg(byte[] arrowMsgPayload);
         void Flush();
         void Shutdown();
     }
