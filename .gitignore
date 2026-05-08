@@ -1,0 +1,46 @@
+# Local agent/tooling state
+.claude/
+
+# Local reference checkout, not part of this Unity package repo
+foxglove-sdk/
+third-party/
+
+# .NET build outputs
+bin/
+obj/
+**/bin/
+**/obj/
+build/
+
+# Unity generated folders
+Library/
+Temp/
+Obj/
+Build/
+Builds/
+Logs/
+UserSettings/
+
+# IDE/user files
+.vs/
+.idea/
+*.user
+*.userprefs
+*.suo
+
+# MCAP recordings are runtime outputs, not source
+Unity2Foxglove/Recordings/*
+!Unity2Foxglove/Recordings/.gitkeep
+debug_mcap/
+.dotnet-home/
+
+# ISG generated source files are rebuilt before IL2CPP/CI builds
+Unity2Foxglove/Assets/Scripts/Generated/
+Unity2Foxglove/Assets/Scripts/Generated.meta
+
+# developer plans
+Plan/
+Developer
+
+# temporary test/verification projects
+Unitytest/
