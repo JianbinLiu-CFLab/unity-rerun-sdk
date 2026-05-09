@@ -29,7 +29,8 @@ namespace Unity.RerunSDK.Encoding
 
         private static void WriteTag(Stream s, int fieldNumber, int wireType)
         {
-            WriteVarint(s, (ulong)(fieldNumber << 3) | (uint)wireType);
+            var tag = ((ulong)(uint)fieldNumber << 3) | (uint)wireType;
+            WriteVarint(s, tag);
         }
 
         private static void WriteUInt64(Stream s, int field, ulong value)

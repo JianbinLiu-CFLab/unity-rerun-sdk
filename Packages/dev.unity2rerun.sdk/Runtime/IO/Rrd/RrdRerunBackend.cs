@@ -8,21 +8,15 @@ namespace Unity.RerunSDK.IO.Rrd
     internal class RrdRerunBackend : IRerunBackend
     {
         private readonly RrdWriter _writer;
-        private readonly ManagedRerunEncoder _encoder;
-        private readonly string _applicationId;
 
-        public RrdRerunBackend(RrdWriter writer, ManagedRerunEncoder encoder, string applicationId)
+        public RrdRerunBackend(RrdWriter writer)
         {
             _writer = writer;
-            _encoder = encoder;
-            _applicationId = applicationId;
         }
 
         public void Initialize(RerunRuntime runtime)
         {
             _writer.WriteStreamHeader();
-            var msg = _encoder.EncodeSetStoreInfoMessage(runtime.RecordingId, _applicationId);
-            Write(msg);
         }
 
         public void Write(EncodedRerunMessage message)

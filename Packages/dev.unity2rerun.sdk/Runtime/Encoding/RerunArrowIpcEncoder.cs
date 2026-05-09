@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;

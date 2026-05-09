@@ -23,6 +23,8 @@
 
   <!-- Compile non-UnityEngine SDK source files directly -->
   <ItemGroup>
+    <Compile Include="..\..\..\Runtime\Core\IRerunBackend.cs" Link="Core\IRerunBackend.cs" />
+    <Compile Include="..\..\..\Runtime\Core\RerunRuntime.cs" Link="Core\RerunRuntime.cs" />
     <Compile Include="..\..\..\Runtime\Core\RerunEntityPath.cs" Link="Core\RerunEntityPath.cs" />
     <Compile Include="..\..\..\Runtime\Core\RerunTimeline.cs" Link="Core\RerunTimeline.cs" />
     <Compile Include="..\..\..\Runtime\Core\RerunTimelineEntry.cs" Link="Core\RerunTimelineEntry.cs" />
@@ -35,9 +37,13 @@
     <Compile Include="..\..\..\Runtime\Transport\Grpc\Protos\SdkComms.cs" Link="Grpc\SdkComms.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\Protos\SdkCommsGrpc.cs" Link="Grpc\SdkCommsGrpc.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunArrowIpcEncoder.cs" Link="Encoding\RerunArrowIpcEncoder.cs" />
-    <!-- RrdRerunBackend uses internal IRerunBackend; tests go through encoder directly -->
     <Compile Include="..\..\..\Runtime\Encoding\ManagedRerunEncoder.cs" Link="Encoding\ManagedRerunEncoder.cs" />
     <Compile Include="..\..\..\Runtime\IO\Rrd\RrdWriter.cs" Link="IO\RrdWriter.cs" />
+    <Compile Include="..\..\..\Runtime\IO\Rrd\RrdRerunBackend.cs" Link="IO\RrdRerunBackend.cs" />
+    <Compile Include="..\..\..\Runtime\Transport\CompositeRerunBackend.cs" Link="Transport\CompositeRerunBackend.cs" />
+    <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcEndpoint.cs" Link="Transport\RerunGrpcEndpoint.cs" />
+    <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcViewerProbe.cs" Link="Transport\RerunGrpcViewerProbe.cs" />
+    <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcClient.cs" Link="Transport\RerunGrpcClient.cs" />
     <Compile Include="..\..\..\Runtime\Util\XxHash32.cs" Link="Util\XxHash32.cs" />
   </ItemGroup>
 
