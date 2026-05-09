@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <RerunTestsBuildRoot>$(MSBuildThisFileDirectory)..\..\..\..\..\build\Tests\Unity.RerunSDK.Core.Tests\</RerunTestsBuildRoot>
+    <BaseOutputPath>$(RerunTestsBuildRoot)</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(RerunTestsBuildRoot)obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(RerunTestsBuildRoot)obj\</MSBuildProjectExtensionsPath>
+    <RestoreOutputPath>$(RerunTestsBuildRoot)obj\</RestoreOutputPath>
+  </PropertyGroup>
+</Project>

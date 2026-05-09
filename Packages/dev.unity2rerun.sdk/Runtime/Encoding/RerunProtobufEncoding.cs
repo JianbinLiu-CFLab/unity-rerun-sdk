@@ -29,7 +29,8 @@ namespace Unity.RerunSDK.Encoding
 
         private static void WriteTag(Stream s, int fieldNumber, int wireType)
         {
-            WriteVarint(s, (ulong)(fieldNumber << 3) | (uint)wireType);
+            var tag = ((ulong)(uint)fieldNumber << 3) | (uint)wireType;
+            WriteVarint(s, tag);
         }
 
         private static void WriteUInt64(Stream s, int field, ulong value)
@@ -215,6 +216,29 @@ namespace Unity.RerunSDK.Encoding
                 WriteUInt64(ms, 7, 1);
             }
 
+            return ms.ToArray();
+        }
+        // ── gRPC LogMsg outer wrapper encoding ──
+
+        /// Wrap a SetStoreInfo inner payload as an outer LogMsg oneof.
+        /// RRD stream writes the inner payload directly; gRPC WriteMessagesRequest
+        /// requires the outer LogMsg wrapper with oneof tag.
+        public static byte[] WrapSetStoreInfoAsLogMsg(byte[] setStoreInfoInnerPayload)
+        {
+            // LogMsg: field 1 (SetStoreInfo) = wire type 2 (len-delimited)
+            return WrapAsLogMsg(1, setStoreInfoInnerPayload);
+        }
+
+        /// Wrap an ArrowMsg inner payload as an outer LogMsg oneof.
+        public static byte[] WrapArrowMsgAsLogMsg(byte[] arrowMsgInnerPayload)
+        {
+            return WrapAsLogMsg(2, arrowMsgInnerPayload);
+        }
+
+        private static byte[] WrapAsLogMsg(int oneofFieldNum, byte[] innerPayload)
+        {
+            using var ms = new MemoryStream();
+            WriteLengthDelimited(ms, oneofFieldNum, innerPayload);
             return ms.ToArray();
         }
     }

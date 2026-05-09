@@ -5,33 +5,23 @@ using Unity.RerunSDK.Encoding;
 
 namespace Unity.RerunSDK.IO.Rrd
 {
-    /// Backend that writes RRD-encoded messages directly to an .rrd file.
     internal class RrdRerunBackend : IRerunBackend
     {
         private readonly RrdWriter _writer;
-        private readonly ManagedRerunEncoder _encoder;
-        private readonly string _applicationId;
-        private RerunRuntime _runtime;
 
-        public RrdRerunBackend(RrdWriter writer, ManagedRerunEncoder encoder, string applicationId)
+        public RrdRerunBackend(RrdWriter writer)
         {
             _writer = writer;
-            _encoder = encoder;
-            _applicationId = applicationId;
         }
 
         public void Initialize(RerunRuntime runtime)
         {
-            _runtime = runtime;
             _writer.WriteStreamHeader();
-
-            var setStoreInfo = _encoder.EncodeSetStoreInfo(runtime.RecordingId, _applicationId);
-            _writer.WriteMessage(RrdConstants.MsgKindSetStoreInfo, setStoreInfo);
         }
 
-        public void WriteArrowMsg(byte[] arrowMsgPayload)
+        public void Write(EncodedRerunMessage message)
         {
-            _writer.WriteMessage(RrdConstants.MsgKindArrowMsg, arrowMsgPayload);
+            _writer.WriteMessage(message.RrdKind, message.RrdPayload);
         }
 
         public void Flush()

@@ -26,12 +26,12 @@ public class RrdSmokeTests
         using (var writer = new RrdWriter(ms))
         {
             writer.WriteStreamHeader();
-            var ssi = encoder.EncodeSetStoreInfo(recordingId, appId);
-            writer.WriteMessage(RrdConstants.MsgKindSetStoreInfo, ssi);
+            var ssi = encoder.EncodeSetStoreInfoMessage(recordingId, appId);
+            writer.WriteMessage(ssi.RrdKind, ssi.RrdPayload);
 
-            var textPayload = encoder.EncodeTextLogArrowMsg(
+            var msg = encoder.EncodeTextLogMessage(
                 recordingId, appId, "logs/unity", "hello test", "INFO", DefTl);
-            writer.WriteMessage(RrdConstants.MsgKindArrowMsg, textPayload);
+            writer.WriteMessage(msg.RrdKind, msg.RrdPayload);
         }
 
         var bytes = ms.ToArray();
@@ -45,7 +45,7 @@ public class RrdSmokeTests
     [Fact]
     public void Scalar_schema_uses_float64()
     {
-        var schema = DecodeSchema(enc => enc.EncodeScalarArrowMsg("rec", "app", "m/fps", 60.0, DefTl));
+        var schema = DecodeSchema(enc => enc.EncodeScalarMessage("rec", "app", "m/fps", 60.0, DefTl));
         var sf = schema.GetFieldByName("Scalars:scalars");
         Assert.NotNull(sf);
         Assert.IsType<ListType>(sf.DataType);
@@ -57,7 +57,7 @@ public class RrdSmokeTests
     [Fact]
     public void ViewCoordinates_component_is_xyz()
     {
-        var schema = DecodeSchema(enc => enc.EncodeViewCoordinatesArrowMsg("rec", "app", "world", 3, 1, 6));
+        var schema = DecodeSchema(enc => enc.EncodeViewCoordinatesMessage("rec", "app", "world", 3, 1, 6));
         var vf = schema.GetFieldByName("ViewCoordinates:xyz");
         Assert.NotNull(vf);
         Assert.Equal("rerun.archetypes.ViewCoordinates", vf.Metadata["rerun:archetype"]);
@@ -70,7 +70,7 @@ public class RrdSmokeTests
     [Fact]
     public void Transform3D_schema_has_translation_and_quaternion()
     {
-        var schema = DecodeSchema(enc => enc.EncodeTransform3DArrowMsg("rec", "app", "w/cube",
+        var schema = DecodeSchema(enc => enc.EncodeTransform3DMessage("rec", "app", "w/cube",
             1f, 2f, 3f, 0f, 0f, 0f, 1f, DefTl));
         var tf = schema.GetFieldByName("Transform3D:translation");
         Assert.NotNull(tf);
@@ -90,7 +90,7 @@ public class RrdSmokeTests
     [Fact]
     public void Row_id_has_control_kind_and_arrow_extension()
     {
-        var schema = DecodeSchema(enc => enc.EncodeTextLogArrowMsg("rec", "app", "logs/u", "hi", "INFO", DefTl));
+        var schema = DecodeSchema(enc => enc.EncodeTextLogMessage("rec", "app", "logs/u", "hi", "INFO", DefTl));
         var rf = schema.GetFieldByName("row_id");
         Assert.NotNull(rf);
         Assert.Equal("control", rf.Metadata["rerun:kind"]);
@@ -100,7 +100,7 @@ public class RrdSmokeTests
     [Fact]
     public void Batch_metadata_contains_sorbet_version_and_rerun_id()
     {
-        var schema = DecodeSchema(enc => enc.EncodeTextLogArrowMsg("rec", "app", "logs/u", "hi", "INFO", DefTl));
+        var schema = DecodeSchema(enc => enc.EncodeTextLogMessage("rec", "app", "logs/u", "hi", "INFO", DefTl));
         Assert.Equal("0.1.3", schema.Metadata["sorbet:version"]);
         Assert.Equal("logs/u", schema.Metadata["rerun:entity_path"]);
         Assert.True(schema.Metadata.ContainsKey("rerun:id"));
@@ -114,7 +114,7 @@ public class RrdSmokeTests
             new("log_time", 1234567890123, RerunTimelineKind.TimestampNs),
             new("log_tick", 1, RerunTimelineKind.Sequence)
         };
-        var schema = DecodeSchema(enc => enc.EncodeScalarArrowMsg("rec", "app", "m/x", 1.0, tls));
+        var schema = DecodeSchema(enc => enc.EncodeScalarMessage("rec", "app", "m/x", 1.0, tls));
 
         var tf = schema.GetFieldByName("log_time");
         Assert.NotNull(tf);
@@ -133,8 +133,8 @@ public class RrdSmokeTests
         var encoder = new ManagedRerunEncoder();
         for (int i = 0; i < 50; i++)
         {
-            var payload = encoder.EncodeTextLogArrowMsg("rec", "app", "logs/u", $"msg{i}", "INFO", DefTl);
-            var schema = DecodeSchemaFromBytes(payload);
+            var msg = encoder.EncodeTextLogMessage("rec", "app", "logs/u", $"msg{i}", "INFO", DefTl);
+            var schema = DecodeSchemaFromBytes(msg);
             var id = schema.Metadata["rerun:id"];
             Assert.DoesNotContain(id, ids);
             ids.Add(id);
@@ -143,16 +143,16 @@ public class RrdSmokeTests
 
     // ── helpers ──
 
-    private delegate byte[] EncFn(ManagedRerunEncoder enc);
+    private delegate EncodedRerunMessage EncFn(ManagedRerunEncoder enc);
 
     private static Apache.Arrow.Schema DecodeSchema(EncFn encode)
     {
         return DecodeSchemaFromBytes(encode(new ManagedRerunEncoder()));
     }
 
-    private static Apache.Arrow.Schema DecodeSchemaFromBytes(byte[] arrowMsgBytes)
+    private static Apache.Arrow.Schema DecodeSchemaFromBytes(EncodedRerunMessage msg)
     {
-        var arrowMsg = RerunLogMsg.ArrowMsg.Parser.ParseFrom(arrowMsgBytes);
+        var arrowMsg = RerunLogMsg.ArrowMsg.Parser.ParseFrom(msg.RrdPayload);
         Assert.NotNull(arrowMsg.Payload);
         Assert.True(arrowMsg.Payload.Length > 0);
 

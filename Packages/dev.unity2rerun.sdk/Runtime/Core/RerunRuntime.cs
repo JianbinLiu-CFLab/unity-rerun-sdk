@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Unity.RerunSDK.Core
 {
-    public class RerunRuntime : IDisposable
+    internal class RerunRuntime : IDisposable
     {
         public string ApplicationId { get; }
         public string RecordingId { get; }

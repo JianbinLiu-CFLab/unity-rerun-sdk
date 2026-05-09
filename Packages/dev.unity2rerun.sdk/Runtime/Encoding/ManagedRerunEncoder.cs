@@ -3,18 +3,24 @@
 using System;
 using System.Collections.Generic;
 using Unity.RerunSDK.Core;
+using static Unity.RerunSDK.IO.Rrd.RrdConstants;
 
 namespace Unity.RerunSDK.Encoding
 {
     internal class ManagedRerunEncoder : IRerunEncoder
     {
-        public byte[] EncodeSetStoreInfo(string recordingId, string applicationId)
+        public EncodedRerunMessage EncodeSetStoreInfoMessage(string recordingId, string applicationId)
         {
             var nowNs = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000;
-            return RerunProtobufEncoding.EncodeSetStoreInfo(recordingId, applicationId, nowNs, 1);
+            var rrdPayload = RerunProtobufEncoding.EncodeSetStoreInfo(recordingId, applicationId, nowNs, 1);
+            var grpcPayload = RerunProtobufEncoding.WrapSetStoreInfoAsLogMsg(rrdPayload);
+
+            return new EncodedRerunMessage(
+                MsgKindSetStoreInfo, rrdPayload, grpcPayload,
+                isStoreInfo: true, isStatic: false);
         }
 
-        public byte[] EncodeTextLogArrowMsg(
+        public EncodedRerunMessage EncodeTextLogMessage(
             string recordingId, string applicationId,
             string entityPath, string text, string level,
             IReadOnlyList<RerunTimelineEntry> timelines)
@@ -22,18 +28,21 @@ namespace Unity.RerunSDK.Encoding
             var rowId = RerunTuidGenerator.Next();
             var chunkId = RerunTuidGenerator.Next();
 
-            var arrowPayload = RerunArrowIpcEncoder.EncodeTextLogArrowIpc(
+            var arrowIpc = RerunArrowIpcEncoder.EncodeTextLogArrowIpc(
                 entityPath, text, level, rowId, chunkId, timelines);
 
-            return RerunProtobufEncoding.EncodeArrowMsg(
+            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
-                chunkIdTimeNs: chunkId.TimeNs, chunkIdInc: chunkId.Inc,
-                compression: 1,
-                uncompressedSize: (ulong)arrowPayload.Length,
-                arrowIpcPayload: arrowPayload);
+                chunkId.TimeNs, chunkId.Inc,
+                compression: 1, (ulong)arrowIpc.Length, arrowIpc);
+
+            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
+
+            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
+                isStoreInfo: false, isStatic: false);
         }
 
-        public byte[] EncodeScalarArrowMsg(
+        public EncodedRerunMessage EncodeScalarMessage(
             string recordingId, string applicationId,
             string entityPath, double value,
             IReadOnlyList<RerunTimelineEntry> timelines)
@@ -41,18 +50,21 @@ namespace Unity.RerunSDK.Encoding
             var rowId = RerunTuidGenerator.Next();
             var chunkId = RerunTuidGenerator.Next();
 
-            var arrowPayload = RerunArrowIpcEncoder.EncodeScalarArrowIpc(
+            var arrowIpc = RerunArrowIpcEncoder.EncodeScalarArrowIpc(
                 entityPath, value, rowId, chunkId, timelines);
 
-            return RerunProtobufEncoding.EncodeArrowMsg(
+            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
-                chunkIdTimeNs: chunkId.TimeNs, chunkIdInc: chunkId.Inc,
-                compression: 1,
-                uncompressedSize: (ulong)arrowPayload.Length,
-                arrowIpcPayload: arrowPayload);
+                chunkId.TimeNs, chunkId.Inc,
+                compression: 1, (ulong)arrowIpc.Length, arrowIpc);
+
+            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
+
+            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
+                isStoreInfo: false, isStatic: false);
         }
 
-        public byte[] EncodeTransform3DArrowMsg(
+        public EncodedRerunMessage EncodeTransform3DMessage(
             string recordingId, string applicationId,
             string entityPath,
             float tx, float ty, float tz,
@@ -62,35 +74,41 @@ namespace Unity.RerunSDK.Encoding
             var rowId = RerunTuidGenerator.Next();
             var chunkId = RerunTuidGenerator.Next();
 
-            var arrowPayload = RerunArrowIpcEncoder.EncodeTransform3DArrowIpc(
+            var arrowIpc = RerunArrowIpcEncoder.EncodeTransform3DArrowIpc(
                 entityPath, tx, ty, tz, qx, qy, qz, qw,
                 rowId, chunkId, timelines);
 
-            return RerunProtobufEncoding.EncodeArrowMsg(
+            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
-                chunkIdTimeNs: chunkId.TimeNs, chunkIdInc: chunkId.Inc,
-                compression: 1,
-                uncompressedSize: (ulong)arrowPayload.Length,
-                arrowIpcPayload: arrowPayload);
+                chunkId.TimeNs, chunkId.Inc,
+                compression: 1, (ulong)arrowIpc.Length, arrowIpc);
+
+            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
+
+            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
+                isStoreInfo: false, isStatic: false);
         }
 
-        public byte[] EncodeViewCoordinatesArrowMsg(
+        public EncodedRerunMessage EncodeViewCoordinatesMessage(
             string recordingId, string applicationId,
             string entityPath, byte x, byte y, byte z)
         {
             var rowId = RerunTuidGenerator.Next();
             var chunkId = RerunTuidGenerator.Next();
 
-            var arrowPayload = RerunArrowIpcEncoder.EncodeViewCoordinatesArrowIpc(
+            var arrowIpc = RerunArrowIpcEncoder.EncodeViewCoordinatesArrowIpc(
                 entityPath, x, y, z, rowId, chunkId);
 
-            return RerunProtobufEncoding.EncodeArrowMsg(
+            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
-                chunkIdTimeNs: chunkId.TimeNs, chunkIdInc: chunkId.Inc,
-                compression: 1,
-                uncompressedSize: (ulong)arrowPayload.Length,
-                arrowIpcPayload: arrowPayload,
+                chunkId.TimeNs, chunkId.Inc,
+                compression: 1, (ulong)arrowIpc.Length, arrowIpc,
                 isStatic: true);
+
+            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
+
+            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
+                isStoreInfo: false, isStatic: true);
         }
     }
 }
