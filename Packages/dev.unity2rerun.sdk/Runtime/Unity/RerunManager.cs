@@ -70,6 +70,8 @@ namespace Unity.RerunSDK.Unity
 
         public RerunLiveState LiveState { get; private set; } = RerunLiveState.Disabled;
 
+        public string ResolvedOutputPath => _resolvedPath;
+
         private void Awake()
         {
             MigrateLegacyOutputPath();

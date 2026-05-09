@@ -44,6 +44,9 @@
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcEndpoint.cs" Link="Transport\RerunGrpcEndpoint.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcViewerProbe.cs" Link="Transport\RerunGrpcViewerProbe.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcClient.cs" Link="Transport\RerunGrpcClient.cs" />
+    <Compile Include="..\..\..\Runtime\Unity\RerunPublishRateLimiter.cs" Link="Unity\RerunPublishRateLimiter.cs" />
+    <Compile Include="..\..\..\Runtime\Unity\RerunScalarSource.cs" Link="Unity\RerunScalarSource.cs" />
+    <Compile Include="..\..\..\Runtime\Unity\RerunScalarSourceEvaluator.cs" Link="Unity\RerunScalarSourceEvaluator.cs" />
     <Compile Include="..\..\..\Runtime\Util\XxHash32.cs" Link="Util\XxHash32.cs" />
   </ItemGroup>
 
