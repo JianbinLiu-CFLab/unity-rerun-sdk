@@ -71,8 +71,7 @@ Unity2Foxglove/Assets/Scripts/Generated.meta
 
 # developer plans
 Plan/
-Developer/*
-!Developer/*.md
+Developer/
 
 # temporary test/verification projects
 Unitytest/
