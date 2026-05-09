@@ -1,10 +1,10 @@
 {
   "name": "dev.unity2rerun.sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "displayName": "Unity2Rerun SDK",
   "license": "Apache-2.0",
-  "description": "Unity native SDK for Rerun — log Unity runtime data to .rrd files and Rerun Viewer without external bridge processes.",
-  "unity": "6000.0",
+  "description": "Unity native SDK for Rerun - log Unity runtime data to .rrd files and Rerun Viewer without external bridge processes.",
+  "unity": "2022.3",
   "dependencies": {
   },
   "keywords": ["rerun", "visualization", "robotics", "debugging", "rrd"],
@@ -16,6 +16,16 @@
       "displayName": "Basic Rrd Recording",
       "description": "Minimal Unity scene that saves a TextLog .rrd file via RerunManager.",
       "path": "Samples~/BasicRrdRecording"
+    },
+    {
+      "displayName": "Publisher Components",
+      "description": "Inspector-driven recording: Transform, Scalar, and TextLog publishers without writing code.",
+      "path": "Samples~/PublisherComponents"
+    },
+    {
+      "displayName": "Live Viewer",
+      "description": "FileAndLive recording with live Rerun Viewer transport. Requires YetAnotherHttpHandler.",
+      "path": "Samples~/LiveViewer"
     }
   ]
 }
