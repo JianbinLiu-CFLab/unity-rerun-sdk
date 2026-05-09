@@ -139,20 +139,20 @@ namespace Unity.RerunSDK.Unity
         {
             if (_runtime == null || !IsRecording) return;
             var snapshot = _runtime.CaptureTimelineSnapshot();
-            var payload = _encoder.EncodeTextLogArrowMsg(
+            var payload = _encoder.EncodeTextLogMessage(
                 _runtime.RecordingId, _applicationId,
                 entityPath, text, level, snapshot.ToEntries());
-            _backend.WriteArrowMsg(payload);
+            _backend.Write(payload);
         }
 
         public void LogScalar(string entityPath, double value)
         {
             if (_runtime == null || !IsRecording) return;
             var snapshot = _runtime.CaptureTimelineSnapshot();
-            var payload = _encoder.EncodeScalarArrowMsg(
+            var payload = _encoder.EncodeScalarMessage(
                 _runtime.RecordingId, _applicationId,
                 entityPath, value, snapshot.ToEntries());
-            _backend.WriteArrowMsg(payload);
+            _backend.Write(payload);
         }
 
         public void LogTransform(string entityPath, Transform transform)
@@ -169,23 +169,23 @@ namespace Unity.RerunSDK.Unity
             var rot = RerunCoordinateConverter.ToRerunRotation(rotation);
 
             var snapshot = _runtime.CaptureTimelineSnapshot();
-            var payload = _encoder.EncodeTransform3DArrowMsg(
+            var payload = _encoder.EncodeTransform3DMessage(
                 _runtime.RecordingId, _applicationId,
                 entityPath,
                 pos.x, pos.y, pos.z,
                 rot.x, rot.y, rot.z, rot.w,
                 snapshot.ToEntries());
-            _backend.WriteArrowMsg(payload);
+            _backend.Write(payload);
         }
 
         // ── Internal ──
 
         private void WriteViewCoordinates()
         {
-            var payload = _encoder.EncodeViewCoordinatesArrowMsg(
+            var payload = _encoder.EncodeViewCoordinatesMessage(
                 _runtime.RecordingId, _applicationId,
                 "world", 3, 1, 6); // Right=3, Up=1, Back=6 = RIGHT_HAND_Y_UP
-            _backend.WriteArrowMsg(payload);
+            _backend.Write(payload);
         }
 
         private string ResolvePath()

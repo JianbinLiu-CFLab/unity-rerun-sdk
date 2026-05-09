@@ -18,11 +18,11 @@ public static class Phase3RrdWriter
         using var writer = new RrdWriter(fs);
 
         writer.WriteStreamHeader();
-        writer.WriteMessage(RrdConstants.MsgKindSetStoreInfo,
-            encoder.EncodeSetStoreInfo(recordingId, appId));
 
-        writer.WriteMessage(RrdConstants.MsgKindArrowMsg,
-            encoder.EncodeViewCoordinatesArrowMsg(recordingId, appId, "world", 3, 1, 6));
+        void WriteMsg(EncodedRerunMessage m) => writer.WriteMessage(m.RrdKind, m.RrdPayload);
+
+        WriteMsg(encoder.EncodeSetStoreInfoMessage(recordingId, appId));
+        WriteMsg(encoder.EncodeViewCoordinatesMessage(recordingId, appId, "world", 3, 1, 6));
 
         for (int i = 0; i < 100; i++)
         {
@@ -34,20 +34,17 @@ public static class Phase3RrdWriter
 
             if (i % 20 == 0)
             {
-                writer.WriteMessage(RrdConstants.MsgKindArrowMsg,
-                    encoder.EncodeTextLogArrowMsg(recordingId, appId, "logs/unity",
-                        $"Frame {i}: hello from Phase 3", "INFO", timelines));
+                WriteMsg(encoder.EncodeTextLogMessage(recordingId, appId, "logs/unity",
+                    $"Frame {i}: hello from Phase 3", "INFO", timelines));
             }
 
-            writer.WriteMessage(RrdConstants.MsgKindArrowMsg,
-                encoder.EncodeScalarArrowMsg(recordingId, appId, "metrics/fps",
-                    60.0 + (i % 10), timelines));
+            WriteMsg(encoder.EncodeScalarMessage(recordingId, appId, "metrics/fps",
+                60.0 + (i % 10), timelines));
 
             var t = i * 0.1;
-            writer.WriteMessage(RrdConstants.MsgKindArrowMsg,
-                encoder.EncodeTransform3DArrowMsg(recordingId, appId, "world/cube",
-                    (float)Math.Sin(t), 2f, (float)Math.Cos(t),
-                    0f, 0f, 0f, 1f, timelines));
+            WriteMsg(encoder.EncodeTransform3DMessage(recordingId, appId, "world/cube",
+                (float)Math.Sin(t), 2f, (float)Math.Cos(t),
+                0f, 0f, 0f, 1f, timelines));
         }
     }
 }

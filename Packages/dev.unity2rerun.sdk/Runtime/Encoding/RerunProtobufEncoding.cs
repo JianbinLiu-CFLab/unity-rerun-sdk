@@ -217,5 +217,28 @@ namespace Unity.RerunSDK.Encoding
 
             return ms.ToArray();
         }
+        // ── gRPC LogMsg outer wrapper encoding ──
+
+        /// Wrap a SetStoreInfo inner payload as an outer LogMsg oneof.
+        /// RRD stream writes the inner payload directly; gRPC WriteMessagesRequest
+        /// requires the outer LogMsg wrapper with oneof tag.
+        public static byte[] WrapSetStoreInfoAsLogMsg(byte[] setStoreInfoInnerPayload)
+        {
+            // LogMsg: field 1 (SetStoreInfo) = wire type 2 (len-delimited)
+            return WrapAsLogMsg(1, setStoreInfoInnerPayload);
+        }
+
+        /// Wrap an ArrowMsg inner payload as an outer LogMsg oneof.
+        public static byte[] WrapArrowMsgAsLogMsg(byte[] arrowMsgInnerPayload)
+        {
+            return WrapAsLogMsg(2, arrowMsgInnerPayload);
+        }
+
+        private static byte[] WrapAsLogMsg(int oneofFieldNum, byte[] innerPayload)
+        {
+            using var ms = new MemoryStream();
+            WriteLengthDelimited(ms, oneofFieldNum, innerPayload);
+            return ms.ToArray();
+        }
     }
 }
