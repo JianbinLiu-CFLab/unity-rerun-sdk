@@ -11,6 +11,11 @@ obj/
 **/bin/
 **/obj/
 build/
+TestResults/
+coverage/
+*.trx
+*.coverage
+*.coveragexml
 
 # Unity generated folders
 Library/
@@ -21,6 +26,13 @@ Builds/
 Logs/
 UserSettings/
 
+# Unity generated IDE/project files
+*.csproj
+*.sln
+*.sln.DotSettings.user
+*.pidb
+*.booproj
+
 # IDE/user files
 .vs/
 .idea/
@@ -28,11 +40,28 @@ UserSettings/
 *.userprefs
 *.suo
 
-# MCAP recordings are runtime outputs, not source
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Recordings are runtime outputs, not source
+*.rrd
+*.rbl
+*.mcap
+*.mcap.tmp
 Unity2Foxglove/Recordings/*
 !Unity2Foxglove/Recordings/.gitkeep
+Unity2Rerun/Assets/Recordings/
 debug_mcap/
 .dotnet-home/
+
+# Imported UPM samples in the local validation Unity project.
+# Package sample source lives under Packages/*/Samples~ and should stay tracked.
+Unity2Rerun/Assets/Samples/
+
+# Local scratch validation scenes/assets
+Unity2Rerun/Assets/LocalValidation/
 
 # ISG generated source files are rebuilt before IL2CPP/CI builds
 Unity2Foxglove/Assets/Scripts/Generated/
