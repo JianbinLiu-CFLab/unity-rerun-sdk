@@ -10,6 +10,8 @@ bin/
 obj/
 **/bin/
 **/obj/
+__pycache__/
+*.py[cod]
 build/
 TestResults/
 coverage/
@@ -69,7 +71,8 @@ Unity2Foxglove/Assets/Scripts/Generated.meta
 
 # developer plans
 Plan/
-Developer
+Developer/*
+!Developer/*.md
 
 # temporary test/verification projects
 Unitytest/

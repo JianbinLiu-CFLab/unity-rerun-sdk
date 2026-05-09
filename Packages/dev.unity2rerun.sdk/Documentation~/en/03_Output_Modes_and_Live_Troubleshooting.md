@@ -40,3 +40,23 @@
 **Cause:** The SDK does not yet write full RRD footer manifests. This is a known limitation tracked for a future phase.
 
 **Action:** Use `rerun rrd stats <file>` or open the file directly in Rerun Viewer. Both work correctly.
+
+## Player (IL2CPP) Troubleshooting
+
+### DLL load error at Player startup
+
+**Cause:** Missing assembly references in `link.xml` or incompatible plugin platform settings.
+
+**Fix:** Verify `Runtime/link.xml` covers all 11 assemblies. See IL2CPP Build Guide.
+
+### Protobuf / Arrow missing method in Player
+
+**Cause:** IL2CPP stripping removed reflection-dependent types.
+
+**Fix:** Ensure the SDK's `link.xml` is present in the consuming project's root or merged into the project-level `link.xml`.
+
+### Live HTTP/2 handler not found in Player
+
+**Cause:** `YetAnotherHttpHandler` is a project-level Git dependency, not bundled in the SDK.
+
+**Fix:** Install `YetAnotherHttpHandler` in the consuming project's `Packages/manifest.json`. See Prerequisites.

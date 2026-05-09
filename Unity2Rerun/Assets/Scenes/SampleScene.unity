@@ -414,7 +414,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunManager
   _applicationId: unity_app
   _outputMode: 0
-  _outputPath: ../build/RRD/unity_recording_{TIMESTAMP}.rrd
+  _outputPath: '../build/RRD/phase6_editor_fileonly_{TIMESTAMP}.rrd '
   _recordOnStart: 1
   _writeViewCoordinates: 1
   _liveEndpoint: rerun+http://127.0.0.1:9876/proxy
@@ -616,10 +616,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunTextLogPublisher
   _manager: {fileID: 0}
   _entityPath: logs/unity
-  _publishRateHz: 0
+  _publishRateHz: 1
   _publishOnEnable: 1
   _warnIfManagerMissing: 1
-  _message: Publisher sample started
+  _message: Phase6 editor smoke
   _level: INFO
   _repeat: 0
   _appendFrameCount: 0
@@ -637,7 +637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunScalarPublisher
   _manager: {fileID: 0}
   _entityPath: metrics/fps
-  _publishRateHz: 4
+  _publishRateHz: 10
   _publishOnEnable: 1
   _warnIfManagerMissing: 1
   _source: 0
