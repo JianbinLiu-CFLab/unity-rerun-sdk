@@ -10,3 +10,5 @@
 - [Publisher Components](en/02_Publisher_Components.md)
 - [Output Modes & Live Troubleshooting](en/03_Output_Modes_and_Live_Troubleshooting.md)
 - [Architecture](en/04_Architecture.md)
+- [IL2CPP Build Guide](en/05_IL2CPP_Build_Guide.md)
+- [IL2CPP 构建指南](zh/05_IL2CPP构建指南.md)
