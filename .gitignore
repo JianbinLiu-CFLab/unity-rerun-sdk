@@ -73,10 +73,12 @@ Unity2Rerun/Assets/LocalValidation/
 Unity2Foxglove/Assets/Scripts/Generated/
 Unity2Foxglove/Assets/Scripts/Generated.meta
 
-# developer plans
+# Local planning, validation notes, and spike experiments
 Plan/
-Developer/*
-!Developer/*.md
+Developer/
+Spikes/
+Spike/
+spike/
 
 # temporary test/verification projects
 Unitytest/
