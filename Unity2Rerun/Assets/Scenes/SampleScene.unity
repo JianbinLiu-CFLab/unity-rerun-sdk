@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -222,7 +223,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -256,6 +257,29 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b24875953ff42efa54222a514583198, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.Publishers.RerunCameraImagePublisher
+  _manager: {fileID: 0}
+  _entityPath: camera/main
+  _publishRateHz: 10
+  _publishOnEnable: 1
+  _warnIfManagerMissing: 1
+  _camera: {fileID: 0}
+  _width: 640
+  _height: 480
+  _format: 0
+  _jpegQuality: 70
+  _maxEncodedBytes: 524288
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +388,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: 
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -410,12 +434,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98005c2e2bbdbc941b281604a08d203a, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunManager
   _applicationId: unity_app
   _outputMode: 0
-  _outputPath: ../build/RRD/phase7_rerunlog_{TIMESTAMP}.rrd
+  _outputPath: ../build/RRD/phase8_rerunlog_{TIMESTAMP}.rrd
   _recordOnStart: 1
+  _runInBackground: 1
   _writeViewCoordinates: 1
   _liveEndpoint: rerun+http://127.0.0.1:9876/proxy
   _autoLaunchViewer: 1
@@ -465,7 +490,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: 
   m_IsGlobal: 1
   priority: 0
@@ -502,7 +527,6 @@ GameObject:
   - component: {fileID: 2143498623}
   - component: {fileID: 2143498622}
   - component: {fileID: 2143498621}
-  - component: {fileID: 2143498624}
   m_Layer: 0
   m_Name: SampleCube
   m_TagString: Untagged
@@ -610,59 +634,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143498616}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 957383253bea530438c0c0875604e534, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunTextLogPublisher
+  m_Script: {fileID: 11500000, guid: 75f6a8d8a46d4262b2fa3bc684ec74df, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.RerunSDK.Samples.RerunInteractive3DPublisher
   _manager: {fileID: 0}
-  _entityPath: logs/unity
-  _publishRateHz: 1
-  _publishOnEnable: 1
-  _warnIfManagerMissing: 1
-  _message: Phase6 editor smoke
-  _level: INFO
-  _repeat: 0
-  _appendFrameCount: 0
---- !u!114 &2143498622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2143498616}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e073aa713f22762468b7cfaff63a4eae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunScalarPublisher
-  _manager: {fileID: 0}
-  _entityPath: metrics/fps
-  _publishRateHz: 10
-  _publishOnEnable: 1
-  _warnIfManagerMissing: 1
-  _source: 0
-  _constantValue: 0
   _target: {fileID: 0}
---- !u!114 &2143498623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2143498616}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20e84d1af6440b84b97cb22ad91e7334, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunTransformPublisher
-  _manager: {fileID: 0}
+  _targetRenderer: {fileID: 0}
+  _controlBridge: {fileID: 0}
   _entityPath: world/cube
-  _publishRateHz: 30
-  _publishOnEnable: 1
-  _warnIfManagerMissing: 1
-  _target: {fileID: 0}
---- !u!114 &2143498624
+  _spatialRateHz: 30
+  _metricsRateHz: 10
+  _trajectoryPointLimit: 256
+--- !u!114 &2143498622
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -671,9 +656,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 2143498616}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ef9bece9b8d44d7a07f9742645fd8e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Unity.RerunSDK.Samples.RerunGeneratedLogSample
+  m_Script: {fileID: 11500000, guid: bdb43c20f70b44fb8e972403671475d0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunInteractiveControlBridge
+  _manager: {fileID: 0}
+  _target: {fileID: 0}
+  _preferredPort: 18765
+  _startOnEnable: 1
+  _controlUrl:
+--- !u!114 &2143498623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2143498616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ea4fb881604f19b9557743dd11ad49, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.RerunSDK.Samples.RerunInteractiveCubeController
+  _rotateSpeed: 3
+  _panSpeed: 0.01
+  _scaleSpeed: 0.5
+  _minScale: 0.2
+  _maxScale: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

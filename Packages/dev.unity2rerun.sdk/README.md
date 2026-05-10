@@ -2,11 +2,32 @@
 
 Unity native SDK for [Rerun](https://rerun.io): log Unity runtime data to `.rrd` files and Rerun Viewer without external bridge processes.
 
+## Version requirements
+
+- Unity 6000.0 LTSC or later (developed on 6000.3.14f1 LTSC; compatible with 6000.0.74f1 LTSC)
+- Editor + Standalone Player. Windows is the verified target for the current SDK work; macOS/Linux are intended targets but not yet verified.
+- Rerun Viewer / CLI 0.31.4+
+- Live transport dependency: Cysharp `YetAnotherHttpHandler` 1.11.5 with its native dependency package. FileOnly `.rrd` output does not require it.
+
 ## Status
 
-Phase 7 - `.rrd` and live output, Publisher components, IL2CPP build support, and `[RerunLog]` source generation.
+Phase 8 - `.rrd` and live output, Publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, 3D boxes, trajectory, and local sidecar control.
 
-## Quick Start
+## Quick install
+
+Add to `Packages/manifest.json`:
+
+```json
+{
+  "dependencies": {
+    "dev.unity2rerun.sdk": "file:../../Packages/dev.unity2rerun.sdk"
+  }
+}
+```
+
+For live gRPC output, also install Cysharp `YetAnotherHttpHandler` 1.11.5 as described in `Documentation~/en/00_Prerequisites.md`.
+
+## Minimal usage
 
 ```csharp
 var go = new GameObject("Rerun");
@@ -14,6 +35,15 @@ var mgr = go.AddComponent<RerunManager>();
 mgr.StartRecording();
 mgr.LogText("logs/unity", "Hello from Unity!");
 mgr.StopRecording();
+```
+
+Interactive 3D/image publishing:
+
+```csharp
+mgr.LogEncodedImage("camera/main", jpegBytes, "image/jpeg");
+mgr.LogTransform("world/cube", cubeTransform);
+mgr.LogBox3D("world/cube", Vector3.zero, cubeTransform.lossyScale * 0.5f, Quaternion.identity, Color.green);
+mgr.LogLineStrips3D("world/cube_trajectory", trajectoryPoints, Color.yellow);
 ```
 
 Attribute-driven publishing:
@@ -30,6 +60,17 @@ public partial class PlayerDebug : MonoBehaviour
 }
 ```
 
+## Features
+
+- Rerun `.rrd` file recording
+- Live Rerun Viewer output through gRPC
+- TextLog, Scalar, Transform3D, EncodedImage, Boxes3D, and LineStrips3D publishing
+- Inspector-driven publishers and samples
+- `[RerunLog]` attribute-driven source generation, not runtime reflection
+- Local loopback sidecar control sample for Unity-driven interactive demos
+- IL2CPP standalone build support
+- Unity-to-Rerun coordinate conversion
+
 ## Package Structure
 
 ```
@@ -38,7 +79,7 @@ Runtime/
   Encoding/     ManagedRerunEncoder, RerunProtobufEncoding, RerunArrowIpcEncoder
   IO/Rrd/       RrdWriter - low-level RRD binary framing
   Transport/    gRPC live transport and backend fan-out
-  Unity/        RerunManager, Publishers, RerunLog attributes
+  Unity/        RerunManager, Publishers, RerunLog attributes, loopback control
   Plugins/      Apache.Arrow.dll, Google.Protobuf.dll, gRPC dependencies
 Editor/
   SourceGenerators/  RerunLog Roslyn analyzer layout
@@ -49,7 +90,12 @@ Editor/
 
 - Windows Editor
 - Windows Standalone IL2CPP Player
+- Phase 8 sidecar control is Windows Editor focused; Player sidecar support remains a later validation item.
 - WebGL is not supported because live transport requires gRPC.
+
+## Full documentation
+
+See [Documentation~/README.md](Documentation~/README.md).
 
 ## License
 

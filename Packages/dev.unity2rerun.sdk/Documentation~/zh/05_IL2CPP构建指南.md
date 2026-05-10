@@ -2,7 +2,7 @@
 
 ## 前置条件
 
-- Unity 2022.3+ 或 Unity 6
+- Unity 6000.0 LTSC 或更高版本（开发环境为 6000.3.14f1 LTSC；兼容 6000.0.74f1 LTSC）
 - 通过 Unity Hub 安装 Windows Build Support (IL2CPP)
 - Cysharp `YetAnotherHttpHandler`（Git 依赖，见前置条件）
 - `Scripts/build_unity_il2cpp.py`（Python 3.9+）

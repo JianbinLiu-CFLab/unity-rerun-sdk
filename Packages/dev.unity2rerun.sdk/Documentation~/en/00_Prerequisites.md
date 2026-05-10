@@ -2,8 +2,8 @@
 
 ## Unity
 
-- Unity 2022 LTS (2022.3+) or Unity 6 (6000.0+)
-- Windows (Editor + Standalone Player)
+- Unity 6000.0 LTSC or later (developed on 6000.3.14f1 LTSC; compatible with 6000.0.74f1 LTSC)
+- Windows (Editor + Standalone Player). macOS/Linux are intended targets but not yet verified.
 - IL2CPP Player support: Phase 6+
 
 ## Rerun Viewer

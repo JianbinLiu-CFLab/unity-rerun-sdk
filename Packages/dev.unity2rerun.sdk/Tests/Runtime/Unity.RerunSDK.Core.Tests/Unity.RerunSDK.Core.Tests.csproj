@@ -31,6 +31,7 @@
     <Compile Include="..\..\..\Runtime\Core\RerunTimelineEntry.cs" Link="Core\RerunTimelineEntry.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\IRerunEncoder.cs" Link="Encoding\IRerunEncoder.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunTuidGenerator.cs" Link="Encoding\RerunTuidGenerator.cs" />
+    <Compile Include="..\..\..\Runtime\Encoding\RerunGeometry.cs" Link="Encoding\RerunGeometry.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\Protos\Common.cs" Link="Encoding\Common.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\Protos\LogMsg.cs" Link="Encoding\LogMsg.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunProtobufEncoding.cs" Link="Encoding\RerunProtobufEncoding.cs" />
@@ -46,6 +47,8 @@
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcViewerProbe.cs" Link="Transport\RerunGrpcViewerProbe.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcClient.cs" Link="Transport\RerunGrpcClient.cs" />
     <Compile Include="..\..\..\Runtime\Unity\RerunPublishRateLimiter.cs" Link="Unity\RerunPublishRateLimiter.cs" />
+    <Compile Include="..\..\..\Runtime\Unity\Control\RerunControlContracts.cs" Link="Unity\Control\RerunControlContracts.cs" />
+    <Compile Include="..\..\..\Runtime\Unity\Control\RerunControlServer.cs" Link="Unity\Control\RerunControlServer.cs" />
     <Compile Include="..\..\..\Runtime\Unity\RerunScalarSource.cs" Link="Unity\RerunScalarSource.cs" />
     <Compile Include="..\..\..\Runtime\Unity\RerunScalarSourceEvaluator.cs" Link="Unity\RerunScalarSourceEvaluator.cs" />
     <Compile Include="..\..\..\Runtime\Util\XxHash32.cs" Link="Util\XxHash32.cs" />

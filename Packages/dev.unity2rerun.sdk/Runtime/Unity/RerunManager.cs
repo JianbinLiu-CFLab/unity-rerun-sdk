@@ -31,6 +31,9 @@ namespace Unity.RerunSDK.Unity
         [SerializeField, Tooltip("Automatically start recording on Start.")]
         private bool _recordOnStart = true;
 
+        [SerializeField, Tooltip("Keep Unity running while Rerun Viewer or sidecar browser has focus.")]
+        private bool _runInBackground = true;
+
         [SerializeField, Tooltip("Write ViewCoordinates on world entity at recording start.")]
         private bool _writeViewCoordinates = true;
 
@@ -72,6 +75,8 @@ namespace Unity.RerunSDK.Unity
         private readonly List<IRerunGeneratedLogSource> _generatedLogStale = new();
         private static readonly List<IRerunGeneratedLogSource> GeneratedLogSources = new();
         private float _generatedLogDiscoveryTimer;
+        private bool _warnedBoxes3DRotationLengthMismatch;
+        private bool _warnedBoxes3DColorLengthMismatch;
 
         public bool IsRecording { get; private set; }
 
@@ -81,6 +86,9 @@ namespace Unity.RerunSDK.Unity
 
         private void Awake()
         {
+            if (_runInBackground)
+                Application.runInBackground = true;
+
             MigrateLegacyOutputPath();
             _encoder = new ManagedRerunEncoder();
         }
@@ -410,10 +418,129 @@ namespace Unity.RerunSDK.Unity
                 snapshot.ToEntries()));
         }
 
+        public void LogEncodedImage(string entityPath, byte[] encodedBytes, string mediaType)
+        {
+            if (_runtime == null || !IsRecording) return;
+            if (encodedBytes == null || encodedBytes.Length == 0) return;
+
+            var snapshot = _runtime.CaptureTimelineSnapshot();
+            _backend.Write(_encoder.EncodeEncodedImageMessage(
+                _runtime.RecordingId, _applicationId,
+                entityPath, encodedBytes, mediaType, snapshot.ToEntries()));
+        }
+
+        public void LogBox3D(string entityPath, Transform target, Color color)
+        {
+            if (target == null) return;
+            var halfSize = new Vector3(
+                Mathf.Abs(target.lossyScale.x) * 0.5f,
+                Mathf.Abs(target.lossyScale.y) * 0.5f,
+                Mathf.Abs(target.lossyScale.z) * 0.5f);
+            LogBox3D(entityPath, target.position, halfSize, target.rotation, color);
+        }
+
+        public void LogBox3D(string entityPath, Vector3 center, Vector3 halfSize, Quaternion rotation, Color color)
+        {
+            LogBoxes3D(
+                entityPath,
+                new[] { center },
+                new[] { halfSize },
+                new[] { rotation },
+                new[] { color });
+        }
+
+        public void LogBoxes3D(
+            string entityPath,
+            IReadOnlyList<Vector3> centers,
+            IReadOnlyList<Vector3> halfSizes,
+            IReadOnlyList<Quaternion> rotations = null,
+            IReadOnlyList<Color> colors = null)
+        {
+            if (_runtime == null || !IsRecording) return;
+            if (centers == null || halfSizes == null) return;
+
+            var count = Math.Min(centers.Count, halfSizes.Count);
+            if (count <= 0) return;
+
+            if (rotations != null && rotations.Count != count && !_warnedBoxes3DRotationLengthMismatch)
+            {
+                Debug.LogWarning($"[Rerun] LogBoxes3D('{entityPath}') rotations count {rotations.Count} does not match box count {count}; missing rotations use identity.");
+                _warnedBoxes3DRotationLengthMismatch = true;
+            }
+
+            if (colors != null && colors.Count != count && !_warnedBoxes3DColorLengthMismatch)
+            {
+                Debug.LogWarning($"[Rerun] LogBoxes3D('{entityPath}') colors count {colors.Count} does not match box count {count}; missing colors use green.");
+                _warnedBoxes3DColorLengthMismatch = true;
+            }
+
+            var boxes = new List<RerunBox3D>(count);
+            for (var i = 0; i < count; i++)
+            {
+                var center = RerunCoordinateConverter.ToRerunPosition(centers[i]);
+                var halfSize = AbsVector(halfSizes[i]);
+                var rotation = rotations != null && i < rotations.Count
+                    ? RerunCoordinateConverter.ToRerunRotation(rotations[i])
+                    : Quaternion.identity;
+                var color = colors != null && i < colors.Count ? colors[i] : Color.green;
+
+                boxes.Add(new RerunBox3D(
+                    ToRerunVec3(center),
+                    ToRerunVec3(halfSize),
+                    new RerunQuat(rotation.x, rotation.y, rotation.z, rotation.w),
+                    ToRgba32(color)));
+            }
+
+            var snapshot = _runtime.CaptureTimelineSnapshot();
+            _backend.Write(_encoder.EncodeBoxes3DMessage(
+                _runtime.RecordingId, _applicationId,
+                entityPath, boxes, snapshot.ToEntries()));
+        }
+
+        public void LogLineStrip3D(string entityPath, IReadOnlyList<Vector3> points, Color color)
+        {
+            LogLineStrips3D(entityPath, points, color);
+        }
+
+        public void LogLineStrips3D(string entityPath, IReadOnlyList<Vector3> points, Color color)
+        {
+            if (_runtime == null || !IsRecording) return;
+            if (points == null || points.Count == 0) return;
+
+            var convertedPoints = new List<RerunVec3>(points.Count);
+            for (var i = 0; i < points.Count; i++)
+                convertedPoints.Add(ToRerunVec3(RerunCoordinateConverter.ToRerunPosition(points[i])));
+
+            var strip = new RerunLineStrip3D(convertedPoints, ToRgba32(color));
+            var snapshot = _runtime.CaptureTimelineSnapshot();
+            _backend.Write(_encoder.EncodeLineStrips3DMessage(
+                _runtime.RecordingId, _applicationId,
+                entityPath, new[] { strip }, snapshot.ToEntries()));
+        }
+
         private void WriteViewCoordinates()
         {
             _backend.Write(_encoder.EncodeViewCoordinatesMessage(
                 _runtime.RecordingId, _applicationId, "world", 3, 1, 6));
+        }
+
+        private static Vector3 AbsVector(Vector3 value)
+        {
+            return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
+        }
+
+        private static RerunVec3 ToRerunVec3(Vector3 value)
+        {
+            return new RerunVec3(value.x, value.y, value.z);
+        }
+
+        private static uint ToRgba32(Color color)
+        {
+            var r = (uint)Mathf.RoundToInt(Mathf.Clamp01(color.r) * 255f);
+            var g = (uint)Mathf.RoundToInt(Mathf.Clamp01(color.g) * 255f);
+            var b = (uint)Mathf.RoundToInt(Mathf.Clamp01(color.b) * 255f);
+            var a = (uint)Mathf.RoundToInt(Mathf.Clamp01(color.a) * 255f);
+            return (r << 24) | (g << 16) | (b << 8) | a;
         }
 
         private string ResolvePath()

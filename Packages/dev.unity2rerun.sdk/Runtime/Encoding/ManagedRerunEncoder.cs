@@ -110,5 +110,63 @@ namespace Unity.RerunSDK.Encoding
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
                 isStoreInfo: false, isStatic: true);
         }
+
+        public EncodedRerunMessage EncodeEncodedImageMessage(
+            string recordingId, string applicationId,
+            string entityPath, byte[] encodedBytes, string mediaType,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            var rowId = RerunTuidGenerator.Next();
+            var chunkId = RerunTuidGenerator.Next();
+
+            var arrowIpc = RerunArrowIpcEncoder.EncodeEncodedImageArrowIpc(
+                entityPath, encodedBytes, mediaType, rowId, chunkId, timelines);
+
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc, isStatic: false);
+        }
+
+        public EncodedRerunMessage EncodeBoxes3DMessage(
+            string recordingId, string applicationId,
+            string entityPath, IReadOnlyList<RerunBox3D> boxes,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            var rowId = RerunTuidGenerator.Next();
+            var chunkId = RerunTuidGenerator.Next();
+
+            var arrowIpc = RerunArrowIpcEncoder.EncodeBoxes3DArrowIpc(
+                entityPath, boxes, rowId, chunkId, timelines);
+
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc, isStatic: false);
+        }
+
+        public EncodedRerunMessage EncodeLineStrips3DMessage(
+            string recordingId, string applicationId,
+            string entityPath, IReadOnlyList<RerunLineStrip3D> strips,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            var rowId = RerunTuidGenerator.Next();
+            var chunkId = RerunTuidGenerator.Next();
+
+            var arrowIpc = RerunArrowIpcEncoder.EncodeLineStrips3DArrowIpc(
+                entityPath, strips, rowId, chunkId, timelines);
+
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc, isStatic: false);
+        }
+
+        private EncodedRerunMessage EncodeArrowMessage(
+            string recordingId, string applicationId,
+            RerunTuid chunkId, byte[] arrowIpc, bool isStatic)
+        {
+            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
+                recordingId, applicationId,
+                chunkId.TimeNs, chunkId.Inc,
+                compression: 1, (ulong)arrowIpc.Length, arrowIpc,
+                isStatic: isStatic);
+
+            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
+
+            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
+                isStoreInfo: false, isStatic: isStatic);
+        }
     }
 }

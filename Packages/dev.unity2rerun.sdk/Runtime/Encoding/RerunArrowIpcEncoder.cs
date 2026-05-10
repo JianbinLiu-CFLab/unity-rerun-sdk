@@ -101,6 +101,82 @@ namespace Unity.RerunSDK.Encoding
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
 
+        public static byte[] EncodeEncodedImageArrowIpc(
+            string entityPath, byte[] encodedBytes, string mediaType,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            var fields = new List<Field> { CreateRowIdField() };
+            foreach (var t in timelines)
+                fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
+            var blobValueType = new ListType(new Field("item", new UInt8Type(), false));
+            fields.Add(CreateComponentField("EncodedImage:blob", "rerun.archetypes.EncodedImage", "rerun.components.Blob",
+                new ListType(new Field("item", blobValueType, true))));
+            fields.Add(CreateComponentField("EncodedImage:media_type", "rerun.archetypes.EncodedImage", "rerun.components.MediaType",
+                new ListType(new Field("item", StringType.Default, true))));
+            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+
+            var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
+            AppendTimelineValues(arrays, timelines);
+            arrays.Add(CreateBlobComponentColumn(encodedBytes ?? System.Array.Empty<byte>()));
+            arrays.Add(CreateStringComponentColumn(mediaType ?? ""));
+            return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
+        }
+
+        public static byte[] EncodeBoxes3DArrowIpc(
+            string entityPath, IReadOnlyList<RerunBox3D> boxes,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            var fields = new List<Field> { CreateRowIdField() };
+            foreach (var t in timelines)
+                fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
+
+            var vec3Inner = new FixedSizeListType(new Field("item", FloatType.Default, false), 3);
+            var quatInner = new FixedSizeListType(new Field("item", FloatType.Default, false), 4);
+            fields.Add(CreateComponentField("Boxes3D:half_sizes", "rerun.archetypes.Boxes3D", "rerun.components.HalfSize3D",
+                new ListType(new Field("item", vec3Inner, true))));
+            fields.Add(CreateComponentField("Boxes3D:centers", "rerun.archetypes.Boxes3D", "rerun.components.Translation3D",
+                new ListType(new Field("item", vec3Inner, true))));
+            fields.Add(CreateComponentField("Boxes3D:quaternions", "rerun.archetypes.Boxes3D", "rerun.components.RotationQuat",
+                new ListType(new Field("item", quatInner, true))));
+            fields.Add(CreateComponentField("Boxes3D:colors", "rerun.archetypes.Boxes3D", "rerun.components.Color",
+                new ListType(new Field("item", new UInt32Type(), true))));
+            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+
+            var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
+            AppendTimelineValues(arrays, timelines);
+            arrays.Add(CreateVec3ComponentColumn(boxes, b => b.HalfSize));
+            arrays.Add(CreateVec3ComponentColumn(boxes, b => b.Center));
+            arrays.Add(CreateQuatComponentColumn(boxes));
+            arrays.Add(CreateUInt32ComponentColumn(boxes, b => b.ColorRgba));
+            return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
+        }
+
+        public static byte[] EncodeLineStrips3DArrowIpc(
+            string entityPath, IReadOnlyList<RerunLineStrip3D> strips,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            var fields = new List<Field> { CreateRowIdField() };
+            foreach (var t in timelines)
+                fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
+
+            var vec3Inner = new FixedSizeListType(new Field("item", FloatType.Default, false), 3);
+            var lineStripValueType = new ListType(new Field("item", vec3Inner, false));
+            fields.Add(CreateComponentField("LineStrips3D:strips", "rerun.archetypes.LineStrips3D", "rerun.components.LineStrip3D",
+                new ListType(new Field("item", lineStripValueType, true))));
+            fields.Add(CreateComponentField("LineStrips3D:colors", "rerun.archetypes.LineStrips3D", "rerun.components.Color",
+                new ListType(new Field("item", new UInt32Type(), true))));
+            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+
+            var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
+            AppendTimelineValues(arrays, timelines);
+            arrays.Add(CreateLineStripPointsColumn(strips));
+            arrays.Add(CreateUInt32ComponentColumn(strips, s => s.ColorRgba));
+            return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
+        }
+
         // ── field builders ──
 
         internal static Field CreateRowIdField()
@@ -183,6 +259,15 @@ namespace Unity.RerunSDK.Encoding
             return WrapComponentInstancesInList(1, b.Build(default));
         }
 
+        private static ListArray CreateBlobComponentColumn(IReadOnlyList<byte> values)
+        {
+            var b = new UInt8Array.Builder();
+            foreach (var v in values)
+                b.Append(v);
+            var blob = WrapInList(new[] { 0, values.Count }, b.Build(default), false);
+            return WrapComponentInstancesInList(1, blob);
+        }
+
         private static ListArray CreateDoubleComponentColumn(double value)
         {
             var b = new DoubleArray.Builder();
@@ -195,7 +280,7 @@ namespace Unity.RerunSDK.Encoding
             var b = new FloatArray.Builder();
             foreach (var v in values) b.Append(v);
             var arr = b.Build(default);
-            var fsl = WrapInFixedSizeList(arr, values.Length);
+            var fsl = WrapInFixedSizeList(arr, values.Length, 1);
             return WrapComponentInstancesInList(1, fsl);
         }
 
@@ -204,33 +289,113 @@ namespace Unity.RerunSDK.Encoding
             var b = new UInt8Array.Builder();
             foreach (var v in values) b.Append(v);
             var arr = b.Build(default);
-            var fsl = WrapInFixedSizeList(arr, values.Length);
+            var fsl = WrapInFixedSizeList(arr, values.Length, 1);
             return WrapComponentInstancesInList(1, fsl);
         }
 
-        private static IArrowArray WrapInFixedSizeList(IArrowArray inner, int size)
+        private static ListArray CreateVec3ComponentColumn<T>(IReadOnlyList<T> values, Func<T, RerunVec3> selector)
+        {
+            var b = new FloatArray.Builder();
+            for (var i = 0; i < values.Count; i++)
+            {
+                var v = selector(values[i]);
+                b.Append(v.X);
+                b.Append(v.Y);
+                b.Append(v.Z);
+            }
+
+            var arr = b.Build(default);
+            var fsl = WrapInFixedSizeList(arr, 3, values.Count);
+            return WrapComponentInstancesInList(values.Count, fsl);
+        }
+
+        private static ListArray CreateQuatComponentColumn(IReadOnlyList<RerunBox3D> boxes)
+        {
+            var b = new FloatArray.Builder();
+            for (var i = 0; i < boxes.Count; i++)
+            {
+                var q = boxes[i].Rotation;
+                b.Append(q.X);
+                b.Append(q.Y);
+                b.Append(q.Z);
+                b.Append(q.W);
+            }
+
+            var arr = b.Build(default);
+            var fsl = WrapInFixedSizeList(arr, 4, boxes.Count);
+            return WrapComponentInstancesInList(boxes.Count, fsl);
+        }
+
+        private static ListArray CreateUInt32ComponentColumn<T>(IReadOnlyList<T> values, Func<T, uint> selector)
+        {
+            var b = new UInt32Array.Builder();
+            for (var i = 0; i < values.Count; i++)
+                b.Append(selector(values[i]));
+            return WrapComponentInstancesInList(values.Count, b.Build(default));
+        }
+
+        private static ListArray CreateLineStripPointsColumn(IReadOnlyList<RerunLineStrip3D> strips)
+        {
+            var b = new FloatArray.Builder();
+            var pointCount = 0;
+            for (var i = 0; i < strips.Count; i++)
+            {
+                var points = strips[i].Points;
+                for (var j = 0; j < points.Count; j++)
+                {
+                    b.Append(points[j].X);
+                    b.Append(points[j].Y);
+                    b.Append(points[j].Z);
+                    pointCount++;
+                }
+            }
+
+            var arr = b.Build(default);
+            var fsl = WrapInFixedSizeList(arr, 3, pointCount);
+            var offsets = new int[strips.Count + 1];
+            pointCount = 0;
+            for (var i = 0; i < strips.Count; i++)
+            {
+                pointCount += strips[i].Points.Count;
+                offsets[i + 1] = pointCount;
+            }
+            var lineStrips = WrapInList(offsets, fsl, false);
+            return WrapComponentInstancesInList(strips.Count, lineStrips);
+        }
+
+        private static IArrowArray WrapInFixedSizeList(IArrowArray inner, int size, int listCount)
         {
             var fslType = new FixedSizeListType(
                 new Field("item", inner.Data.DataType, false), size);
             return ArrowArrayFactory.BuildArray(
-                new ArrayData(fslType, 1, 0, 0,
-                    new[] { ValidityForRows(1) },
+                new ArrayData(fslType, listCount, 0, 0,
+                    new[] { ValidityForRows(listCount) },
                     new[] { inner.Data }));
         }
 
         private static ListArray WrapComponentInstancesInList(int componentCount, IArrowArray innerArray)
         {
-            // Two int32 offsets in LE: [0, componentCount]
-            var offsets = new byte[8];
-            offsets[4] = (byte)(componentCount & 0xFF);
-            offsets[5] = (byte)((componentCount >> 8) & 0xFF);
-            offsets[6] = (byte)((componentCount >> 16) & 0xFF);
-            offsets[7] = (byte)((componentCount >> 24) & 0xFF);
+            return WrapInList(new[] { 0, componentCount }, innerArray, true);
+        }
 
-            var offBuf = new ArrowBuffer(new ReadOnlyMemory<byte>(offsets));
-            var listType = new ListType(new Field("item", innerArray.Data.DataType, true));
-            return new ListArray(new ArrayData(listType, RowCount, 0, 0,
-                new[] { ValidityForRows(RowCount), offBuf },
+        private static ListArray WrapInList(IReadOnlyList<int> offsets, IArrowArray innerArray, bool innerNullable)
+        {
+            var offsetBytes = new byte[offsets.Count * 4];
+            for (var i = 0; i < offsets.Count; i++)
+            {
+                var value = offsets[i];
+                var offset = i * 4;
+                offsetBytes[offset] = (byte)(value & 0xFF);
+                offsetBytes[offset + 1] = (byte)((value >> 8) & 0xFF);
+                offsetBytes[offset + 2] = (byte)((value >> 16) & 0xFF);
+                offsetBytes[offset + 3] = (byte)((value >> 24) & 0xFF);
+            }
+
+            var rowCount = offsets.Count - 1;
+            var offBuf = new ArrowBuffer(new ReadOnlyMemory<byte>(offsetBytes));
+            var listType = new ListType(new Field("item", innerArray.Data.DataType, innerNullable));
+            return new ListArray(new ArrayData(listType, rowCount, 0, 0,
+                new[] { ValidityForRows(rowCount), offBuf },
                 new[] { innerArray.Data }));
         }
 
