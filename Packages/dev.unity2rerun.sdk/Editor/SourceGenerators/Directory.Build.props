@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <RestoreAdditionalProjectSources>$(RestoreAdditionalProjectSources);https://api.nuget.org/v3/index.json</RestoreAdditionalProjectSources>
+    <SgBuildRoot>$(MSBuildThisFileDirectory)..\..\..\..\build\SourceGenerators\RerunLogSourceGenerator\</SgBuildRoot>
+    <BaseIntermediateOutputPath>$(SgBuildRoot)obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(SgBuildRoot)obj\</MSBuildProjectExtensionsPath>
+    <RestoreOutputPath>$(SgBuildRoot)obj\</RestoreOutputPath>
+  </PropertyGroup>
+</Project>

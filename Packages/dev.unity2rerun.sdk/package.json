@@ -1,6 +1,6 @@
 {
   "name": "dev.unity2rerun.sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "displayName": "Unity2Rerun SDK",
   "license": "Apache-2.0",
   "description": "Unity native SDK for Rerun - log Unity runtime data to .rrd files and Rerun Viewer without external bridge processes.",
@@ -26,6 +26,11 @@
       "displayName": "Live Viewer",
       "description": "FileAndLive recording with live Rerun Viewer transport. Requires YetAnotherHttpHandler.",
       "path": "Samples~/LiveViewer"
+    },
+    {
+      "displayName": "Generated RerunLog",
+      "description": "Attribute-driven TextLog, Scalar, and Transform3D publishing via source generation.",
+      "path": "Samples~/GeneratedRerunLog"
     }
   ]
 }
