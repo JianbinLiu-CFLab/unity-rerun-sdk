@@ -1,0 +1,22 @@
+﻿cff-version: 1.2.0
+message: "If you use Unity2Rerun in research, please cite this software."
+title: "Unity2Rerun"
+type: software
+authors:
+  - family-names: "Liu"
+    given-names: "Jianbin"
+license: "Apache-2.0"
+repository-code: "https://github.com/JianbinLiu-CFLab/unity-rerun-sdk"
+url: "https://github.com/JianbinLiu-CFLab/unity-rerun-sdk"
+version: "paper-evidence-2026-05-09"
+date-released: "2026-05-09"
+abstract: >-
+  Unity2Rerun is a Unity-native Rerun logging SDK for recording
+  .rrd files and streaming Unity runtime data to Rerun Viewer.
+keywords:
+  - Unity
+  - Rerun
+  - RRD
+  - robotics visualization
+  - telemetry
+  - IL2CPP

@@ -414,7 +414,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunManager
   _applicationId: unity_app
   _outputMode: 0
-  _outputPath: '../build/RRD/phase6_editor_fileonly_{TIMESTAMP}.rrd '
+  _outputPath: ../build/RRD/phase7_rerunlog_{TIMESTAMP}.rrd
   _recordOnStart: 1
   _writeViewCoordinates: 1
   _liveEndpoint: rerun+http://127.0.0.1:9876/proxy
@@ -502,6 +502,7 @@ GameObject:
   - component: {fileID: 2143498623}
   - component: {fileID: 2143498622}
   - component: {fileID: 2143498621}
+  - component: {fileID: 2143498624}
   m_Layer: 0
   m_Name: SampleCube
   m_TagString: Untagged
@@ -609,7 +610,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143498616}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 957383253bea530438c0c0875604e534, type: 3}
   m_Name: 
@@ -630,7 +631,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143498616}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e073aa713f22762468b7cfaff63a4eae, type: 3}
   m_Name: 
@@ -650,7 +651,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2143498616}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20e84d1af6440b84b97cb22ad91e7334, type: 3}
   m_Name: 
@@ -661,6 +662,18 @@ MonoBehaviour:
   _publishOnEnable: 1
   _warnIfManagerMissing: 1
   _target: {fileID: 0}
+--- !u!114 &2143498624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2143498616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ef9bece9b8d44d7a07f9742645fd8e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.RerunSDK.Samples.RerunGeneratedLogSample
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

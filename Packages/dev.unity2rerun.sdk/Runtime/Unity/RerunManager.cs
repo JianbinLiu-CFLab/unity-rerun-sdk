@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Unity.RerunSDK.Core;
 using Unity.RerunSDK.Encoding;
@@ -16,6 +17,7 @@ namespace Unity.RerunSDK.Unity
     {
         private const string DefaultOutputPath = "../build/RRD/unity_recording_{TIMESTAMP}.rrd";
         private const string LegacyPersistentOutputPath = "{PERSISTENT}/unity_recording.rrd";
+        private const float GeneratedLogDiscoveryIntervalSeconds = 1f;
 
         [SerializeField, Tooltip("Application name shown in Rerun Viewer.")]
         private string _applicationId = "unity_app";
@@ -65,6 +67,11 @@ namespace Unity.RerunSDK.Unity
         private RerunViewerLauncher _launcher;
 
         private string _resolvedPath;
+        private readonly Dictionary<IRerunGeneratedLogSource, float[]> _generatedLogTimers = new();
+        private readonly List<IRerunGeneratedLogSource> _generatedLogSnapshot = new();
+        private readonly List<IRerunGeneratedLogSource> _generatedLogStale = new();
+        private static readonly List<IRerunGeneratedLogSource> GeneratedLogSources = new();
+        private float _generatedLogDiscoveryTimer;
 
         public bool IsRecording { get; private set; }
 
@@ -89,6 +96,19 @@ namespace Unity.RerunSDK.Unity
                 StartRecording();
         }
 
+        public static void RegisterGeneratedLogSource(IRerunGeneratedLogSource source)
+        {
+            if (source == null) return;
+            if (!GeneratedLogSources.Contains(source))
+                GeneratedLogSources.Add(source);
+        }
+
+        public static void UnregisterGeneratedLogSource(IRerunGeneratedLogSource source)
+        {
+            if (source == null) return;
+            GeneratedLogSources.Remove(source);
+        }
+
         public void StartRecording()
         {
             if (IsRecording) return;
@@ -107,6 +127,8 @@ namespace Unity.RerunSDK.Unity
                     WriteViewCoordinates();
 
                 IsRecording = true;
+                _generatedLogDiscoveryTimer = 0f;
+                DiscoverGeneratedLogSources();
                 Debug.Log($"[Rerun] Recording started mode={_outputMode}" +
                     (_outputMode != RerunOutputMode.LiveOnly ? $" → {_resolvedPath}" : ""));
             }
@@ -172,6 +194,7 @@ namespace Unity.RerunSDK.Unity
         {
             if (!IsRecording) return;
             IsRecording = false;
+            _generatedLogTimers.Clear();
 
             if (_runtime != null)
             {
@@ -203,6 +226,124 @@ namespace Unity.RerunSDK.Unity
         }
 
         // ── Timeline API ──
+
+        private void Update()
+        {
+            DiscoverGeneratedLogSourcesIfDue();
+            DriveGeneratedLogSources();
+        }
+
+        private void DiscoverGeneratedLogSourcesIfDue()
+        {
+            if (!IsRecording)
+                return;
+
+            _generatedLogDiscoveryTimer -= Time.deltaTime;
+            if (_generatedLogDiscoveryTimer > 0f)
+                return;
+
+            _generatedLogDiscoveryTimer = GeneratedLogDiscoveryIntervalSeconds;
+            DiscoverGeneratedLogSources();
+        }
+
+        private static void DiscoverGeneratedLogSources()
+        {
+#if UNITY_2023_1_OR_NEWER
+            var behaviours = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+#else
+            var behaviours = FindObjectsOfType<MonoBehaviour>();
+#endif
+            foreach (var behaviour in behaviours)
+            {
+                if (behaviour is IRerunGeneratedLogSource source)
+                    RegisterGeneratedLogSource(source);
+            }
+        }
+
+        private void DriveGeneratedLogSources()
+        {
+            if (!IsRecording || _runtime == null || GeneratedLogSources.Count == 0)
+                return;
+
+            _generatedLogSnapshot.Clear();
+            _generatedLogSnapshot.AddRange(GeneratedLogSources);
+            _generatedLogStale.Clear();
+
+            var dt = Time.deltaTime;
+            foreach (var source in _generatedLogSnapshot)
+            {
+                if (source == null)
+                    continue;
+
+                if (source is MonoBehaviour mb)
+                {
+                    if (mb == null)
+                    {
+                        _generatedLogStale.Add(source);
+                        continue;
+                    }
+
+                    if (!mb.isActiveAndEnabled)
+                        continue;
+                }
+
+                int count;
+                try
+                {
+                    count = source.RerunLog_EntryCount;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[RerunLog] Failed to read generated entry count: {ex.Message}");
+                    continue;
+                }
+
+                if (count <= 0)
+                    continue;
+
+                if (!_generatedLogTimers.TryGetValue(source, out var timers) || timers.Length != count)
+                {
+                    timers = new float[count];
+                    _generatedLogTimers[source] = timers;
+                }
+
+                for (var i = 0; i < count; i++)
+                {
+                    timers[i] -= dt;
+                    if (timers[i] > 0f)
+                        continue;
+
+                    RerunGeneratedLogEntry entry;
+                    try
+                    {
+                        entry = source.RerunLog_GetEntry(i);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"[RerunLog] Failed to read generated entry {i}: {ex.Message}");
+                        timers[i] = 1f;
+                        continue;
+                    }
+
+                    timers[i] = entry.RateHz > 0f ? 1f / entry.RateHz : 0f;
+
+                    try
+                    {
+                        source.RerunLog_Publish(i, this);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning($"[RerunLog] Generated publish failed for {entry.EntityPath}: {ex.Message}");
+                    }
+                }
+            }
+
+            foreach (var stale in _generatedLogStale)
+            {
+                GeneratedLogSources.Remove(stale);
+                _generatedLogTimers.Remove(stale);
+            }
+        }
 
         public void SetTimeSequence(string name, long value)
         {

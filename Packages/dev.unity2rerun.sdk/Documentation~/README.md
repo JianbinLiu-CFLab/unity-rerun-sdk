@@ -12,3 +12,5 @@
 - [Architecture](en/04_Architecture.md)
 - [IL2CPP Build Guide](en/05_IL2CPP_Build_Guide.md)
 - [IL2CPP 构建指南](zh/05_IL2CPP构建指南.md)
+- [RerunLog Source Generator](en/06_RerunLog_Source_Generator.md)
+- [RerunLog Source Generator 中文](zh/06_RerunLog_Source_Generator.md)

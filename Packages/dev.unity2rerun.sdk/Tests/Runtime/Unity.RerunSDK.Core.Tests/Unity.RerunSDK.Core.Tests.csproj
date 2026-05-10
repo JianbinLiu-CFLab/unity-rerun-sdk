@@ -13,6 +13,7 @@
     <PackageReference Include="Grpc.Net.Client" Version="2.76.0" />
     <PackageReference Include="Grpc.Core.Api" Version="2.76.0" />
     <PackageReference Include="Grpc.Net.Common" Version="2.76.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -48,6 +49,8 @@
     <Compile Include="..\..\..\Runtime\Unity\RerunScalarSource.cs" Link="Unity\RerunScalarSource.cs" />
     <Compile Include="..\..\..\Runtime\Unity\RerunScalarSourceEvaluator.cs" Link="Unity\RerunScalarSourceEvaluator.cs" />
     <Compile Include="..\..\..\Runtime\Util\XxHash32.cs" Link="Util\XxHash32.cs" />
+    <Compile Include="..\..\..\Editor\Shared\RerunSourceEmitter.cs" Link="Editor\RerunSourceEmitter.cs" />
+    <Compile Include="..\..\..\Editor\SourceGenerators\src\RerunLogSourceGenerator.cs" Link="Editor\RerunLogSourceGenerator.cs" />
   </ItemGroup>
 
 </Project>

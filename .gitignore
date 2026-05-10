@@ -10,6 +10,9 @@ bin/
 obj/
 **/bin/
 **/obj/
+Packages/dev.unity2rerun.sdk/Editor/SourceGenerators/analyzers/dotnet/cs/*.pdb
+Packages/dev.unity2rerun.sdk/Editor/SourceGenerators/analyzers/dotnet/cs/*.deps.json
+Packages/dev.unity2rerun.sdk/Editor/SourceGenerators/obj.meta
 __pycache__/
 *.py[cod]
 build/
@@ -30,6 +33,7 @@ UserSettings/
 
 # Unity generated IDE/project files
 *.csproj
+!Packages/dev.unity2rerun.sdk/Editor/SourceGenerators/RerunLogSourceGenerator.csproj
 *.sln
 *.sln.DotSettings.user
 *.pidb
@@ -71,7 +75,8 @@ Unity2Foxglove/Assets/Scripts/Generated.meta
 
 # developer plans
 Plan/
-Developer/
+Developer/*
+!Developer/*.md
 
 # temporary test/verification projects
 Unitytest/
