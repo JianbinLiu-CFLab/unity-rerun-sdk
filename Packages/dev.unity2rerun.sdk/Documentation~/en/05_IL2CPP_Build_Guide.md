@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Unity 2022.3+ or Unity 6
+- Unity 6000.0 LTSC or later (developed on 6000.3.14f1 LTSC; compatible with 6000.0.74f1 LTSC)
 - Windows Build Support (IL2CPP) installed via Unity Hub
 - Cysharp `YetAnotherHttpHandler` (Git dependency, see Prerequisites)
 - `Scripts/build_unity_il2cpp.py` (Python 3.9+)

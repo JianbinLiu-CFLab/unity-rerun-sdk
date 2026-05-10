@@ -4,7 +4,7 @@
   "displayName": "Unity2Rerun SDK",
   "license": "Apache-2.0",
   "description": "Unity native SDK for Rerun - log Unity runtime data to .rrd files and Rerun Viewer without external bridge processes.",
-  "unity": "2022.3",
+  "unity": "6000.0",
   "dependencies": {
   },
   "keywords": ["rerun", "visualization", "robotics", "debugging", "rrd"],
@@ -31,6 +31,11 @@
       "displayName": "Generated RerunLog",
       "description": "Attribute-driven TextLog, Scalar, and Transform3D publishing via source generation.",
       "path": "Samples~/GeneratedRerunLog"
+    },
+    {
+      "displayName": "Interactive 3D Control",
+      "description": "Interactive cube sample with EncodedImage, Boxes3D, trajectory, metrics, logs, and loopback sidecar control.",
+      "path": "Samples~/Interactive3DControl"
     }
   ]
 }

@@ -14,3 +14,5 @@
 - [IL2CPP 构建指南](zh/05_IL2CPP构建指南.md)
 - [RerunLog Source Generator](en/06_RerunLog_Source_Generator.md)
 - [RerunLog Source Generator 中文](zh/06_RerunLog_Source_Generator.md)
+- [Interactive 3D Control](en/07_Interactive_3D_Control.md)
+- [Interactive 3D Control 中文](zh/07_Interactive_3D_Control.md)
