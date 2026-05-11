@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: 
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -267,7 +267,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b24875953ff42efa54222a514583198, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.Publishers.RerunCameraImagePublisher
   _manager: {fileID: 0}
   _entityPath: camera/main
@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: 
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -434,10 +434,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98005c2e2bbdbc941b281604a08d203a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunManager
   _applicationId: unity_app
-  _outputMode: 1
+  _outputMode: 2
   _outputPath: ../build/RRD/phase8_rerunlog_{TIMESTAMP}.rrd
   _recordOnStart: 1
   _runInBackground: 1
@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: 
   m_IsGlobal: 1
   priority: 0
@@ -527,6 +527,7 @@ GameObject:
   - component: {fileID: 2143498623}
   - component: {fileID: 2143498622}
   - component: {fileID: 2143498621}
+  - component: {fileID: 2143498624}
   m_Layer: 0
   m_Name: SampleCube
   m_TagString: Untagged
@@ -637,7 +638,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75f6a8d8a46d4262b2fa3bc684ec74df, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unity.RerunSDK.Samples.RerunInteractive3DPublisher
   _manager: {fileID: 0}
   _target: {fileID: 0}
@@ -657,13 +658,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdb43c20f70b44fb8e972403671475d0, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunInteractiveControlBridge
   _manager: {fileID: 0}
   _target: {fileID: 0}
   _preferredPort: 18765
   _startOnEnable: 1
-  _controlUrl:
+  _controlUrl: 
 --- !u!114 &2143498623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -674,13 +675,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13ea4fb881604f19b9557743dd11ad49, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unity.RerunSDK.Samples.RerunInteractiveCubeController
   _rotateSpeed: 3
   _panSpeed: 0.01
   _scaleSpeed: 0.5
   _minScale: 0.2
   _maxScale: 5
+--- !u!114 &2143498624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2143498616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60e92d16a974e48b1d5e52eaf331f91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.Publishers.RerunPoints3DPublisher
+  _manager: {fileID: 775325511}
+  _entityPath: world/points
+  _publishRateHz: 10
+  _publishOnEnable: 1
+  _warnIfManagerMissing: 1
+  _pointCount: 64
+  _cloudRadius: 1.25
+  _pointRadius: 0.025
+  _color: {r: 0.2, g: 0.8, b: 1, a: 1}
+  _animate: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

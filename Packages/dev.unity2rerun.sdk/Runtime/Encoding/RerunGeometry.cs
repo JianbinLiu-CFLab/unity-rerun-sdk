@@ -62,4 +62,18 @@ namespace Unity.RerunSDK.Encoding
         public IReadOnlyList<RerunVec3> Points { get; }
         public uint ColorRgba { get; }
     }
+
+    internal readonly struct RerunPoint3D
+    {
+        public RerunPoint3D(RerunVec3 position, uint colorRgba, float radius)
+        {
+            Position = position;
+            ColorRgba = colorRgba;
+            Radius = radius;
+        }
+
+        public RerunVec3 Position { get; }
+        public uint ColorRgba { get; }
+        public float Radius { get; }
+    }
 }

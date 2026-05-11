@@ -110,6 +110,11 @@ namespace Unity.RerunSDK.Unity.Control
                     client = _listener.AcceptTcpClient();
                     HandleClient(client);
                 }
+                catch (Exception ex) when (IsBenignClientDisconnect(ex))
+                {
+                    // Browser refreshes/canceled fetches can close the socket while we write.
+                    // The server remains healthy, so don't surface this as a Unity warning.
+                }
                 catch (SocketException)
                 {
                     if (_running)
@@ -255,6 +260,26 @@ namespace Unity.RerunSDK.Unity.Control
             stream.Write(bodyBytes, 0, bodyBytes.Length);
         }
 
+        internal static bool IsBenignClientDisconnect(Exception ex)
+        {
+            if (ex == null)
+                return false;
+
+            if (ex is IOException)
+                return true;
+
+            if (ex is SocketException socketException)
+            {
+                return socketException.SocketErrorCode == SocketError.ConnectionAborted ||
+                       socketException.SocketErrorCode == SocketError.ConnectionReset ||
+                       socketException.SocketErrorCode == SocketError.Disconnecting ||
+                       socketException.SocketErrorCode == SocketError.OperationAborted ||
+                       socketException.SocketErrorCode == SocketError.Shutdown;
+            }
+
+            return IsBenignClientDisconnect(ex.InnerException);
+        }
+
         private static string Escape(string value)
         {
             return (value ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"");
@@ -266,21 +291,96 @@ namespace Unity.RerunSDK.Unity.Control
   <meta charset=""utf-8"">
   <title>Unity2Rerun Control</title>
   <style>
-    body{font-family:system-ui,sans-serif;margin:24px;max-width:720px}
-    button,input{font:inherit;margin:4px}
+    body{font-family:system-ui,sans-serif;margin:24px;max-width:760px;line-height:1.4}
+    button,input{font:inherit;margin:4px 6px 4px 0}
+    section{margin:18px 0}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .param{padding:8px 0;border-top:1px solid #ddd}
     pre{background:#111;color:#eee;padding:12px;overflow:auto}
   </style>
 </head>
 <body>
   <h1>Unity2Rerun Control</h1>
-  <button onclick=""cmd({type:'reset_pose'})"">Reset</button>
-  <button onclick=""cmd({type:'set_color',color:[0,1,0,1]})"">Green</button>
-  <button onclick=""cmd({type:'set_color',color:[0.4,0.7,1,1]})"">Blue</button>
+  <section>
+    <h2>Actions</h2>
+    <div id=""actions"" class=""row""></div>
+  </section>
+  <section>
+    <h2>Parameters</h2>
+    <div id=""parameters""></div>
+  </section>
   <button onclick=""refresh()"">Refresh</button>
   <pre id=""state""></pre>
   <script>
-    async function refresh(){state.textContent=await (await fetch('/state')).text();}
-    async function cmd(body){await fetch('/command',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});refresh();}
+    const knownActionIds = ['reset_pose','set_color_green','set_color_red','set_color_blue','scale_down','scale_up','scale_reset'];
+    let latestState = null;
+
+    async function refresh(){
+      latestState = await (await fetch('/state')).json();
+      state.textContent = JSON.stringify(latestState, null, 2);
+      renderActions(latestState);
+      renderParameters(latestState);
+    }
+
+    function renderActions(state){
+      actions.textContent = '';
+      for (const action of state.actions || []) {
+        const button = document.createElement('button');
+        button.textContent = action.label || action.id;
+        button.disabled = !action.command;
+        button.onclick = () => cmd(action.command);
+        actions.appendChild(button);
+      }
+    }
+
+    function renderParameters(state){
+      parameters.textContent = '';
+      for (const parameter of state.parameters || []) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'param';
+        const label = document.createElement('label');
+        label.textContent = parameter.label || parameter.name;
+        wrapper.appendChild(label);
+
+        if (parameter.type === 'float') {
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.step = '0.05';
+          input.min = '0.001';
+          input.value = parameter.value;
+          input.disabled = !parameter.writable;
+          input.onchange = () => cmd({type:'set_scale', scale:Number(input.value)});
+          wrapper.appendChild(input);
+        } else if (parameter.type === 'color') {
+          const input = document.createElement('input');
+          input.type = 'color';
+          input.value = rgbaToHex(parameter.value || [0,1,0,1]);
+          input.disabled = !parameter.writable;
+          input.onchange = () => cmd({type:'set_color', color:hexToRgba(input.value)});
+          wrapper.appendChild(input);
+        }
+        parameters.appendChild(wrapper);
+      }
+    }
+
+    async function cmd(body){
+      await fetch('/command',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      refresh();
+    }
+
+    function rgbaToHex(rgba){
+      return '#' + rgba.slice(0, 3).map(v => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0')).join('');
+    }
+
+    function hexToRgba(hex){
+      return [
+        parseInt(hex.slice(1, 3), 16) / 255,
+        parseInt(hex.slice(3, 5), 16) / 255,
+        parseInt(hex.slice(5, 7), 16) / 255,
+        1
+      ];
+    }
+
     refresh();
   </script>
 </body>

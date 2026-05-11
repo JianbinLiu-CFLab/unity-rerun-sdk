@@ -77,6 +77,8 @@ namespace Unity.RerunSDK.Unity
         private float _generatedLogDiscoveryTimer;
         private bool _warnedBoxes3DRotationLengthMismatch;
         private bool _warnedBoxes3DColorLengthMismatch;
+        private bool _warnedPoints3DColorLengthMismatch;
+        private bool _warnedPoints3DRadiusLengthMismatch;
 
         public bool IsRecording { get; private set; }
 
@@ -539,6 +541,58 @@ namespace Unity.RerunSDK.Unity
             _backend.Write(_encoder.EncodeLineStrips3DMessage(
                 _runtime.RecordingId, _applicationId,
                 entityPath, new[] { strip }, snapshot.ToEntries()));
+        }
+
+        public void LogPoints3D(string entityPath, IReadOnlyList<Vector3> positions, Color color, float radius = 0.03f)
+        {
+            if (_runtime == null || !IsRecording) return;
+            if (positions == null || positions.Count == 0) return;
+
+            var colors = new Color[positions.Count];
+            var radii = new float[positions.Count];
+            for (var i = 0; i < positions.Count; i++)
+            {
+                colors[i] = color;
+                radii[i] = radius;
+            }
+
+            LogPoints3D(entityPath, positions, colors, radii);
+        }
+
+        public void LogPoints3D(
+            string entityPath,
+            IReadOnlyList<Vector3> positions,
+            IReadOnlyList<Color> colors = null,
+            IReadOnlyList<float> radii = null)
+        {
+            if (_runtime == null || !IsRecording) return;
+            if (positions == null || positions.Count == 0) return;
+
+            if (colors != null && colors.Count != positions.Count && !_warnedPoints3DColorLengthMismatch)
+            {
+                Debug.LogWarning($"[Rerun] LogPoints3D('{entityPath}') colors count {colors.Count} does not match point count {positions.Count}; missing colors use cyan.");
+                _warnedPoints3DColorLengthMismatch = true;
+            }
+
+            if (radii != null && radii.Count != positions.Count && !_warnedPoints3DRadiusLengthMismatch)
+            {
+                Debug.LogWarning($"[Rerun] LogPoints3D('{entityPath}') radii count {radii.Count} does not match point count {positions.Count}; missing radii use 0.03.");
+                _warnedPoints3DRadiusLengthMismatch = true;
+            }
+
+            var points = new List<RerunPoint3D>(positions.Count);
+            for (var i = 0; i < positions.Count; i++)
+            {
+                var position = RerunCoordinateConverter.ToRerunPosition(positions[i]);
+                var color = colors != null && i < colors.Count ? colors[i] : Color.cyan;
+                var radius = radii != null && i < radii.Count ? Mathf.Max(0f, radii[i]) : 0.03f;
+                points.Add(new RerunPoint3D(ToRerunVec3(position), ToRgba32(color), radius));
+            }
+
+            var snapshot = _runtime.CaptureTimelineSnapshot();
+            _backend.Write(_encoder.EncodePoints3DMessage(
+                _runtime.RecordingId, _applicationId,
+                entityPath, points, snapshot.ToEntries()));
         }
 
         private void WriteViewCoordinates()
