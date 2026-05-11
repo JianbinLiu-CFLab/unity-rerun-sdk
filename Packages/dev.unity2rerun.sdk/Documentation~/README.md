@@ -1,7 +1,7 @@
 # Unity2Rerun SDK Documentation
 
-- [English](en/) — primary language
-- [中文](zh/) — synchronized
+- [English](en/) - primary language
+- [中文](zh/) - synchronized
 
 ## Quick Links
 
@@ -16,3 +16,12 @@
 - [RerunLog Source Generator 中文](zh/06_RerunLog_Source_Generator.md)
 - [Interactive 3D Control](en/07_Interactive_3D_Control.md)
 - [Interactive 3D Control 中文](zh/07_Interactive_3D_Control.md)
+
+## Release Validation
+
+Phase 9 `.rrd` output writes RRD footer/manifests by default. Generated files are expected to pass:
+
+```powershell
+rerun rrd verify <file.rrd>
+rerun rrd stats <file.rrd>
+```

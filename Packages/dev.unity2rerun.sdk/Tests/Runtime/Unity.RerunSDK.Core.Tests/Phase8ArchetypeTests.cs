@@ -149,6 +149,9 @@ public class Phase8ArchetypeTests
             var payload = new byte[len];
             fs.ReadExactly(payload);
 
+            if (kind == Unity.RerunSDK.IO.Rrd.RrdConstants.MsgKindEnd)
+                break;
+
             if (kind != Unity.RerunSDK.IO.Rrd.RrdConstants.MsgKindArrowMsg)
                 continue;
 

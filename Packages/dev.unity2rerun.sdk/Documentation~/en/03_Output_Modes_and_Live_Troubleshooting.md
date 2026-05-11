@@ -15,6 +15,33 @@
 3. Enable `Auto Launch Viewer` or start `rerun` manually.
 4. Verify Console shows: `Using Cysharp YetAnotherHttpHandler for HTTP/2 live gRPC`.
 
+## Transport Health
+
+During Play Mode, `RerunManager` exposes a read-only Transport Health section in the Inspector:
+
+- `Live State`
+- `Supported`
+- `Running`
+- `Queue Depth`
+- `Dropped`
+- `Reconnects`
+- `Sent StoreInfo`
+- `Sent Data`
+- `Last Error`
+
+The same data is available from `RerunManager.GetTransportStatsSnapshot()`. These counters are diagnostic only; they do not change the file-first behavior of `FileAndLive`.
+
+## RRD Verification
+
+`.rrd` files written by the SDK include RRD footer/manifests by default. For release checks or bug reports, run:
+
+```powershell
+rerun rrd verify path/to/file.rrd
+rerun rrd stats path/to/file.rrd
+```
+
+`verify` should exit successfully. `stats` should list the expected entity paths and components.
+
 ## Common Errors
 
 ### Bad gRPC response. Response protocol downgraded to HTTP/1.1.
@@ -35,11 +62,11 @@
 
 **Action:** No action needed. This is not an error.
 
-### rerun rrd verify fails with missing footer/manifests
+### rerun rrd verify fails
 
-**Cause:** The SDK does not yet write full RRD footer manifests. This is a known limitation tracked for a future phase.
+**Cause:** The file may be incomplete, still being written, or produced by an older SDK revision before Phase 9 footer support.
 
-**Action:** Use `rerun rrd stats <file>` or open the file directly in Rerun Viewer. Both work correctly.
+**Action:** Stop recording cleanly, then rerun `rerun rrd verify <file>`. For old no-footer files, open them directly in Rerun Viewer or regenerate them with the current SDK.
 
 ## Player (IL2CPP) Troubleshooting
 

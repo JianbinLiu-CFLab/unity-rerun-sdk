@@ -84,6 +84,29 @@ namespace Unity.RerunSDK.Unity
 
         public string ResolvedOutputPath => _resolvedPath;
 
+        public RerunTransportStatsSnapshot GetTransportStatsSnapshot()
+        {
+            if (_grpcClient != null)
+            {
+                var snapshot = _grpcClient.GetStatsSnapshot();
+                LiveState = snapshot.LiveState;
+                return snapshot;
+            }
+
+            var supported = _outputMode == RerunOutputMode.LiveOnly ||
+                            _outputMode == RerunOutputMode.FileAndLive;
+            return new RerunTransportStatsSnapshot(
+                supported: supported,
+                isRunning: false,
+                liveState: LiveState,
+                queueDepth: 0,
+                droppedCount: 0,
+                reconnectCount: 0,
+                sentStoreInfoCount: 0,
+                sentDataCount: 0,
+                lastError: "");
+        }
+
         private void Awake()
         {
             if (_runInBackground)

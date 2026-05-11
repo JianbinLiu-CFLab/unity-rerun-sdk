@@ -23,6 +23,15 @@ namespace Unity.RerunSDK.Encoding
             RerunTuid rowId, RerunTuid chunkId,
             IReadOnlyList<RerunTimelineEntry> timelines)
         {
+            return EncodeTextLogArrowIpc(entityPath, text, level, rowId, chunkId, timelines, out _);
+        }
+
+        internal static byte[] EncodeTextLogArrowIpc(
+            string entityPath, string text, string level,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines,
+            out Schema schema)
+        {
             var fields = new List<Field> { CreateRowIdField() };
             foreach (var t in timelines)
                 fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
@@ -30,7 +39,7 @@ namespace Unity.RerunSDK.Encoding
             fields.Add(CreateComponentField("TextLog:text", "rerun.archetypes.TextLog", "rerun.components.Text", textType));
             var levelType = new ListType(new Field("item", StringType.Default, true));
             fields.Add(CreateComponentField("TextLog:level", "rerun.archetypes.TextLog", "rerun.components.TextLogLevel", levelType));
-            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
 
             var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
             AppendTimelineValues(arrays, timelines);
@@ -44,12 +53,21 @@ namespace Unity.RerunSDK.Encoding
             RerunTuid rowId, RerunTuid chunkId,
             IReadOnlyList<RerunTimelineEntry> timelines)
         {
+            return EncodeScalarArrowIpc(entityPath, value, rowId, chunkId, timelines, out _);
+        }
+
+        internal static byte[] EncodeScalarArrowIpc(
+            string entityPath, double value,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines,
+            out Schema schema)
+        {
             var fields = new List<Field> { CreateRowIdField() };
             foreach (var t in timelines)
                 fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
             fields.Add(CreateComponentField("Scalars:scalars", "rerun.archetypes.Scalars", "rerun.components.Scalar",
                 new ListType(new Field("item", DoubleType.Default, true))));
-            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
 
             var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
             AppendTimelineValues(arrays, timelines);
@@ -64,6 +82,17 @@ namespace Unity.RerunSDK.Encoding
             RerunTuid rowId, RerunTuid chunkId,
             IReadOnlyList<RerunTimelineEntry> timelines)
         {
+            return EncodeTransform3DArrowIpc(entityPath, tx, ty, tz, qx, qy, qz, qw, rowId, chunkId, timelines, out _);
+        }
+
+        internal static byte[] EncodeTransform3DArrowIpc(
+            string entityPath,
+            float tx, float ty, float tz,
+            float qx, float qy, float qz, float qw,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines,
+            out Schema schema)
+        {
             var fields = new List<Field> { CreateRowIdField() };
             foreach (var t in timelines)
                 fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
@@ -73,7 +102,7 @@ namespace Unity.RerunSDK.Encoding
             var quatInner = new FixedSizeListType(new Field("item", FloatType.Default, false), 4);
             fields.Add(CreateComponentField("Transform3D:quaternion", "rerun.archetypes.Transform3D", "rerun.components.RotationQuat",
                 new ListType(new Field("item", quatInner, true))));
-            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
 
             var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
             AppendTimelineValues(arrays, timelines);
@@ -86,13 +115,21 @@ namespace Unity.RerunSDK.Encoding
             string entityPath, byte x, byte y, byte z,
             RerunTuid rowId, RerunTuid chunkId)
         {
+            return EncodeViewCoordinatesArrowIpc(entityPath, x, y, z, rowId, chunkId, out _);
+        }
+
+        internal static byte[] EncodeViewCoordinatesArrowIpc(
+            string entityPath, byte x, byte y, byte z,
+            RerunTuid rowId, RerunTuid chunkId,
+            out Schema schema)
+        {
             var innerFsl = new FixedSizeListType(new Field("item", new UInt8Type(), false), 3);
             var fields = new Field[] {
                 CreateRowIdField(),
                 CreateComponentField("ViewCoordinates:xyz", "rerun.archetypes.ViewCoordinates", "rerun.components.ViewCoordinates",
                     new ListType(new Field("item", innerFsl, true)), isStatic: true),
             };
-            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
 
             IArrowArray[] arrays = {
                 CreateTuidColumn(rowId),
@@ -106,6 +143,15 @@ namespace Unity.RerunSDK.Encoding
             RerunTuid rowId, RerunTuid chunkId,
             IReadOnlyList<RerunTimelineEntry> timelines)
         {
+            return EncodeEncodedImageArrowIpc(entityPath, encodedBytes, mediaType, rowId, chunkId, timelines, out _);
+        }
+
+        internal static byte[] EncodeEncodedImageArrowIpc(
+            string entityPath, byte[] encodedBytes, string mediaType,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines,
+            out Schema schema)
+        {
             var fields = new List<Field> { CreateRowIdField() };
             foreach (var t in timelines)
                 fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
@@ -114,7 +160,7 @@ namespace Unity.RerunSDK.Encoding
                 new ListType(new Field("item", blobValueType, true))));
             fields.Add(CreateComponentField("EncodedImage:media_type", "rerun.archetypes.EncodedImage", "rerun.components.MediaType",
                 new ListType(new Field("item", StringType.Default, true))));
-            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
 
             var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
             AppendTimelineValues(arrays, timelines);
@@ -127,6 +173,15 @@ namespace Unity.RerunSDK.Encoding
             string entityPath, IReadOnlyList<RerunBox3D> boxes,
             RerunTuid rowId, RerunTuid chunkId,
             IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            return EncodeBoxes3DArrowIpc(entityPath, boxes, rowId, chunkId, timelines, out _);
+        }
+
+        internal static byte[] EncodeBoxes3DArrowIpc(
+            string entityPath, IReadOnlyList<RerunBox3D> boxes,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines,
+            out Schema schema)
         {
             var fields = new List<Field> { CreateRowIdField() };
             foreach (var t in timelines)
@@ -142,7 +197,7 @@ namespace Unity.RerunSDK.Encoding
                 new ListType(new Field("item", quatInner, true))));
             fields.Add(CreateComponentField("Boxes3D:colors", "rerun.archetypes.Boxes3D", "rerun.components.Color",
                 new ListType(new Field("item", new UInt32Type(), true))));
-            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
 
             var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
             AppendTimelineValues(arrays, timelines);
@@ -158,6 +213,15 @@ namespace Unity.RerunSDK.Encoding
             RerunTuid rowId, RerunTuid chunkId,
             IReadOnlyList<RerunTimelineEntry> timelines)
         {
+            return EncodeLineStrips3DArrowIpc(entityPath, strips, rowId, chunkId, timelines, out _);
+        }
+
+        internal static byte[] EncodeLineStrips3DArrowIpc(
+            string entityPath, IReadOnlyList<RerunLineStrip3D> strips,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines,
+            out Schema schema)
+        {
             var fields = new List<Field> { CreateRowIdField() };
             foreach (var t in timelines)
                 fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
@@ -168,7 +232,7 @@ namespace Unity.RerunSDK.Encoding
                 new ListType(new Field("item", lineStripValueType, true))));
             fields.Add(CreateComponentField("LineStrips3D:colors", "rerun.archetypes.LineStrips3D", "rerun.components.Color",
                 new ListType(new Field("item", new UInt32Type(), true))));
-            var schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
 
             var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
             AppendTimelineValues(arrays, timelines);

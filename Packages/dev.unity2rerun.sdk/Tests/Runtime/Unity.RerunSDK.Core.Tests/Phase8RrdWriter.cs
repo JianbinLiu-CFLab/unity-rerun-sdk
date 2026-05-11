@@ -15,10 +15,12 @@ public static class Phase8RrdWriter
 
         using var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read);
         using var writer = new RrdWriter(fs);
+        var backend = new RrdRerunBackend(writer);
+        var runtime = new RerunRuntime(appId, backend);
 
-        writer.WriteStreamHeader();
+        backend.Initialize(runtime);
 
-        void WriteMsg(EncodedRerunMessage m) => writer.WriteMessage(m.RrdKind, m.RrdPayload);
+        void WriteMsg(EncodedRerunMessage m) => backend.Write(m);
 
         WriteMsg(encoder.EncodeSetStoreInfoMessage(recordingId, appId));
         WriteMsg(encoder.EncodeViewCoordinatesMessage(recordingId, appId, "world", 3, 1, 6));
@@ -55,6 +57,8 @@ public static class Phase8RrdWriter
             0xFFAA00FF);
         WriteMsg(encoder.EncodeLineStrips3DMessage(
             recordingId, appId, "world/cube_trajectory", new[] { strip }, timelines));
+
+        backend.Shutdown();
     }
 
     private static readonly byte[] OnePixelPng =

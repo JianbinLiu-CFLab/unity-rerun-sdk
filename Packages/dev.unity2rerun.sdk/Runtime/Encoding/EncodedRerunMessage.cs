@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
+#nullable enable
+
 namespace Unity.RerunSDK.Encoding
 {
     /// Transport envelope for a single Rerun message.
@@ -22,18 +24,23 @@ namespace Unity.RerunSDK.Encoding
         /// Whether this message contains static data (for ArrowMsg.is_static).
         public bool IsStatic { get; }
 
+        /// Manifest metadata for ArrowMsg chunks, filled by the encoder side.
+        public RrdManifestChunkInfo? ManifestChunkInfo { get; }
+
         public EncodedRerunMessage(
             ulong rrdKind,
             byte[] rrdPayload,
             byte[] grpcLogMsgBytes,
             bool isStoreInfo,
-            bool isStatic)
+            bool isStatic,
+            RrdManifestChunkInfo? manifestChunkInfo = null)
         {
             RrdKind = rrdKind;
             RrdPayload = rrdPayload;
             GrpcLogMsgBytes = grpcLogMsgBytes;
             IsStoreInfo = isStoreInfo;
             IsStatic = isStatic;
+            ManifestChunkInfo = manifestChunkInfo;
         }
     }
 }

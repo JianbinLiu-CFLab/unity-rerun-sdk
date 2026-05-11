@@ -29,7 +29,10 @@ namespace Unity.RerunSDK.Encoding
             var chunkId = RerunTuidGenerator.Next();
 
             var arrowIpc = RerunArrowIpcEncoder.EncodeTextLogArrowIpc(
-                entityPath, text, level, rowId, chunkId, timelines);
+                entityPath, text, level, rowId, chunkId, timelines, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: false,
+                arrowIpc, schema, timelines);
 
             var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
@@ -39,7 +42,7 @@ namespace Unity.RerunSDK.Encoding
             var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
 
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: false);
+                isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
         }
 
         public EncodedRerunMessage EncodeScalarMessage(
@@ -51,7 +54,10 @@ namespace Unity.RerunSDK.Encoding
             var chunkId = RerunTuidGenerator.Next();
 
             var arrowIpc = RerunArrowIpcEncoder.EncodeScalarArrowIpc(
-                entityPath, value, rowId, chunkId, timelines);
+                entityPath, value, rowId, chunkId, timelines, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: false,
+                arrowIpc, schema, timelines);
 
             var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
@@ -61,7 +67,7 @@ namespace Unity.RerunSDK.Encoding
             var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
 
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: false);
+                isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
         }
 
         public EncodedRerunMessage EncodeTransform3DMessage(
@@ -76,7 +82,10 @@ namespace Unity.RerunSDK.Encoding
 
             var arrowIpc = RerunArrowIpcEncoder.EncodeTransform3DArrowIpc(
                 entityPath, tx, ty, tz, qx, qy, qz, qw,
-                rowId, chunkId, timelines);
+                rowId, chunkId, timelines, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: false,
+                arrowIpc, schema, timelines);
 
             var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
@@ -86,7 +95,7 @@ namespace Unity.RerunSDK.Encoding
             var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
 
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: false);
+                isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
         }
 
         public EncodedRerunMessage EncodeViewCoordinatesMessage(
@@ -97,7 +106,10 @@ namespace Unity.RerunSDK.Encoding
             var chunkId = RerunTuidGenerator.Next();
 
             var arrowIpc = RerunArrowIpcEncoder.EncodeViewCoordinatesArrowIpc(
-                entityPath, x, y, z, rowId, chunkId);
+                entityPath, x, y, z, rowId, chunkId, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: true,
+                arrowIpc, schema, Array.Empty<RerunTimelineEntry>());
 
             var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
@@ -108,7 +120,7 @@ namespace Unity.RerunSDK.Encoding
             var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
 
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: true);
+                isStoreInfo: false, isStatic: true, manifestChunkInfo: manifestInfo);
         }
 
         public EncodedRerunMessage EncodeEncodedImageMessage(
@@ -120,9 +132,13 @@ namespace Unity.RerunSDK.Encoding
             var chunkId = RerunTuidGenerator.Next();
 
             var arrowIpc = RerunArrowIpcEncoder.EncodeEncodedImageArrowIpc(
-                entityPath, encodedBytes, mediaType, rowId, chunkId, timelines);
+                entityPath, encodedBytes, mediaType, rowId, chunkId, timelines, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: false,
+                arrowIpc, schema, timelines);
 
-            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc, isStatic: false);
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: false, manifestInfo: manifestInfo);
         }
 
         public EncodedRerunMessage EncodeBoxes3DMessage(
@@ -134,9 +150,13 @@ namespace Unity.RerunSDK.Encoding
             var chunkId = RerunTuidGenerator.Next();
 
             var arrowIpc = RerunArrowIpcEncoder.EncodeBoxes3DArrowIpc(
-                entityPath, boxes, rowId, chunkId, timelines);
+                entityPath, boxes, rowId, chunkId, timelines, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: false,
+                arrowIpc, schema, timelines);
 
-            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc, isStatic: false);
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: false, manifestInfo: manifestInfo);
         }
 
         public EncodedRerunMessage EncodeLineStrips3DMessage(
@@ -148,14 +168,19 @@ namespace Unity.RerunSDK.Encoding
             var chunkId = RerunTuidGenerator.Next();
 
             var arrowIpc = RerunArrowIpcEncoder.EncodeLineStrips3DArrowIpc(
-                entityPath, strips, rowId, chunkId, timelines);
+                entityPath, strips, rowId, chunkId, timelines, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: false,
+                arrowIpc, schema, timelines);
 
-            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc, isStatic: false);
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: false, manifestInfo: manifestInfo);
         }
 
         private EncodedRerunMessage EncodeArrowMessage(
             string recordingId, string applicationId,
-            RerunTuid chunkId, byte[] arrowIpc, bool isStatic)
+            RerunTuid chunkId, byte[] arrowIpc, bool isStatic,
+            RrdManifestChunkInfo manifestInfo)
         {
             var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
@@ -166,7 +191,25 @@ namespace Unity.RerunSDK.Encoding
             var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
 
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: isStatic);
+                isStoreInfo: false, isStatic: isStatic, manifestChunkInfo: manifestInfo);
+        }
+
+        private static RrdManifestChunkInfo CreateManifestInfo(
+            string recordingId, string applicationId,
+            string entityPath, RerunTuid chunkId, bool isStatic,
+            byte[] arrowIpc, Apache.Arrow.Schema schema,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            return RrdManifestChunkInfo.FromSchema(
+                recordingId,
+                applicationId,
+                entityPath,
+                chunkId,
+                isStatic,
+                rowCount: 1,
+                uncompressedSize: (ulong)arrowIpc.Length,
+                schema,
+                timelines);
         }
     }
 }

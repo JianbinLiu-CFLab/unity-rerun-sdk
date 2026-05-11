@@ -12,7 +12,9 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Unity.RerunSDK.Core;
 using Unity.RerunSDK.Encoding;
+using Unity.RerunSDK.Transport;
 using RerunSdkComms = Rerun.SdkComms.V1Alpha1;
 
 namespace Unity.RerunSDK.Transport.Grpc
@@ -46,13 +48,18 @@ namespace Unity.RerunSDK.Transport.Grpc
         private bool _hasPendingStoreInfo;
 
         private Task? _backgroundTask;
-        private int _droppedCount;
-        private int _sentStoreInfoCount;
-        private int _sentDataCount;
+        private long _droppedCount;
+        private long _sentStoreInfoCount;
+        private long _sentDataCount;
+        private long _queuedDataCount;
+        private long _reconnectCount;
+        private int _isRunning;
+        private int _liveState = (int)RerunLiveState.Disconnected;
+        private string _lastError = "";
         private volatile bool _stopRequested;
         private volatile bool _disposed;
 
-        public int DroppedCount => Volatile.Read(ref _droppedCount);
+        public long DroppedCount => Interlocked.Read(ref _droppedCount);
 
         public RerunGrpcClient(RerunGrpcEndpoint endpoint,
             int connectTimeoutMs = 3000, int reconnectDelayMs = 1000, int maxQueueMessages = 2048)
@@ -98,6 +105,7 @@ namespace Unity.RerunSDK.Transport.Grpc
                     return;
                 }
 
+                Interlocked.Increment(ref _queuedDataCount);
                 _messageSignal.Release();
             }
         }
@@ -114,53 +122,72 @@ namespace Unity.RerunSDK.Transport.Grpc
                 }
             }
 
-            return _sendQueue.Reader.TryRead(out message);
+            var hasMessage = _sendQueue.Reader.TryRead(out message);
+            if (hasMessage)
+                Interlocked.Decrement(ref _queuedDataCount);
+            return hasMessage;
         }
 
         /// Start connecting in the background.
         public void Start()
         {
             if (_backgroundTask != null) return;
+            Volatile.Write(ref _isRunning, 1);
+            SetLiveState(RerunLiveState.Connecting);
             LogInfo($"[RerunGrpcClient] Starting live stream loop to {_endpoint.GrpcAddress}");
             _backgroundTask = Task.Run(() => RunLoop(_shutdownCts.Token));
         }
 
         private async Task RunLoop(CancellationToken ct)
         {
-            while (!ct.IsCancellationRequested)
+            try
             {
-                try
+                while (!ct.IsCancellationRequested)
                 {
-                    await ConnectAndStream(ct);
-                    if (_stopRequested)
-                        break;
-                }
-                catch (OperationCanceledException) { break; }
-                catch (Exception ex)
-                {
-                    if (_stopRequested)
+                    try
                     {
-                        if (IsExpectedShutdownException(ex))
+                        await ConnectAndStream(ct);
+                        if (_stopRequested)
+                            break;
+                    }
+                    catch (OperationCanceledException) { break; }
+                    catch (Exception ex)
+                    {
+                        RecordLastError(ex);
+
+                        if (_stopRequested)
                         {
-                            LogInfo($"[RerunGrpcClient] Live stream closed during shutdown ({ex.GetType().Name})");
+                            if (IsExpectedShutdownException(ex))
+                            {
+                                LogInfo($"[RerunGrpcClient] Live stream closed during shutdown ({ex.GetType().Name})");
+                                break;
+                            }
+
+                            var stopExtra = ex is RpcException stopRpc
+                                ? $", StatusCode={stopRpc.StatusCode}, Detail={stopRpc.Status.Detail}"
+                                : "";
+                            LogWarning($"[RerunGrpcClient] Stream ended during shutdown: {ex.GetType().Name}: {ex.Message}{stopExtra}");
                             break;
                         }
 
-                        var stopExtra = ex is RpcException stopRpc
-                            ? $", StatusCode={stopRpc.StatusCode}, Detail={stopRpc.Status.Detail}"
+                        Interlocked.Increment(ref _reconnectCount);
+                        SetLiveState(RerunLiveState.Reconnecting);
+
+                        var extra = ex is RpcException rpc
+                            ? $", StatusCode={rpc.StatusCode}, Detail={rpc.Status.Detail}"
                             : "";
-                        LogWarning($"[RerunGrpcClient] Stream ended during shutdown: {ex.GetType().Name}: {ex.Message}{stopExtra}");
-                        break;
+                        LogWarning($"[RerunGrpcClient] Stream ended: {ex.GetType().Name}: {ex.Message}{extra}, reconnecting in {_reconnectDelayMs}ms");
                     }
 
-                    var extra = ex is RpcException rpc
-                        ? $", StatusCode={rpc.StatusCode}, Detail={rpc.Status.Detail}"
-                        : "";
-                    LogWarning($"[RerunGrpcClient] Stream ended: {ex.GetType().Name}: {ex.Message}{extra}, reconnecting in {_reconnectDelayMs}ms");
+                    try { await Task.Delay(_reconnectDelayMs, ct); }
+                    catch (OperationCanceledException) { break; }
                 }
-
-                try { await Task.Delay(_reconnectDelayMs, ct); }
-                catch (OperationCanceledException) { break; }
+            }
+            finally
+            {
+                Volatile.Write(ref _isRunning, 0);
+                if (_stopRequested || _disposed)
+                    SetLiveState(RerunLiveState.Disconnected);
             }
         }
 
@@ -180,6 +207,8 @@ namespace Unity.RerunSDK.Transport.Grpc
 
                 call = _client.WriteMessages(cancellationToken: ct);
                 _call = call;
+                SetLiveState(RerunLiveState.Connected);
+                Volatile.Write(ref _lastError, "");
                 LogInfo($"[RerunGrpcClient] WriteMessages stream opened to {_endpoint.GrpcAddress}");
 
                 EncodedRerunMessage storeInfo = default;
@@ -279,6 +308,34 @@ namespace Unity.RerunSDK.Transport.Grpc
             var dataCount = Interlocked.Increment(ref _sentDataCount);
             if (dataCount <= 5)
                 LogInfo($"[RerunGrpcClient] Data message sent to live stream (kind={msg.RrdKind}, total={dataCount})");
+        }
+
+        internal RerunTransportStatsSnapshot GetStatsSnapshot()
+        {
+            bool hasPendingStoreInfo;
+            lock (_queueGate)
+                hasPendingStoreInfo = _hasPendingStoreInfo;
+
+            return new RerunTransportStatsSnapshot(
+                supported: true,
+                isRunning: Volatile.Read(ref _isRunning) != 0,
+                liveState: (RerunLiveState)Volatile.Read(ref _liveState),
+                queueDepth: Interlocked.Read(ref _queuedDataCount) + (hasPendingStoreInfo ? 1 : 0),
+                droppedCount: Interlocked.Read(ref _droppedCount),
+                reconnectCount: Interlocked.Read(ref _reconnectCount),
+                sentStoreInfoCount: Interlocked.Read(ref _sentStoreInfoCount),
+                sentDataCount: Interlocked.Read(ref _sentDataCount),
+                lastError: Volatile.Read(ref _lastError));
+        }
+
+        private void SetLiveState(RerunLiveState state)
+        {
+            Volatile.Write(ref _liveState, (int)state);
+        }
+
+        private void RecordLastError(Exception ex)
+        {
+            Volatile.Write(ref _lastError, $"{ex.GetType().Name}: {ex.Message}");
         }
 
         private static GrpcChannelOptions CreateChannelOptions()
