@@ -8,6 +8,7 @@ namespace Unity.RerunSDK.IO.Rrd
     internal class RrdRerunBackend : IRerunBackend
     {
         private readonly RrdWriter _writer;
+        private readonly RrdFooterBuilder _footerBuilder = new RrdFooterBuilder();
 
         public RrdRerunBackend(RrdWriter writer)
         {
@@ -21,17 +22,19 @@ namespace Unity.RerunSDK.IO.Rrd
 
         public void Write(EncodedRerunMessage message)
         {
-            _writer.WriteMessage(message.RrdKind, message.RrdPayload);
+            var span = _writer.WriteMessage(message.RrdKind, message.RrdPayload);
+            if (message.ManifestChunkInfo != null)
+                _footerBuilder.AddChunk(message.ManifestChunkInfo, span);
         }
 
         public void Flush()
         {
-            _writer.FinishNoFooter();
+            _writer.Flush();
         }
 
         public void Shutdown()
         {
-            _writer.FinishNoFooter();
+            _writer.FinishWithFooter(_footerBuilder.Build());
         }
     }
 }

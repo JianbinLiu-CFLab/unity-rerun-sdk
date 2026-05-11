@@ -29,6 +29,7 @@
     <Compile Include="..\..\..\Runtime\Core\RerunEntityPath.cs" Link="Core\RerunEntityPath.cs" />
     <Compile Include="..\..\..\Runtime\Core\RerunTimeline.cs" Link="Core\RerunTimeline.cs" />
     <Compile Include="..\..\..\Runtime\Core\RerunTimelineEntry.cs" Link="Core\RerunTimelineEntry.cs" />
+    <Compile Include="..\..\..\Runtime\Core\RerunLiveState.cs" Link="Core\RerunLiveState.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\IRerunEncoder.cs" Link="Encoding\IRerunEncoder.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunTuidGenerator.cs" Link="Encoding\RerunTuidGenerator.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunGeometry.cs" Link="Encoding\RerunGeometry.cs" />
@@ -36,13 +37,17 @@
     <Compile Include="..\..\..\Runtime\Encoding\Protos\LogMsg.cs" Link="Encoding\LogMsg.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunProtobufEncoding.cs" Link="Encoding\RerunProtobufEncoding.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\EncodedRerunMessage.cs" Link="Encoding\EncodedRerunMessage.cs" />
+    <Compile Include="..\..\..\Runtime\Encoding\RrdManifestChunkInfo.cs" Link="Encoding\RrdManifestChunkInfo.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\Protos\SdkComms.cs" Link="Grpc\SdkComms.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\Protos\SdkCommsGrpc.cs" Link="Grpc\SdkCommsGrpc.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunArrowIpcEncoder.cs" Link="Encoding\RerunArrowIpcEncoder.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\ManagedRerunEncoder.cs" Link="Encoding\ManagedRerunEncoder.cs" />
     <Compile Include="..\..\..\Runtime\IO\Rrd\RrdWriter.cs" Link="IO\RrdWriter.cs" />
+    <Compile Include="..\..\..\Runtime\IO\Rrd\RrdPayloadSpan.cs" Link="IO\RrdPayloadSpan.cs" />
+    <Compile Include="..\..\..\Runtime\IO\Rrd\RrdFooterBuilder.cs" Link="IO\RrdFooterBuilder.cs" />
     <Compile Include="..\..\..\Runtime\IO\Rrd\RrdRerunBackend.cs" Link="IO\RrdRerunBackend.cs" />
     <Compile Include="..\..\..\Runtime\Transport\CompositeRerunBackend.cs" Link="Transport\CompositeRerunBackend.cs" />
+    <Compile Include="..\..\..\Runtime\Transport\RerunTransportStatsSnapshot.cs" Link="Transport\RerunTransportStatsSnapshot.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcEndpoint.cs" Link="Transport\RerunGrpcEndpoint.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcViewerProbe.cs" Link="Transport\RerunGrpcViewerProbe.cs" />
     <Compile Include="..\..\..\Runtime\Transport\Grpc\RerunGrpcClient.cs" Link="Transport\RerunGrpcClient.cs" />

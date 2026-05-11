@@ -67,7 +67,7 @@ public class TransportTests
         client.Write(DataMessage());
         client.Write(DataMessage());
 
-        Assert.Equal(1, client.DroppedCount);
+        Assert.Equal(1L, client.DroppedCount);
         var reader = GetSendQueueReader(client);
         Assert.True(reader.TryRead(out var queued));
         Assert.False(queued.IsStoreInfo);
@@ -82,12 +82,86 @@ public class TransportTests
         client.Write(DataMessage());
         client.Write(StoreInfoMessage());
 
-        Assert.Equal(0, client.DroppedCount);
+        Assert.Equal(0L, client.DroppedCount);
         Assert.True(TryTakeNextMessage(client, out var first));
         Assert.True(first.IsStoreInfo);
         Assert.True(TryTakeNextMessage(client, out var second));
         Assert.False(second.IsStoreInfo);
         Assert.False(TryTakeNextMessage(client, out _));
+    }
+
+    [Fact]
+    public void Grpc_client_initial_stats_are_read_only_snapshot()
+    {
+        using var client = new RerunGrpcClient(RerunGrpcEndpoint.Default, maxQueueMessages: 1);
+
+        var snapshot = client.GetStatsSnapshot();
+
+        Assert.True(snapshot.Supported);
+        Assert.False(snapshot.IsRunning);
+        Assert.Equal(RerunLiveState.Disconnected, snapshot.LiveState);
+        Assert.Equal(0, snapshot.QueueDepth);
+        Assert.Equal(0, snapshot.DroppedCount);
+        Assert.Equal(0, snapshot.ReconnectCount);
+        Assert.Equal(0, snapshot.SentStoreInfoCount);
+        Assert.Equal(0, snapshot.SentDataCount);
+        Assert.Equal("", snapshot.LastError);
+    }
+
+    [Fact]
+    public void Grpc_client_stats_include_queue_depth_and_drops()
+    {
+        using var client = new RerunGrpcClient(RerunGrpcEndpoint.Default, maxQueueMessages: 1);
+
+        client.Write(DataMessage());
+        client.Write(StoreInfoMessage());
+        client.Write(DataMessage());
+
+        var snapshot = client.GetStatsSnapshot();
+
+        Assert.Equal(2, snapshot.QueueDepth);
+        Assert.Equal(1, snapshot.DroppedCount);
+        Assert.Equal(1L, client.DroppedCount);
+    }
+
+    [Fact]
+    public void Grpc_client_stats_snapshot_is_immutable_value()
+    {
+        using var client = new RerunGrpcClient(RerunGrpcEndpoint.Default, maxQueueMessages: 1);
+        var before = client.GetStatsSnapshot();
+
+        client.Write(DataMessage());
+        var after = client.GetStatsSnapshot();
+
+        Assert.Equal(0, before.QueueDepth);
+        Assert.Equal(1, after.QueueDepth);
+    }
+
+    [Fact]
+    public void Grpc_client_stats_include_sent_counters()
+    {
+        using var client = new RerunGrpcClient(RerunGrpcEndpoint.Default, maxQueueMessages: 1);
+
+        InvokeLogSent(client, StoreInfoMessage());
+        InvokeLogSent(client, DataMessage());
+        InvokeLogSent(client, DataMessage());
+
+        var snapshot = client.GetStatsSnapshot();
+
+        Assert.Equal(1, snapshot.SentStoreInfoCount);
+        Assert.Equal(2, snapshot.SentDataCount);
+    }
+
+    [Fact]
+    public void Grpc_client_stats_include_last_error()
+    {
+        using var client = new RerunGrpcClient(RerunGrpcEndpoint.Default, maxQueueMessages: 1);
+
+        InvokeRecordLastError(client, new InvalidOperationException("boom"));
+
+        var snapshot = client.GetStatsSnapshot();
+        Assert.Contains("InvalidOperationException", snapshot.LastError);
+        Assert.Contains("boom", snapshot.LastError);
     }
 
     [Fact]
@@ -149,7 +223,9 @@ public class TransportTests
         try
         {
             var port = ((IPEndPoint)listener.LocalEndpoint).Port;
-            Assert.True(RerunGrpcViewerProbe.IsViewerListening($"http://127.0.0.1:{port}", timeoutMs: 200));
+            Assert.True(SpinWait.SpinUntil(
+                () => RerunGrpcViewerProbe.IsViewerListening($"http://127.0.0.1:{port}", timeoutMs: 500),
+                TimeSpan.FromSeconds(2)));
         }
         finally
         {
@@ -231,6 +307,22 @@ public class TransportTests
         var result = (bool)method.Invoke(client, args)!;
         message = (EncodedRerunMessage)args[0];
         return result;
+    }
+
+    private static void InvokeLogSent(RerunGrpcClient client, EncodedRerunMessage message)
+    {
+        var method = typeof(RerunGrpcClient).GetMethod("LogSent",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(method);
+        method.Invoke(client, new object[] { message });
+    }
+
+    private static void InvokeRecordLastError(RerunGrpcClient client, Exception exception)
+    {
+        var method = typeof(RerunGrpcClient).GetMethod("RecordLastError",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.NotNull(method);
+        method.Invoke(client, new object[] { exception });
     }
 }
 

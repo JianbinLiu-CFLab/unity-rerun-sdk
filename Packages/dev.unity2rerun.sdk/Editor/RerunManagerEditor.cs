@@ -9,6 +9,11 @@ namespace Unity.RerunSDK.Editor
     [CustomEditor(typeof(RerunManager))]
     public class RerunManagerEditor : UnityEditor.Editor
     {
+        public override bool RequiresConstantRepaint()
+        {
+            return Application.isPlaying;
+        }
+
         public override void OnInspectorGUI()
         {
             var mgr = (RerunManager)target;
@@ -64,7 +69,18 @@ namespace Unity.RerunSDK.Editor
 
             if (Application.isPlaying)
             {
-                EditorGUILayout.LabelField("Live State", mgr.LiveState.ToString());
+                var stats = mgr.GetTransportStatsSnapshot();
+                EditorGUILayout.Space();
+                EditorGUILayout.LabelField("Transport Health", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("Live State", stats.LiveState.ToString());
+                EditorGUILayout.LabelField("Supported", stats.Supported ? "Yes" : "No");
+                EditorGUILayout.LabelField("Running", stats.IsRunning ? "Yes" : "No");
+                EditorGUILayout.LabelField("Queue Depth", stats.QueueDepth.ToString());
+                EditorGUILayout.LabelField("Dropped", stats.DroppedCount.ToString());
+                EditorGUILayout.LabelField("Reconnects", stats.ReconnectCount.ToString());
+                EditorGUILayout.LabelField("Sent StoreInfo", stats.SentStoreInfoCount.ToString());
+                EditorGUILayout.LabelField("Sent Data", stats.SentDataCount.ToString());
+                EditorGUILayout.LabelField("Last Error", string.IsNullOrEmpty(stats.LastError) ? "-" : stats.LastError);
 
                 if (GUILayout.Button(mgr.IsRecording ? "Stop Recording" : "Start Recording"))
                 {
