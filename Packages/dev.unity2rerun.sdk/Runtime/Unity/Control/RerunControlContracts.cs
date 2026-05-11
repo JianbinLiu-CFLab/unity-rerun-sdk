@@ -301,6 +301,8 @@ namespace Unity.RerunSDK.Unity.Control
         {
             var sb = new StringBuilder(256);
             sb.Append('{');
+            AppendPose(sb);
+            sb.Append(',');
             AppendVector3(sb, "position", Position);
             sb.Append(',');
             AppendVector3(sb, "rotationEuler", RotationEuler);
@@ -310,7 +312,10 @@ namespace Unity.RerunSDK.Unity.Control
             sb.Append(',');
             sb.Append("\"commandCount\":").Append(CommandCount).Append(',');
             sb.Append("\"lastCommand\":\"").Append(Escape(LastCommand ?? string.Empty)).Append("\",");
-            sb.Append("\"controlUrl\":\"").Append(Escape(ControlUrl ?? string.Empty)).Append('"');
+            sb.Append("\"controlUrl\":\"").Append(Escape(ControlUrl ?? string.Empty)).Append("\",");
+            AppendActions(sb);
+            sb.Append(',');
+            AppendParameters(sb);
             sb.Append('}');
             return sb.ToString();
         }
@@ -326,6 +331,77 @@ namespace Unity.RerunSDK.Unity.Control
         private static void AppendColor(StringBuilder sb, string name, RerunControlColor value)
         {
             sb.Append('"').Append(name).Append("\":[")
+                .Append(Format(value.R)).Append(',')
+                .Append(Format(value.G)).Append(',')
+                .Append(Format(value.B)).Append(',')
+                .Append(Format(value.A)).Append(']');
+        }
+
+        private void AppendPose(StringBuilder sb)
+        {
+            sb.Append("\"pose\":{");
+            AppendVector3(sb, "position", Position);
+            sb.Append(',');
+            AppendVector3(sb, "rotationEuler", RotationEuler);
+            sb.Append(',');
+            AppendVector3(sb, "scale", new RerunControlVector3(Scale, Scale, Scale));
+            sb.Append('}');
+        }
+
+        private void AppendActions(StringBuilder sb)
+        {
+            sb.Append("\"actions\":[");
+            AppendAction(sb, "reset_pose", "Reset Pose", "button", "{\"type\":\"reset_pose\"}");
+            sb.Append(',');
+            AppendAction(sb, "set_color_green", "Green", "preset", "{\"type\":\"set_color\",\"color\":[0,1,0,1]}");
+            sb.Append(',');
+            AppendAction(sb, "set_color_red", "Red", "preset", "{\"type\":\"set_color\",\"color\":[1,0.1,0.05,1]}");
+            sb.Append(',');
+            AppendAction(sb, "set_color_blue", "Blue", "preset", "{\"type\":\"set_color\",\"color\":[0.25,0.5,1,1]}");
+            sb.Append(',');
+            AppendAction(sb, "scale_down", "Scale Down", "button", "{\"type\":\"set_scale\",\"scale\":" + Format(Math.Max(0.1f, Scale * 0.8f)) + "}");
+            sb.Append(',');
+            AppendAction(sb, "scale_up", "Scale Up", "button", "{\"type\":\"set_scale\",\"scale\":" + Format(Math.Max(0.1f, Scale * 1.25f)) + "}");
+            sb.Append(',');
+            AppendAction(sb, "scale_reset", "Scale Reset", "button", "{\"type\":\"set_scale\",\"scale\":1}");
+            sb.Append(']');
+        }
+
+        private static void AppendAction(StringBuilder sb, string id, string label, string kind, string commandJson)
+        {
+            sb.Append('{')
+                .Append("\"id\":\"").Append(Escape(id)).Append("\",")
+                .Append("\"label\":\"").Append(Escape(label)).Append("\",")
+                .Append("\"kind\":\"").Append(Escape(kind)).Append("\",")
+                .Append("\"command\":").Append(commandJson)
+                .Append('}');
+        }
+
+        private void AppendParameters(StringBuilder sb)
+        {
+            sb.Append("\"parameters\":[");
+            sb.Append('{')
+                .Append("\"name\":\"cube.color\",")
+                .Append("\"label\":\"Color\",")
+                .Append("\"type\":\"color\",")
+                .Append("\"writable\":true,")
+                .Append("\"value\":");
+            AppendColorValue(sb, Color);
+            sb.Append('}');
+            sb.Append(',');
+            sb.Append('{')
+                .Append("\"name\":\"cube.scale\",")
+                .Append("\"label\":\"Scale\",")
+                .Append("\"type\":\"float\",")
+                .Append("\"writable\":true,")
+                .Append("\"value\":").Append(Format(Scale))
+                .Append('}');
+            sb.Append(']');
+        }
+
+        private static void AppendColorValue(StringBuilder sb, RerunControlColor value)
+        {
+            sb.Append('[')
                 .Append(Format(value.R)).Append(',')
                 .Append(Format(value.G)).Append(',')
                 .Append(Format(value.B)).Append(',')

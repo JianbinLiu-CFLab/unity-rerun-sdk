@@ -44,3 +44,15 @@ Publishes a text log entry to `logs/<entity>`.
 | Level | INFO, WARN, ERROR, DEBUG, TRACE |
 | Repeat | Publish continuously (false = one-shot) |
 | Append Frame Count | Add frame number to message |
+
+## RerunPoints3DPublisher
+
+Publishes a small synthetic Rerun `Points3D` point cloud around the GameObject. This is the first sensor parity slice and is intended for 3D view smoke tests rather than lidar packet decoding.
+
+| Field | Description |
+|-------|-------------|
+| Point Count | Number of points to emit |
+| Cloud Radius | Synthetic cloud radius around the GameObject |
+| Point Radius | Rerun visual radius per point |
+| Color | Point color |
+| Animate | Rotate the synthetic point cloud over time |

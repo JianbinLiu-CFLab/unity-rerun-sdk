@@ -92,6 +92,33 @@ public class Phase8ArchetypeTests
     }
 
     [Fact]
+    public void Points3D_schema_uses_positions_colors_and_radii()
+    {
+        var point = new RerunPoint3D(
+            new RerunVec3(1f, 2f, 3f),
+            0x00FF00FF,
+            0.05f);
+
+        var schema = DecodeSchema(enc => enc.EncodePoints3DMessage(
+            "rec", "app", "world/points", new[] { point }, DefTl));
+
+        AssertVector3ListField(schema, "Points3D:positions", "rerun.components.Position3D");
+
+        var colors = schema.GetFieldByName("Points3D:colors");
+        Assert.NotNull(colors);
+        Assert.Equal("rerun.archetypes.Points3D", colors.Metadata["rerun:archetype"]);
+        Assert.Equal("rerun.components.Color", colors.Metadata["rerun:component_type"]);
+        var colorList = Assert.IsType<ListType>(colors.DataType);
+        Assert.IsType<UInt32Type>(colorList.ValueDataType);
+
+        var radii = schema.GetFieldByName("Points3D:radii");
+        Assert.NotNull(radii);
+        Assert.Equal("rerun.components.Radius", radii.Metadata["rerun:component_type"]);
+        var radiiList = Assert.IsType<ListType>(radii.DataType);
+        Assert.IsType<FloatType>(radiiList.ValueDataType);
+    }
+
+    [Fact]
     public void Phase8_smoke_rrd_places_box_geometry_on_cube_entity()
     {
         var path = Path.Combine(Path.GetTempPath(), $"phase8_{Guid.NewGuid():N}.rrd");

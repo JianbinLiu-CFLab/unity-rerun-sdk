@@ -203,6 +203,7 @@ namespace Unity.RerunSDK.Unity
             _lastCommand = RerunControlCommandNames.ToWireName(command.Type);
             RefreshState();
             LogText($"Applied command {_lastCommand}", "INFO");
+            LogCommandCount();
         }
 
         private void ApplyColor(Color color)
@@ -241,6 +242,13 @@ namespace Unity.RerunSDK.Unity
             var manager = _manager != null ? _manager : FindManager();
             if (manager != null && manager.IsRecording)
                 manager.LogText("logs/rerun/control", message, level);
+        }
+
+        private void LogCommandCount()
+        {
+            var manager = _manager != null ? _manager : FindManager();
+            if (manager != null && manager.IsRecording)
+                manager.LogScalar("metrics/interactive/command_count", _commandCount);
         }
 
         private static RerunManager FindManager()

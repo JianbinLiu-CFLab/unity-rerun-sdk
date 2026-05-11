@@ -241,6 +241,41 @@ namespace Unity.RerunSDK.Encoding
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
 
+        public static byte[] EncodePoints3DArrowIpc(
+            string entityPath, IReadOnlyList<RerunPoint3D> points,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            return EncodePoints3DArrowIpc(entityPath, points, rowId, chunkId, timelines, out _);
+        }
+
+        internal static byte[] EncodePoints3DArrowIpc(
+            string entityPath, IReadOnlyList<RerunPoint3D> points,
+            RerunTuid rowId, RerunTuid chunkId,
+            IReadOnlyList<RerunTimelineEntry> timelines,
+            out Schema schema)
+        {
+            var fields = new List<Field> { CreateRowIdField() };
+            foreach (var t in timelines)
+                fields.Add(CreateTimelineFieldFor(t.Kind, t.Name));
+
+            var vec3Inner = new FixedSizeListType(new Field("item", FloatType.Default, false), 3);
+            fields.Add(CreateComponentField("Points3D:positions", "rerun.archetypes.Points3D", "rerun.components.Position3D",
+                new ListType(new Field("item", vec3Inner, true))));
+            fields.Add(CreateComponentField("Points3D:colors", "rerun.archetypes.Points3D", "rerun.components.Color",
+                new ListType(new Field("item", new UInt32Type(), true))));
+            fields.Add(CreateComponentField("Points3D:radii", "rerun.archetypes.Points3D", "rerun.components.Radius",
+                new ListType(new Field("item", FloatType.Default, true))));
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+
+            var arrays = new List<IArrowArray> { CreateTuidColumn(rowId) };
+            AppendTimelineValues(arrays, timelines);
+            arrays.Add(CreateVec3ComponentColumn(points, p => p.Position));
+            arrays.Add(CreateUInt32ComponentColumn(points, p => p.ColorRgba));
+            arrays.Add(CreateFloatComponentColumn(points, p => p.Radius));
+            return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
+        }
+
         // ── field builders ──
 
         internal static Field CreateRowIdField()
@@ -393,6 +428,14 @@ namespace Unity.RerunSDK.Encoding
         private static ListArray CreateUInt32ComponentColumn<T>(IReadOnlyList<T> values, Func<T, uint> selector)
         {
             var b = new UInt32Array.Builder();
+            for (var i = 0; i < values.Count; i++)
+                b.Append(selector(values[i]));
+            return WrapComponentInstancesInList(values.Count, b.Build(default));
+        }
+
+        private static ListArray CreateFloatComponentColumn<T>(IReadOnlyList<T> values, Func<T, float> selector)
+        {
+            var b = new FloatArray.Builder();
             for (var i = 0; i < values.Count; i++)
                 b.Append(selector(values[i]));
             return WrapComponentInstancesInList(values.Count, b.Build(default));

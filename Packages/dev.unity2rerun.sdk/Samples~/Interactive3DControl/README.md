@@ -3,8 +3,8 @@
 This sample demonstrates the Phase 8 loop:
 
 - Unity Game View controls a cube.
-- Unity2Rerun publishes Transform3D, Boxes3D, LineStrips3D trajectory, EncodedImage, metrics, and TextLog.
-- A local sidecar panel controls Unity through `127.0.0.1`.
+- Unity2Rerun publishes Transform3D, Boxes3D, LineStrips3D trajectory, optional Points3D, EncodedImage, metrics, and TextLog.
+- A local sidecar panel controls Unity through `127.0.0.1` with action buttons and parameter-like state.
 - Rerun Viewer visualizes the result live or from a `.rrd` file.
 
 ## Scene Setup
@@ -35,7 +35,15 @@ The sidecar is intentionally local-only:
 - no remote bind
 - no TLS
 - no auth
-- Windows Editor sample target for Phase 8
+- Windows Editor sample target for the current interactive control path
+
+The `/state` endpoint includes:
+
+- `actions`: reset pose, color presets, scale up/down/reset
+- `parameters`: writable `cube.color` and `cube.scale`
+- pose, current color, command count, last command, and control URL
+
+The sidecar page renders those actions/parameters dynamically and posts commands to `/command`. Accepted commands are logged back to Rerun as `logs/rerun/control` and update `metrics/interactive/command_count`.
 
 ## Rerun Streams
 
@@ -43,6 +51,7 @@ Expected streams:
 
 - `world/cube` (Transform3D + Boxes3D)
 - `world/cube_trajectory`
+- `world/points` if `RerunPoints3DPublisher` is added
 - `camera/main`
 - `metrics/interactive/fps`
 - `metrics/interactive/trajectory_points`
@@ -51,6 +60,19 @@ Expected streams:
 - `logs/rerun/image`
 
 If the Viewer shows old panels such as `metrics/fps` or `metrics/generated_fps`, that is a persisted Viewer blueprint rather than Phase 8 data. Run `rerun reset` or create a fresh layout, then reopen the recording.
+
+## Recommended Rerun Layout
+
+Use a manual grid layout for Phase 10:
+
+- 3D view: `world`
+- Image view: `camera/main`
+- Time series: `metrics/interactive/fps`
+- Time series: `metrics/interactive/command_count`
+- Time series: `metrics/interactive/trajectory_points`
+- Text log: `logs/rerun/control`
+
+Rerun Desktop does not currently provide a Foxglove-style Parameters or Service Call panel for arbitrary Unity callbacks. The sidecar page is the supported control surface for this sample.
 
 ## Acceptance Notes
 

@@ -177,6 +177,24 @@ namespace Unity.RerunSDK.Encoding
                 isStatic: false, manifestInfo: manifestInfo);
         }
 
+        public EncodedRerunMessage EncodePoints3DMessage(
+            string recordingId, string applicationId,
+            string entityPath, IReadOnlyList<RerunPoint3D> points,
+            IReadOnlyList<RerunTimelineEntry> timelines)
+        {
+            var rowId = RerunTuidGenerator.Next();
+            var chunkId = RerunTuidGenerator.Next();
+
+            var arrowIpc = RerunArrowIpcEncoder.EncodePoints3DArrowIpc(
+                entityPath, points, rowId, chunkId, timelines, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: false,
+                arrowIpc, schema, timelines);
+
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: false, manifestInfo: manifestInfo);
+        }
+
         private EncodedRerunMessage EncodeArrowMessage(
             string recordingId, string applicationId,
             RerunTuid chunkId, byte[] arrowIpc, bool isStatic,
