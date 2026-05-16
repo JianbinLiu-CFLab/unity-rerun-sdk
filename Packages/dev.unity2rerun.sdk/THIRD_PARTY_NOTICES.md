@@ -28,6 +28,17 @@ This Unity package uses third-party open source software and public specificatio
 - License: Apache-2.0
 - Usage: managed gRPC live transport to Rerun Viewer.
 
+## Microsoft .NET support libraries
+
+- URL: https://dot.net/
+- License: MIT
+- Usage: bundled managed support assemblies required by gRPC and async runtime behavior in Unity:
+  - `Microsoft.Bcl.AsyncInterfaces.dll`
+  - `Microsoft.Extensions.DependencyInjection.Abstractions.dll`
+  - `Microsoft.Extensions.Logging.Abstractions.dll`
+  - `System.Diagnostics.DiagnosticSource.dll`
+  - `System.Threading.Channels.dll`
+
 ## Cysharp YetAnotherHttpHandler
 
 - URL: https://github.com/Cysharp/YetAnotherHttpHandler

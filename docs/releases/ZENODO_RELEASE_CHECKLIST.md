@@ -14,6 +14,8 @@ Zenodo archival does not prevent plagiarism by itself, but it creates a durable,
 - `docs/releases/RELEASE_NOTES_v0.4.0.md` records the release scope and validation evidence.
 - `AI_NOTICE.md` records the author's ethical position without modifying the Apache-2.0 license.
 - `Packages/dev.unity2rerun.sdk/RELEASE_NOTES.md` records package-level release evidence.
+- The v0.4.0 Zenodo Concept DOI is `10.5281/zenodo.20247512`.
+- The v0.4.0 version-specific DOI is `10.5281/zenodo.20247513`.
 
 Do not add `.zenodo.json` unless there is a specific metadata field that `CITATION.cff` cannot express. Zenodo supports both, but if both files are present, Zenodo uses `.zenodo.json` and ignores `CITATION.cff` for GitHub release archiving.
 
@@ -24,6 +26,7 @@ Do not add `.zenodo.json` unless there is a specific metadata field that `CITATI
    ```powershell
    git status --short --untracked-files=all
    git diff --check
+   python Scripts/release/validate_package.py
    ```
 
 2. Run automated tests.
@@ -71,6 +74,11 @@ Do not add `.zenodo.json` unless there is a specific metadata field that `CITATI
    - `CITATION.cff` DOI field
    - `docs/releases/RELEASE_NOTES_v0.4.0.md` citation section
 8. Commit the DOI metadata update as a follow-up release metadata commit.
+
+For v0.4.0, these values are:
+
+- Concept DOI: `10.5281/zenodo.20247512`
+- Version DOI: `10.5281/zenodo.20247513`
 
 ## Important Zenodo Behavior
 

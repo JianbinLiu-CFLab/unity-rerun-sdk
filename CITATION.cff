@@ -1,5 +1,5 @@
 ﻿cff-version: 1.2.0
-message: "If you use Unity2Rerun in research, please cite this software. Use the version-specific Zenodo DOI when an exact archived release is required."
+message: "If you use Unity2Rerun in research, please cite this software. Use the Concept DOI for the project across versions, or the version-specific Zenodo DOI when an exact archived release is required."
 title: "Unity2Rerun"
 type: software
 authors:
@@ -8,6 +8,7 @@ authors:
 license: "Apache-2.0"
 repository-code: "https://github.com/JianbinLiu-CFLab/unity-rerun-sdk"
 url: "https://github.com/JianbinLiu-CFLab/unity-rerun-sdk"
+doi: "10.5281/zenodo.20247512"
 version: "0.4.0"
 date-released: "2026-05-17"
 abstract: >-

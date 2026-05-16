@@ -3,12 +3,13 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Unity](https://img.shields.io/badge/Unity-6000.0%2B-black?logo=unity)](https://unity.com/)
 [![Release](https://img.shields.io/badge/release-v0.4.0-green)](https://github.com/JianbinLiu-CFLab/unity-rerun-sdk/releases)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20247512.svg)](https://doi.org/10.5281/zenodo.20247512)
 
 Unity2Rerun is a Unity-native SDK for [Rerun](https://rerun.io). It records Unity runtime data to `.rrd` files and can stream live output to Rerun Viewer without requiring an external bridge process for the basic workflow.
 
 ## Status
 
-The current release target is v0.4.0. The package focuses on runtime logging, `.rrd` output with official-compatible footer/manifests, live Viewer output, publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, Pinhole camera metadata, 3D boxes, trajectories, point clouds, planar laser scans, and local sidecar control.
+The current public release is v0.4.0. The package focuses on runtime logging, `.rrd` output with official-compatible footer/manifests, live Viewer output, publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, Pinhole camera metadata, 3D boxes, trajectories, point clouds, planar laser scans, and local sidecar control.
 
 ## Version Requirements
 
@@ -28,7 +29,7 @@ Package-level documentation is available in [Packages/dev.unity2rerun.sdk/README
 
 ## Citation / Research Positioning
 
-If you use Unity2Rerun in research, please cite the software metadata in [CITATION.cff](CITATION.cff). After the first GitHub release is archived by Zenodo, cite the Zenodo Concept DOI for the project or the version-specific DOI for exact reproducibility. A concise research-positioning note is available in [PAPER.md](PAPER.md).
+If you use Unity2Rerun in research, please cite the software metadata in [CITATION.cff](CITATION.cff). Use the Zenodo Concept DOI [10.5281/zenodo.20247512](https://doi.org/10.5281/zenodo.20247512) to cite the project across all versions, or the version-specific DOI [10.5281/zenodo.20247513](https://doi.org/10.5281/zenodo.20247513) for exact reproduction of v0.4.0. A concise research-positioning note is available in [PAPER.md](PAPER.md).
 
 Release and provenance documents:
 

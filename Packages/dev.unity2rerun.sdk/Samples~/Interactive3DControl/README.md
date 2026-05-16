@@ -80,7 +80,7 @@ Rerun Desktop does not currently provide a Foxglove-style Parameters or Service 
 
 ## Acceptance Notes
 
-Record a short acceptance pass in `Developer/Phase8_Interactive_3D_EncodedImage_Sidecar_Control_Acceptance.md`:
+Record a short local acceptance pass before publishing a release:
 
 - Rerun Viewer screenshot with 3D cube, trajectory, image, plots, and logs.
 - Unity Game View control smoke.
