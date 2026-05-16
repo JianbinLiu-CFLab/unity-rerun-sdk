@@ -1,11 +1,14 @@
 # Interactive 3D Control
 
-Phase 8 added a visible end-to-end demo for Unity2Rerun. Phase 10 polishes it into the Rerun-first parity sample:
+Phase 8 added a visible end-to-end demo for Unity2Rerun. Phase 10 polished it into the Rerun-first parity sample, and Phase 11 adds sensor-typed publishing:
 
 - `LogEncodedImage` publishes JPEG/PNG bytes as Rerun `EncodedImage`.
 - `LogBox3D` / `LogBoxes3D` publishes Rerun `Boxes3D` using half-extents.
 - `LogLineStrips3D` publishes a trajectory as Rerun `LineStrips3D`.
 - `LogPoints3D` / `RerunPoints3DPublisher` publishes Rerun `Points3D` point clouds.
+- `LogPinhole` / `RerunPinholeCameraPublisher` publishes camera intrinsics/frustum metadata.
+- `RerunPointCloudPublisher` accepts external point-cloud frames or Transform sources.
+- `RerunLaserScanPublisher` maps scan ranges to `Points3D` and `LineStrips3D`.
 - `RerunInteractiveControlBridge` exposes a local-only sidecar panel for controlling Unity.
 
 ## Sidecar Control
@@ -55,6 +58,12 @@ manager.LogPoints3D("world/points", pointPositions, Color.cyan, radius: 0.03f);
 ```
 
 For Inspector-driven smoke tests, add `RerunPoints3DPublisher` to a GameObject. It publishes a small synthetic point cloud around the object so the Rerun 3D view has a point-cloud parity slice without adding lidar packet decoding.
+
+## Sensor Typed Publishers
+
+For camera metadata, add `RerunPinholeCameraPublisher` to the same camera used by `RerunCameraImagePublisher`. Set both components to the same entity path, for example `world/camera`, so the Rerun Viewer can associate the encoded image and pinhole/frustum metadata. The pinhole camera space uses Rerun `RDF` (`[3, 2, 5]`: right, down, forward), while the world entity remains `RIGHT_HAND_Y_UP` (`[3, 1, 6]`).
+
+For point-cloud data, use `RerunPointCloudPublisher.SetFrame(...)` from code, or assign Transform sources in the Inspector for smoke testing. For scan data, use `RerunLaserScanPublisher.SetRanges(...)`; samples outside the configured range window are skipped before publishing.
 
 ## Recommended Viewer Layout
 

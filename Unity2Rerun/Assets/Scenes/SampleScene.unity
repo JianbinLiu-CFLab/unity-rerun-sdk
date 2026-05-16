@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -270,7 +271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.Publishers.RerunCameraImagePublisher
   _manager: {fileID: 0}
-  _entityPath: camera/main
+  _entityPath: world/camera
   _publishRateHz: 10
   _publishOnEnable: 1
   _warnIfManagerMissing: 1
@@ -280,6 +281,30 @@ MonoBehaviour:
   _format: 0
   _jpegQuality: 70
   _maxEncodedBytes: 524288
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53342f7dbcf04b67829cd8d159f3a137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.Publishers.RerunPinholeCameraPublisher
+  _manager: {fileID: 0}
+  _entityPath: world/camera
+  _publishRateHz: 10
+  _publishOnEnable: 1
+  _warnIfManagerMissing: 1
+  _camera: {fileID: 0}
+  _width: 640
+  _height: 480
+  _imagePlaneDistance: 0.1
+  _frustumColor: {r: 0.2, g: 0.8, b: 1, a: 0.75}
+  _lineWidth: 0.003
+  _publishCameraPose: 1
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

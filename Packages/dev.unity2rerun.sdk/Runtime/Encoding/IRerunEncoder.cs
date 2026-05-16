@@ -25,5 +25,8 @@ namespace Unity.RerunSDK.Encoding
         EncodedRerunMessage EncodeViewCoordinatesMessage(
             string recordingId, string applicationId,
             string entityPath, byte x, byte y, byte z);
+        EncodedRerunMessage EncodePinholeMessage(
+            string recordingId, string applicationId,
+            string entityPath, RerunPinhole pinhole);
     }
 }

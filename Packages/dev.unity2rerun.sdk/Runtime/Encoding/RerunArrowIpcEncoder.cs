@@ -138,6 +138,57 @@ namespace Unity.RerunSDK.Encoding
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
 
+        public static byte[] EncodePinholeArrowIpc(
+            string entityPath, RerunPinhole pinhole,
+            RerunTuid rowId, RerunTuid chunkId)
+        {
+            return EncodePinholeArrowIpc(entityPath, pinhole, rowId, chunkId, out _);
+        }
+
+        internal static byte[] EncodePinholeArrowIpc(
+            string entityPath, RerunPinhole pinhole,
+            RerunTuid rowId, RerunTuid chunkId,
+            out Schema schema)
+        {
+            var matrixInner = new FixedSizeListType(new Field("item", FloatType.Default, false), 9);
+            var resolutionInner = new FixedSizeListType(new Field("item", FloatType.Default, false), 2);
+            var cameraXyzInner = new FixedSizeListType(new Field("item", new UInt8Type(), false), 3);
+
+            var fields = new Field[] {
+                CreateRowIdField(),
+                CreateComponentField("Pinhole:image_from_camera", "rerun.archetypes.Pinhole", "rerun.components.PinholeProjection",
+                    new ListType(new Field("item", matrixInner, true)), isStatic: true),
+                CreateComponentField("Pinhole:resolution", "rerun.archetypes.Pinhole", "rerun.components.Resolution",
+                    new ListType(new Field("item", resolutionInner, true)), isStatic: true),
+                CreateComponentField("Pinhole:camera_xyz", "rerun.archetypes.Pinhole", "rerun.components.ViewCoordinates",
+                    new ListType(new Field("item", cameraXyzInner, true)), isStatic: true),
+                CreateComponentField("Pinhole:image_plane_distance", "rerun.archetypes.Pinhole", "rerun.components.ImagePlaneDistance",
+                    new ListType(new Field("item", FloatType.Default, true)), isStatic: true),
+                CreateComponentField("Pinhole:color", "rerun.archetypes.Pinhole", "rerun.components.Color",
+                    new ListType(new Field("item", new UInt32Type(), true)), isStatic: true),
+                CreateComponentField("Pinhole:line_width", "rerun.archetypes.Pinhole", "rerun.components.Radius",
+                    new ListType(new Field("item", FloatType.Default, true)), isStatic: true),
+            };
+            schema = new Schema(fields, MakeBatchMetadata(entityPath, chunkId));
+
+            IArrowArray[] arrays = {
+                CreateTuidColumn(rowId),
+                CreateFloatVectorComponentColumn(
+                    pinhole.Fx, 0f, 0f,
+                    0f, pinhole.Fy, 0f,
+                    pinhole.Cx, pinhole.Cy, 1f),
+                CreateFloatVectorComponentColumn(pinhole.Width, pinhole.Height),
+                CreateByteVectorComponentColumn(
+                    RerunPinhole.CameraXyzRight,
+                    RerunPinhole.CameraXyzDown,
+                    RerunPinhole.CameraXyzForward),
+                CreateFloatComponentColumn(pinhole.ImagePlaneDistance),
+                CreateUInt32ComponentColumn(pinhole.ColorRgba),
+                CreateFloatComponentColumn(pinhole.LineWidth),
+            };
+            return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
+        }
+
         public static byte[] EncodeEncodedImageArrowIpc(
             string entityPath, byte[] encodedBytes, string mediaType,
             RerunTuid rowId, RerunTuid chunkId,
@@ -370,6 +421,20 @@ namespace Unity.RerunSDK.Encoding
         private static ListArray CreateDoubleComponentColumn(double value)
         {
             var b = new DoubleArray.Builder();
+            b.Append(value);
+            return WrapComponentInstancesInList(1, b.Build(default));
+        }
+
+        private static ListArray CreateFloatComponentColumn(float value)
+        {
+            var b = new FloatArray.Builder();
+            b.Append(value);
+            return WrapComponentInstancesInList(1, b.Build(default));
+        }
+
+        private static ListArray CreateUInt32ComponentColumn(uint value)
+        {
+            var b = new UInt32Array.Builder();
             b.Append(value);
             return WrapComponentInstancesInList(1, b.Build(default));
         }

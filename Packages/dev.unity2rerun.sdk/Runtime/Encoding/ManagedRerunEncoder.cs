@@ -123,6 +123,23 @@ namespace Unity.RerunSDK.Encoding
                 isStoreInfo: false, isStatic: true, manifestChunkInfo: manifestInfo);
         }
 
+        public EncodedRerunMessage EncodePinholeMessage(
+            string recordingId, string applicationId,
+            string entityPath, RerunPinhole pinhole)
+        {
+            var rowId = RerunTuidGenerator.Next();
+            var chunkId = RerunTuidGenerator.Next();
+
+            var arrowIpc = RerunArrowIpcEncoder.EncodePinholeArrowIpc(
+                entityPath, pinhole, rowId, chunkId, out var schema);
+            var manifestInfo = CreateManifestInfo(
+                recordingId, applicationId, entityPath, chunkId, isStatic: true,
+                arrowIpc, schema, Array.Empty<RerunTimelineEntry>());
+
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: true, manifestInfo: manifestInfo);
+        }
+
         public EncodedRerunMessage EncodeEncodedImageMessage(
             string recordingId, string applicationId,
             string entityPath, byte[] encodedBytes, string mediaType,
