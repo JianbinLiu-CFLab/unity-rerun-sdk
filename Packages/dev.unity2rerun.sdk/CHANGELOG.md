@@ -10,9 +10,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Nothing yet.
+
+## 0.4.0 - 2026-05-17
+
+### Added
+
 - `RerunPinhole` encoding and `RerunManager.LogPinhole` for Rerun `Pinhole` camera metadata.
 - `RerunPinholeCameraPublisher`, `RerunPointCloudPublisher`, and `RerunLaserScanPublisher` sensor-oriented publisher components.
 - Phase 11 smoke `.rrd` writer covering Pinhole, EncodedImage association, point clouds, and planar laser-scan visualization.
+
+### Validation
+
+- xUnit runtime suite passed 66/66 tests.
+- `build/RRD/phase11_sensor_smoke.rrd` passed `rerun rrd verify`.
+- Manual replay confirmed `/world/camera`, `/world/points`, `/world/laser_scan`, and `/world/laser_scan_outline`.
 
 ## 0.3.0 - 2026-05-10
 

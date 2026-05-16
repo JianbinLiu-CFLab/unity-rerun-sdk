@@ -1,51 +1,53 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to Unity2Rerun are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
-## 1.0.0 - 2026-05-05
+## 0.4.0 - 2026-05-17
 
 ### Added
 
-- WebSocket server: pure C# implementation of RFC 6455, supporting the Foxglove WebSocket protocol (subprotocol `foxglove.sdk.v1`)
-- JSON encoding: JSON serialization and deserialization for all Foxglove schema messages
-- Schema support: `foxglove.FrameTransform`, `foxglove.SceneUpdate`, `foxglove.CompressedImage`
-- Unity MonoBehaviour integration: `FoxgloveManager`, `FoxgloveTransformPublisher`, `FoxgloveSceneCubePublisher`, `FoxgloveCameraPublisher`
-- FoxRun: `[FoxRun]` attribute for one-line auto-publish to Foxglove topics, with dual-track Roslyn ISG + Player build `.g.cs` fallback
-- Parameters: `getParameters` / `setParameters`, with `parametersSubscribe` / `parametersUnsubscribe` for real-time push
-- Services: `advertiseServices` / `unadvertiseServices` / `callService`, main-thread-safe `DrainServiceCalls()` dispatch
-- ConnectionGraph: publisher/subscriber topology broadcast
-- ClientPublish: Foxglove-to-Unity message publishing
-- Assets: `fetchAsset` support with configurable multiple Asset Roots
-- PlaybackControl: playback control command support
-- MCAP Writer: real-time WebSocket message recording to .mcap files
-- MCAP Reader: .mcap file parsing, extracting Schema/Channel/Message records
-- MCAP Replay: replay recorded files to Foxglove
-- MCAP compression: LZ4 and Zstd compression support (IonKiwi.lz4.dll / ZstdSharp.dll)
-- MCAP Attachments: custom metadata attachment during recording
-- IL2CPP build: link.xml preservation, batch build via `FoxgloveBuild.BuildWindowsIl2Cpp` editor script
-- `FoxgloveParameterComponent`: drag-and-drop parameter exposure component
-- 465 automated dotnet tests covering all functional modules
-- Demo project (`Unity2Foxglove`): ready-to-run demonstration scene
-- Sample (`BasicVisualization`): minimal setup example
-- Logger bridge: `IFoxgloveLogger` interface, making protocol errors traceable in Unity Console, dotnet tests, and IL2CPP Player
+- Rerun `Pinhole` camera metadata encoding and `RerunManager.LogPinhole`.
+- `RerunPinholeCameraPublisher` for Unity camera intrinsics/frustum metadata.
+- `RerunPointCloudPublisher` for Transform-based or externally supplied point-cloud frames.
+- `RerunLaserScanPublisher` for planar scan ranges mapped to `Points3D` plus optional `LineStrips3D`.
+- Phase 11 smoke `.rrd` writer for repeatable Rerun CLI validation.
+- Release metadata updates for Zenodo/GitHub archiving through `CITATION.cff` and release notes.
+
+### Validation
+
+- `dotnet test Packages/dev.unity2rerun.sdk/Tests/Runtime/Unity.RerunSDK.Core.Tests/Unity.RerunSDK.Core.Tests.csproj --no-restore` passed 66/66 tests.
+- `rerun rrd verify build/RRD/phase11_sensor_smoke.rrd` verified without error.
+- Manual Rerun replay confirmed camera image, Pinhole camera entity, point cloud, laser scan points, and laser scan outline.
+
+## 0.3.0 - 2026-05-10
+
+### Added
+
+- RRD footer and manifest finalization by default.
+- Official `rerun rrd verify` compatibility for generated smoke recordings.
+- `EncodedImage`, `Boxes3D`, and `LineStrips3D` archetype support.
+- Interactive 3D Control sample with camera image, cube box, trajectory, metrics, logs, and loopback sidecar control.
+- Read-only live transport health snapshot API and Inspector diagnostics.
+- `[RerunLog]` attribute-driven source generation and IL2CPP build-time generated-file fallback.
+- FileOnly, LiveOnly, and FileAndLive output modes.
 
 ### Changed
 
-- Package renamed from `dev.foxglove.sdk` to `dev.unity2foxglove.sdk`
-- Removed dependency on external Python bridge process; WebSocket server runs in-process in Unity
-- Refactored Transport abstraction layer, supporting Managed Backend (pure C#) and Native Backend (reserved)
+- `RrdRerunBackend.Flush()` now flushes the stream without finalizing it.
+- `RrdRerunBackend.Shutdown()` writes the full RRD End message and StreamFooter.
+- Test smoke writers now use the same backend finalization path as runtime recording.
 
 ### Fixed
 
-- Phase 16 code review: fixed various code quality issues, null checks, resource disposal, etc.
+- Removed the known `Missing RRD footer / no RRD manifests` limitation for newly generated files.
+- Prevented live transport diagnostics from changing bounded-queue send semantics.
 
 ### Known Limitations
 
-- Protobuf binary encoding is not implemented; currently only JSON is supported
-- WebGL platform is not supported (depends on `TcpListener`)
-- macOS / Linux platforms have not been verified
-- Native Backend (C implementation) has not yet been integrated into the transport layer
+- Windows Editor and Windows Standalone IL2CPP Player are the verified targets.
+- Sidecar control is Windows Editor focused; Player sidecar support remains a later validation item.
+- Live gRPC requires project-level `YetAnotherHttpHandler`.

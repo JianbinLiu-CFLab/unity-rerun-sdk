@@ -1,6 +1,6 @@
 {
   "name": "dev.unity2rerun.sdk",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "displayName": "Unity2Rerun SDK",
   "license": "Apache-2.0",
   "description": "Unity native SDK for Rerun - log Unity runtime data to .rrd files and Rerun Viewer without external bridge processes.",
@@ -34,7 +34,7 @@
     },
     {
       "displayName": "Interactive 3D Control",
-      "description": "Interactive cube sample with EncodedImage, Boxes3D, trajectory, metrics, logs, and loopback sidecar control.",
+      "description": "Interactive cube sample with EncodedImage, Pinhole, Boxes3D, Points3D, laser scan, trajectory, metrics, logs, and loopback sidecar control.",
       "path": "Samples~/Interactive3DControl"
     }
   ]

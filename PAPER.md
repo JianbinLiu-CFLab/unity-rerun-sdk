@@ -72,4 +72,4 @@ Unity2Rerun should be evaluated as a Unity package for Rerun-oriented runtime ev
 
 ## Citation Note
 
-Software citation metadata is provided in [`CITATION.cff`](CITATION.cff). The initial evidence release is intended to use a tag such as `paper-evidence-2026-05-09`. A DOI can be added after archiving the GitHub release through Zenodo or another software archive.
+Software citation metadata is provided in [`CITATION.cff`](CITATION.cff). The initial public release target is `v0.4.0`, covering managed RRD footer/manifests, live output, generated logging, interactive 3D control, Pinhole camera metadata, point-cloud publishing, and planar laser-scan visualization. A DOI can be added after archiving the GitHub release through Zenodo or another software archive.
