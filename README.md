@@ -2,8 +2,11 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Unity](https://img.shields.io/badge/Unity-6000.0%2B-black?logo=unity)](https://unity.com/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-purple?logo=dotnet)](https://dotnet.microsoft.com/)
 [![Release](https://img.shields.io/badge/release-v0.4.0-green)](https://github.com/JianbinLiu-CFLab/unity-rerun-sdk/releases)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20247512.svg)](https://doi.org/10.5281/zenodo.20247512)
+[![Tests](https://github.com/JianbinLiu-CFLab/unity-rerun-sdk/actions/workflows/dotnet-tests.yml/badge.svg)](https://github.com/JianbinLiu-CFLab/unity-rerun-sdk/actions/workflows/dotnet-tests.yml)
+[![Docs Check](https://github.com/JianbinLiu-CFLab/unity-rerun-sdk/actions/workflows/docs-check.yml/badge.svg)](https://github.com/JianbinLiu-CFLab/unity-rerun-sdk/actions/workflows/docs-check.yml)
 
 Unity2Rerun is a Unity-native SDK for [Rerun](https://rerun.io). It records Unity runtime data to `.rrd` files and can stream live output to Rerun Viewer without requiring an external bridge process for the basic workflow.
 

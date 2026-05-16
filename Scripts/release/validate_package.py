@@ -43,6 +43,8 @@ REQUIRED_FILES = [
     ROOT / "CITATION.cff",
     ROOT / "AI_NOTICE.md",
     ROOT / "CHANGELOG.md",
+    ROOT / ".github" / "workflows" / "dotnet-tests.yml",
+    ROOT / ".github" / "workflows" / "docs-check.yml",
     ROOT / "docs" / "releases" / "RELEASE_NOTES_v0.4.0.md",
     ROOT / "docs" / "releases" / "ZENODO_RELEASE_CHECKLIST.md",
     PACKAGE / "README.md",

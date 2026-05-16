@@ -1,0 +1,44 @@
+name: docs check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "CHANGELOG.md"
+      - "CITATION.cff"
+      - "PAPER.md"
+      - "AI_NOTICE.md"
+      - "docs/**"
+      - "Packages/dev.unity2rerun.sdk/README.md"
+      - "Packages/dev.unity2rerun.sdk/CHANGELOG.md"
+      - "Packages/dev.unity2rerun.sdk/RELEASE_NOTES.md"
+      - "Packages/dev.unity2rerun.sdk/THIRD_PARTY_NOTICES.md"
+      - "Packages/dev.unity2rerun.sdk/Documentation~/**"
+      - "Packages/dev.unity2rerun.sdk/Samples~/**"
+      - "Scripts/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "CHANGELOG.md"
+      - "CITATION.cff"
+      - "PAPER.md"
+      - "AI_NOTICE.md"
+      - "docs/**"
+      - "Packages/dev.unity2rerun.sdk/README.md"
+      - "Packages/dev.unity2rerun.sdk/CHANGELOG.md"
+      - "Packages/dev.unity2rerun.sdk/RELEASE_NOTES.md"
+      - "Packages/dev.unity2rerun.sdk/THIRD_PARTY_NOTICES.md"
+      - "Packages/dev.unity2rerun.sdk/Documentation~/**"
+      - "Packages/dev.unity2rerun.sdk/Samples~/**"
+      - "Scripts/**"
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate public docs and release package
+        run: python3 Scripts/release/validate_package.py
