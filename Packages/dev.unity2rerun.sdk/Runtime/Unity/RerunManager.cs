@@ -454,6 +454,15 @@ namespace Unity.RerunSDK.Unity
                 entityPath, encodedBytes, mediaType, snapshot.ToEntries()));
         }
 
+        public void LogPinhole(string entityPath, RerunPinhole pinhole)
+        {
+            if (_runtime == null || !IsRecording) return;
+
+            _backend.Write(_encoder.EncodePinholeMessage(
+                _runtime.RecordingId, _applicationId,
+                entityPath, pinhole));
+        }
+
         public void LogBox3D(string entityPath, Transform target, Color color)
         {
             if (target == null) return;

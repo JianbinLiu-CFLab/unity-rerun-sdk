@@ -3,7 +3,7 @@
 This sample demonstrates the Phase 8 loop:
 
 - Unity Game View controls a cube.
-- Unity2Rerun publishes Transform3D, Boxes3D, LineStrips3D trajectory, optional Points3D, EncodedImage, metrics, and TextLog.
+- Unity2Rerun publishes Transform3D, Boxes3D, LineStrips3D trajectory, optional Points3D, Pinhole camera metadata, EncodedImage, metrics, and TextLog.
 - A local sidecar panel controls Unity through `127.0.0.1` with action buttons and parameter-like state.
 - Rerun Viewer visualizes the result live or from a `.rrd` file.
 
@@ -14,6 +14,8 @@ This sample demonstrates the Phase 8 loop:
 3. Add `RerunInteractive3DPublisher` to the cube or a nearby driver object.
 4. Add `RerunInteractiveControlBridge` to the cube or a nearby driver object.
 5. Add `RerunCameraImagePublisher` to a camera-facing object or the camera itself.
+6. Optional for Phase 11 sensor smoke: add `RerunPinholeCameraPublisher` to the same camera and set both camera publishers to the same entity path, such as `world/camera`.
+7. Optional: add `RerunPointCloudPublisher` or `RerunLaserScanPublisher` to a nearby GameObject for point-cloud or planar scan visualization.
 
 Keep `Run In Background` enabled on `RerunManager`. Sidecar commands arrive on a loopback HTTP thread and are applied from Unity `Update`; if Unity stops updating while the browser has focus, commands will appear to apply only after returning to or stopping Play mode.
 
@@ -52,6 +54,8 @@ Expected streams:
 - `world/cube` (Transform3D + Boxes3D)
 - `world/cube_trajectory`
 - `world/points` if `RerunPoints3DPublisher` is added
+- `world/camera` if `RerunPinholeCameraPublisher` is added with the camera image entity path aligned
+- `world/laser_scan` and `world/laser_scan_outline` if `RerunLaserScanPublisher` is added
 - `camera/main`
 - `metrics/interactive/fps`
 - `metrics/interactive/trajectory_points`

@@ -11,7 +11,7 @@ Unity native SDK for [Rerun](https://rerun.io): log Unity runtime data to `.rrd`
 
 ## Status
 
-Phase 10 - `.rrd` and live output, official-compatible RRD footer/manifests, Publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, 3D boxes, trajectories, Points3D, local sidecar controls, and live transport health diagnostics.
+Phase 11 - `.rrd` and live output, official-compatible RRD footer/manifests, Publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, 3D boxes, trajectories, Points3D, Pinhole camera metadata, laser-scan/point-cloud publishers, local sidecar controls, and live transport health diagnostics.
 
 ## Quick install
 
@@ -41,6 +41,7 @@ Interactive 3D/image publishing:
 
 ```csharp
 mgr.LogEncodedImage("camera/main", jpegBytes, "image/jpeg");
+mgr.LogPinhole("camera/main", RerunPinhole.FromVerticalFov(640, 480, 60f));
 mgr.LogTransform("world/cube", cubeTransform);
 mgr.LogBox3D("world/cube", Vector3.zero, cubeTransform.lossyScale * 0.5f, Quaternion.identity, Color.green);
 mgr.LogLineStrips3D("world/cube_trajectory", trajectoryPoints, Color.yellow);
@@ -66,7 +67,8 @@ public partial class PlayerDebug : MonoBehaviour
 - Rerun `.rrd` file recording with footer/manifests verified by `rerun rrd verify`
 - Live Rerun Viewer output through gRPC
 - Read-only live transport health snapshot in `RerunManager` and the Inspector
-- TextLog, Scalar, Transform3D, EncodedImage, Boxes3D, LineStrips3D, and Points3D publishing
+- TextLog, Scalar, Transform3D, EncodedImage, Pinhole, Boxes3D, LineStrips3D, and Points3D publishing
+- Sensor-oriented publisher components for camera pinhole metadata, point clouds, and planar laser scans
 - Inspector-driven publishers and samples
 - `[RerunLog]` attribute-driven source generation, not runtime reflection
 - Local loopback sidecar control sample with parameter-like state and action buttons for Unity-driven interactive demos

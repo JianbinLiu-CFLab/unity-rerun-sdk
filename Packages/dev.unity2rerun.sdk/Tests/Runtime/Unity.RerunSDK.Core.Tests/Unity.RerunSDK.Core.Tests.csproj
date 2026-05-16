@@ -33,6 +33,8 @@
     <Compile Include="..\..\..\Runtime\Encoding\IRerunEncoder.cs" Link="Encoding\IRerunEncoder.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunTuidGenerator.cs" Link="Encoding\RerunTuidGenerator.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunGeometry.cs" Link="Encoding\RerunGeometry.cs" />
+    <Compile Include="..\..\..\Runtime\Encoding\RerunPinhole.cs" Link="Encoding\RerunPinhole.cs" />
+    <Compile Include="..\..\..\Runtime\Encoding\RerunLaserScanProjection.cs" Link="Encoding\RerunLaserScanProjection.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\Protos\Common.cs" Link="Encoding\Common.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\Protos\LogMsg.cs" Link="Encoding\LogMsg.cs" />
     <Compile Include="..\..\..\Runtime\Encoding\RerunProtobufEncoding.cs" Link="Encoding\RerunProtobufEncoding.cs" />

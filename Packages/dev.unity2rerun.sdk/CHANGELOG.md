@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## Unreleased
+
+### Added
+
+- `RerunPinhole` encoding and `RerunManager.LogPinhole` for Rerun `Pinhole` camera metadata.
+- `RerunPinholeCameraPublisher`, `RerunPointCloudPublisher`, and `RerunLaserScanPublisher` sensor-oriented publisher components.
+- Phase 11 smoke `.rrd` writer covering Pinhole, EncodedImage association, point clouds, and planar laser-scan visualization.
+
 ## 0.3.0 - 2026-05-10
 
 ### Added
