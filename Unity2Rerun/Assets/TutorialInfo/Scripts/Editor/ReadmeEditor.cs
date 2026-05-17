@@ -1,11 +1,19 @@
-﻿using System.Collections;
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: UnityProject/Assets/TutorialInfo/Scripts/Editor
+// Purpose: Supports the Unity tutorial information panel used by the validation project.
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
 using System.IO;
 using System.Reflection;
-
+/// <summary>
+/// Stores tutorial metadata shown by the Unity validation project.
+/// </summary>
 [CustomEditor(typeof(Readme))]
 [InitializeOnLoad]
 public class ReadmeEditor : Editor
@@ -119,7 +127,9 @@ public class ReadmeEditor : Editor
         }
         GUILayout.EndHorizontal();
     }
-
+    /// <summary>
+    /// Draws the custom Unity Inspector for the selected component.
+    /// </summary>
     public override void OnInspectorGUI()
     {
         var readme = (Readme)target;

@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/IO/Rrd
+// Purpose: Writes Rerun RRD stream records, manifests, and footer metadata.
 
 #nullable enable
 
@@ -22,15 +26,22 @@ using ProtoSchema = Rerun.Common.V1Alpha1.Schema;
 
 namespace Unity.RerunSDK.IO.Rrd
 {
+    /// <summary>
+    /// Provides RRD Footer Builder support for Unity2Rerun.
+    /// </summary>
     internal sealed class RrdFooterBuilder
     {
         private readonly List<ManifestChunkEntry> _chunks = new();
-
+        /// <summary>
+        /// Handles the AddChunk workflow for this component.
+        /// </summary>
         public void AddChunk(RrdManifestChunkInfo info, RrdPayloadSpan payloadSpan)
         {
             _chunks.Add(new ManifestChunkEntry(info, payloadSpan));
         }
-
+        /// <summary>
+        /// Builds the  result from the current inputs.
+        /// </summary>
         public RrdFooter Build()
         {
             var footer = new RrdFooter();
@@ -478,7 +489,9 @@ namespace Unity.RerunSDK.IO.Rrd
                 bytes[byteCount - 1] &= (byte)((1 << (rowCount % 8)) - 1);
             return new ArrowBuffer(new ReadOnlyMemory<byte>(bytes));
         }
-
+        /// <summary>
+        /// Carries Manifest Column data across Unity2Rerun runtime boundaries.
+        /// </summary>
         private readonly struct ManifestColumn
         {
             public Field Field { get; }
@@ -495,7 +508,9 @@ namespace Unity.RerunSDK.IO.Rrd
                 Array = array;
             }
         }
-
+        /// <summary>
+        /// Carries Manifest Chunk Entry data across Unity2Rerun runtime boundaries.
+        /// </summary>
         private readonly struct ManifestChunkEntry
         {
             public RrdManifestChunkInfo Info { get; }
@@ -508,7 +523,9 @@ namespace Unity.RerunSDK.IO.Rrd
                 PayloadSpan = payloadSpan;
             }
         }
-
+        /// <summary>
+        /// Carries Component Key data across Unity2Rerun runtime boundaries.
+        /// </summary>
         private readonly struct ComponentKey
         {
             public string Archetype { get; }
@@ -522,7 +539,9 @@ namespace Unity.RerunSDK.IO.Rrd
                 Component = component;
                 ComponentType = componentType;
             }
-
+            /// <summary>
+            /// Handles the Matches workflow for this component.
+            /// </summary>
             public bool Matches(RrdManifestComponentInfo component)
             {
                 return Archetype == component.Archetype &&

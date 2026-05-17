@@ -1,5 +1,9 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: Runtime/IO/Rrd
+// Purpose: Writes Rerun RRD stream records, manifests, and footer metadata.
+
 // Low-level RRD binary stream writer.
 // Handles the custom RRD framing protocol: StreamHeader, MessageHeader,
 // End message, and StreamFooter.
@@ -12,18 +16,43 @@ using Unity.RerunSDK.Util;
 
 namespace Unity.RerunSDK.IO.Rrd
 {
+    /// <summary>
+    /// Provides RRD Constants support for Unity2Rerun.
+    /// </summary>
     public static class RrdConstants
     {
         public static readonly byte[] FourCC = { (byte)'R', (byte)'R', (byte)'F', (byte)'2' };
-
+        /// <summary>
+        /// RRD message kind for End records.
+        /// </summary>
         public const ulong MsgKindEnd = 0;
+        /// <summary>
+        /// RRD message kind for SetStoreInfo records.
+        /// </summary>
         public const ulong MsgKindSetStoreInfo = 1;
+        /// <summary>
+        /// RRD message kind for ArrowMsg chunk records.
+        /// </summary>
         public const ulong MsgKindArrowMsg = 2;
-
+        /// <summary>
+        /// Byte size of the fixed RRD stream header.
+        /// </summary>
         public const int StreamHeaderSize = 12;
+        /// <summary>
+        /// Byte size of one fixed RRD message header.
+        /// </summary>
         public const int MessageHeaderSize = 16;
+        /// <summary>
+        /// Byte size of the fixed RRD stream footer.
+        /// </summary>
         public const int StreamFooterFixedSize = 32;
+        /// <summary>
+        /// Byte size of the non-entry RRD stream footer section.
+        /// </summary>
         public const int StreamFooterStaticPartSize = 12;
+        /// <summary>
+        /// CRC seed used by Rerun stream footer validation.
+        /// </summary>
         public const uint StreamFooterCrcSeed = 7850921;
     }
 
@@ -70,7 +99,9 @@ namespace Unity.RerunSDK.IO.Rrd
 
             return new RrdPayloadSpan((ulong)payloadOffset, (ulong)payload.Length);
         }
-
+        /// <summary>
+        /// Flushes buffered output without changing ownership or finalization state.
+        /// </summary>
         public void Flush()
         {
             _stream.Flush();
@@ -81,7 +112,9 @@ namespace Unity.RerunSDK.IO.Rrd
         {
             _finished = true;
         }
-
+        /// <summary>
+        /// Handles the FinishWithFooter workflow for this component.
+        /// </summary>
         public void FinishWithFooter(RrdFooter footer)
         {
             if (_finished)
@@ -113,7 +146,9 @@ namespace Unity.RerunSDK.IO.Rrd
             _stream.Write(fixedPart, 0, fixedPart.Length);
             _numWritten += entry.Length + fixedPart.Length;
         }
-
+        /// <summary>
+        /// Stops the component or service and releases owned runtime resources.
+        /// </summary>
         public void Dispose()
         {
             if (!_finished) FinishNoFooter();

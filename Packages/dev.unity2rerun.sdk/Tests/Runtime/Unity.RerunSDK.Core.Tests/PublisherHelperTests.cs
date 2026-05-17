@@ -1,8 +1,16 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Publisher Helper Tests behavior for release and regression validation.
+
 // Publisher helper tests cover pure C# logic used by Unity components.
 
 using Unity.RerunSDK.Unity;
 using Xunit;
-
+/// <summary>
+/// Regression tests for Publisher Helper Tests.
+/// </summary>
 public class PublisherHelperTests
 {
     [Fact]

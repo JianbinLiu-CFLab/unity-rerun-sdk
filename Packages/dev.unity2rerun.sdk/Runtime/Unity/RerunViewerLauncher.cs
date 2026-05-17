@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity
+// Purpose: Integrates managed Rerun logging with Unity runtime components.
 
 #nullable enable
 
@@ -11,6 +15,9 @@ using Debug = UnityEngine.Debug;
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Provides Rerun Viewer Launcher support for Unity2Rerun.
+    /// </summary>
     internal class RerunViewerLauncher
     {
         private Process? _ownedProcess;
@@ -72,20 +79,20 @@ namespace Unity.RerunSDK.Unity
                     {
                         if (_ownedProcess.ExitCode != 0)
                         {
-                            Debug.LogWarning($"[Rerun] Viewer process exited before gRPC opened (exit={_ownedProcess.ExitCode})");
+                            Debug.LogWarning($"[Rerun] Viewer process exited before Grpc opened (exit={_ownedProcess.ExitCode})");
                             return false;
                         }
 
                         if (!processExitedCleanly)
                         {
-                            Debug.Log("[Rerun] Viewer launcher process exited cleanly; continuing gRPC probe.");
+                            Debug.Log("[Rerun] Viewer launcher process exited cleanly; continuing Grpc probe.");
                             processExitedCleanly = true;
                         }
                     }
                     Thread.Sleep(100);
                 }
 
-                Debug.LogWarning($"[Rerun] Viewer process started but gRPC did not open in {launchTimeoutMs}ms");
+                Debug.LogWarning($"[Rerun] Viewer process started but Grpc did not open in {launchTimeoutMs}ms");
                 return false;
             }
             catch (Exception ex)
@@ -146,7 +153,9 @@ namespace Unity.RerunSDK.Unity
             }
             return null;
         }
-
+        /// <summary>
+        /// Handles the StopOwnedProcess workflow for this component.
+        /// </summary>
         public void StopOwnedProcess()
         {
             if (_ownedProcess != null && !_ownedProcess.HasExited)

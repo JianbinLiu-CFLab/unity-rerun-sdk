@@ -1,11 +1,15 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity
+// Purpose: Integrates managed Rerun logging with Unity runtime components.
 
 using UnityEngine;
 
 namespace Unity.RerunSDK.Unity
 {
     /// Unity-to-Rerun coordinate converter.
-    /// Left-hand Y-up (Unity) → RIGHT_HAND_Y_UP (Rerun): position (x, y, -z).
+    /// Left-hand Y-up (Unity) -> RIGHT_HAND_Y_UP (Rerun): position (x, y, -z).
     public static class RerunCoordinateConverter
     {
         /// Convert Unity left-hand Y-up position to Rerun RIGHT_HAND_Y_UP.

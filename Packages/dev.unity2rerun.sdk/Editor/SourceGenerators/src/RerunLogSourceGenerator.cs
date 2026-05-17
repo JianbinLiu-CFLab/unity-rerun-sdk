@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Editor/SourceGenerators/src
+// Purpose: Implements editor-time source generation support for Rerun logging attributes.
 
 #nullable disable
 
@@ -13,9 +17,13 @@ using Unity.RerunSDK.Editor;
 
 namespace Unity.RerunSDK.SourceGenerators
 {
+    /// <summary>
+    /// Provides Unity Editor support for Rerun Log Source Generator.
+    /// </summary>
     [Generator]
     public sealed class RerunLogSourceGenerator : IIncrementalGenerator
     {
+        // Fully-qualified metadata names used to match Unity runtime attributes without loading Unity.
         private const string RerunLogAttributeName = "Unity.RerunSDK.Unity.RerunLogAttribute";
         private const string RerunScalarAttributeName = "Unity.RerunSDK.Unity.RerunScalarAttribute";
         private const string RerunTransformAttributeName = "Unity.RerunSDK.Unity.RerunTransformAttribute";
@@ -23,6 +31,7 @@ namespace Unity.RerunSDK.SourceGenerators
         private const string TransformName = "UnityEngine.Transform";
         private const string GameObjectName = "UnityEngine.GameObject";
 
+        /// <summary>Diagnostic emitted when a generated log target cannot receive a partial implementation.</summary>
         private static readonly DiagnosticDescriptor ClassMustBePartial = new(
             "RERUNLOG001",
             "RerunLog source class must be partial",
@@ -31,6 +40,7 @@ namespace Unity.RerunSDK.SourceGenerators
             DiagnosticSeverity.Error,
             true);
 
+        /// <summary>Diagnostic emitted when a member type cannot be mapped to a Rerun archetype.</summary>
         private static readonly DiagnosticDescriptor UnsupportedMemberType = new(
             "RERUNLOG002",
             "Unsupported RerunLog member type",
@@ -39,6 +49,7 @@ namespace Unity.RerunSDK.SourceGenerators
             DiagnosticSeverity.Error,
             true);
 
+        /// <summary>Diagnostic emitted when an attribute supplies an invalid Rerun entity path.</summary>
         private static readonly DiagnosticDescriptor InvalidEntityPath = new(
             "RERUNLOG003",
             "Invalid Rerun entity path",
@@ -47,6 +58,7 @@ namespace Unity.RerunSDK.SourceGenerators
             DiagnosticSeverity.Error,
             true);
 
+        /// <summary>Diagnostic emitted when a field declaration would generate ambiguous member output.</summary>
         private static readonly DiagnosticDescriptor MultiVariableField = new(
             "RERUNLOG004",
             "Multi-variable RerunLog field declaration is unsupported",
@@ -55,6 +67,7 @@ namespace Unity.RerunSDK.SourceGenerators
             DiagnosticSeverity.Error,
             true);
 
+        /// <summary>Diagnostic emitted when logging attributes are attached to unsupported symbols.</summary>
         private static readonly DiagnosticDescriptor InvalidAttributeTarget = new(
             "RERUNLOG005",
             "Invalid RerunLog attribute target",
@@ -62,7 +75,9 @@ namespace Unity.RerunSDK.SourceGenerators
             "RerunLog",
             DiagnosticSeverity.Error,
             true);
-
+        /// <summary>
+        /// Initializes the backend before messages are written.
+        /// </summary>
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             var candidates = context.SyntaxProvider.CreateSyntaxProvider(
@@ -434,7 +449,9 @@ namespace Unity.RerunSDK.SourceGenerators
             }
             return new string(chars);
         }
-
+        /// <summary>
+        /// Provides Unity Editor support for Candidate Result.
+        /// </summary>
         private sealed class CandidateResult
         {
             public CandidateResult(string ns, string className, string accessibility, string fullTypeName)

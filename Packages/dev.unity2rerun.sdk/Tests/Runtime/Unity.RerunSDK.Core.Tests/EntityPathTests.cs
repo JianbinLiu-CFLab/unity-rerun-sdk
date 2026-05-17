@@ -1,7 +1,15 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Entity Path Tests behavior for release and regression validation.
+
 // Entity path tests
 using Xunit;
 using Unity.RerunSDK.Core;
-
+/// <summary>
+/// Regression tests for Entity Path Tests.
+/// </summary>
 public class EntityPathTests
 {
     [Fact]

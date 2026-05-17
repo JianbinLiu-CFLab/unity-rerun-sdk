@@ -1,3 +1,9 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Phase9 Rrd Footer Tests behavior for release and regression validation.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +13,9 @@ using Unity.RerunSDK.IO.Rrd;
 using Unity.RerunSDK.Util;
 using Xunit;
 using RerunLogMsg = Rerun.LogMsg.V1Alpha1;
-
+/// <summary>
+/// Regression tests for Phase9 RRD Footer Tests.
+/// </summary>
 public class Phase9RrdFooterTests
 {
     private const int StreamHeaderSize = 12;

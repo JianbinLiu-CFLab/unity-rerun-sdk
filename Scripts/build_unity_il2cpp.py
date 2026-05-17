@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 # SPDX-License-Identifier: Apache-2.0
 #
+# Purpose: Run Unity batchmode IL2CPP build validation for the local project.
+
 # Unity2Rerun IL2CPP Standalone Player build script.
 # Usage: python Scripts/build_unity_il2cpp.py [--unity-path <path>] [--dry-run]
 

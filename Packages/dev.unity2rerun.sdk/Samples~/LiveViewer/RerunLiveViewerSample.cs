@@ -1,14 +1,21 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: Samples~/LiveViewer
+// Purpose: Provides the Rerun Live Viewer Sample Unity sample script for users importing the package.
+
 // Live Viewer sample: TextLog + Transform + Scalar with FileAndLive output.
 // Requires Rerun Viewer running on port 9876 or auto-launch enabled.
-// Requires Cysharp YetAnotherHttpHandler for HTTP/2 gRPC in Unity.
+// Requires Cysharp YetAnotherHttpHandler for HTTP/2 Grpc in Unity.
 
 using Unity.RerunSDK.Unity;
 using UnityEngine;
 
 namespace Unity.RerunSDK.Samples
 {
+    /// <summary>
+    /// Sample MonoBehaviour for Rerun Live Viewer Sample in Unity sample scene.
+    /// </summary>
     public class RerunLiveViewerSample : MonoBehaviour
     {
         private void Start()

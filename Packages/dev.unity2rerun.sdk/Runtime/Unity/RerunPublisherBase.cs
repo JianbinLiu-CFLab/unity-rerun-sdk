@@ -1,10 +1,17 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity
+// Purpose: Integrates managed Rerun logging with Unity runtime components.
 
 using Unity.RerunSDK.Core;
 using UnityEngine;
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Provides Rerun Publisher Base support for Unity2Rerun.
+    /// </summary>
     public abstract class RerunPublisherBase : MonoBehaviour
     {
         [SerializeField, Tooltip("Target RerunManager. Leave empty to auto-detect in the scene.")]

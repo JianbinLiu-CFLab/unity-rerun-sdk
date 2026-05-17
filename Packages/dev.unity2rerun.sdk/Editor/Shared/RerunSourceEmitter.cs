@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Editor/Shared
+// Purpose: Shares source-emission helpers between Roslyn and Unity Editor generation paths.
 
 using System;
 using System.Collections.Generic;
@@ -8,22 +12,32 @@ using Unity.RerunSDK.Core;
 
 namespace Unity.RerunSDK.Editor
 {
+    /// <summary>
+    /// Provides Unity Editor support for Rerun Source Emitter.
+    /// </summary>
     public static class RerunSourceEmitter
     {
+        /// <summary>
+        /// Provides Unity Editor support for Log Kind.
+        /// </summary>
         public enum LogKind
         {
             TextLog,
             Scalar,
             Transform3D,
         }
-
+        /// <summary>
+        /// Provides Unity Editor support for Member Kind.
+        /// </summary>
         public enum MemberKind
         {
             Field,
             Property,
             ThisTransform,
         }
-
+        /// <summary>
+        /// Provides Unity Editor support for Log Entry.
+        /// </summary>
         public sealed class LogEntry
         {
             public LogEntry(
@@ -52,7 +66,9 @@ namespace Unity.RerunSDK.Editor
             public float RateHz { get; }
             public string Level { get; }
         }
-
+        /// <summary>
+        /// Handles the EmitClass workflow for this component.
+        /// </summary>
         public static string EmitClass(
             string ns,
             string className,

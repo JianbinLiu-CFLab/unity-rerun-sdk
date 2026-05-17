@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Publishers
+// Purpose: Provides a Unity Inspector publisher component for Rerun visualization data.
 
 using System.Collections.Generic;
 using Unity.RerunSDK.Unity;
@@ -6,6 +10,9 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Unity.Publishers
 {
+    /// <summary>
+    /// Provides Rerun Points3D Publisher support for Unity2Rerun.
+    /// </summary>
     [AddComponentMenu("Rerun/Publishers/Rerun Points3D Publisher")]
     public class RerunPoints3DPublisher : RerunPublisherBase
     {

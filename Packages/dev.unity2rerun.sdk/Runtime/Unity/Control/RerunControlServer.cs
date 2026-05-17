@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Control
+// Purpose: Implements local loopback sidecar control for interactive Unity samples.
 
 #nullable disable
 
@@ -11,6 +15,9 @@ using System.Threading;
 
 namespace Unity.RerunSDK.Unity.Control
 {
+    /// <summary>
+    /// Provides Rerun Control Server support for Unity2Rerun.
+    /// </summary>
     public sealed class RerunControlServer : IDisposable
     {
         private readonly Func<RerunControlState> _stateProvider;
@@ -32,7 +39,9 @@ namespace Unity.RerunSDK.Unity.Control
         public bool IsRunning => _running;
 
         public event Action<string> Warning;
-
+        /// <summary>
+        /// Starts the component or service and prepares its runtime resources.
+        /// </summary>
         public void Start(int preferredPort = 18765)
         {
             if (_running)
@@ -58,7 +67,9 @@ namespace Unity.RerunSDK.Unity.Control
             };
             _thread.Start();
         }
-
+        /// <summary>
+        /// Stops the component or service and releases owned runtime resources.
+        /// </summary>
         public void Stop()
         {
             if (!_running)
@@ -82,7 +93,9 @@ namespace Unity.RerunSDK.Unity.Control
             Port = 0;
             ControlUrl = "";
         }
-
+        /// <summary>
+        /// Stops the component or service and releases owned runtime resources.
+        /// </summary>
         public void Dispose()
         {
             Stop();
@@ -259,7 +272,9 @@ namespace Unity.RerunSDK.Unity.Control
             stream.Write(headerBytes, 0, headerBytes.Length);
             stream.Write(bodyBytes, 0, bodyBytes.Length);
         }
-
+        /// <summary>
+        /// Handles the IsBenignClientDisconnect workflow for this component.
+        /// </summary>
         internal static bool IsBenignClientDisconnect(Exception ex)
         {
             if (ex == null)
@@ -285,6 +300,7 @@ namespace Unity.RerunSDK.Unity.Control
             return (value ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"");
         }
 
+        /// <summary>Embedded local control page served by the loopback sidecar endpoint.</summary>
         private const string HtmlPage = @"<!doctype html>
 <html>
 <head>

@@ -1,4 +1,10 @@
-// Pure C# tests for Phase 10 sidecar control contract.
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Sidecar Control Tests behavior for release and regression validation.
+
+// Pure C# tests for Phase10 sidecar control contract.
 
 using System;
 using System.IO;
@@ -8,7 +14,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.RerunSDK.Unity.Control;
 using Xunit;
-
+/// <summary>
+/// Regression tests for Sidecar Control Tests.
+/// </summary>
 public class SidecarControlTests
 {
     [Fact]

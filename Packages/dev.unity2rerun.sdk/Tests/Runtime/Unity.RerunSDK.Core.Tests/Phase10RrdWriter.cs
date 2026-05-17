@@ -1,10 +1,18 @@
-// Phase 10 RRD writer - interactive parity smoke including Points3D.
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Phase10 Rrd Writer behavior for release and regression validation.
+
+// Phase10 RRD writer - interactive parity smoke including Points3D.
 using System.Collections.Generic;
 using System.IO;
 using Unity.RerunSDK.Core;
 using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.IO.Rrd;
-
+/// <summary>
+/// Regression tests for Phase10 RRD Writer.
+/// </summary>
 public static class Phase10RrdWriter
 {
     public static void WritePhase10Rrd(string path)

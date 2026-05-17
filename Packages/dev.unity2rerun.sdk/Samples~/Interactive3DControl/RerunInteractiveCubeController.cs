@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Samples~/Interactive3DControl
+// Purpose: Provides the Rerun Interactive Cube Controller Unity sample script for users importing the package.
 
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
@@ -7,6 +11,9 @@ using UnityEngine.InputSystem;
 
 namespace Unity.RerunSDK.Samples
 {
+    /// <summary>
+    /// Sample MonoBehaviour for Rerun Interactive Cube Controller in Unity sample scene.
+    /// </summary>
     public class RerunInteractiveCubeController : MonoBehaviour
     {
         [SerializeField] private float _rotateSpeed = 3f;
@@ -58,7 +65,9 @@ namespace Unity.RerunSDK.Samples
             if (ReadResetPressed())
                 ResetPose();
         }
-
+        /// <summary>
+        /// Handles the ResetPose workflow for this component.
+        /// </summary>
         public void ResetPose()
         {
             transform.position = _initialPosition;

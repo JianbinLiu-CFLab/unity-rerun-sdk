@@ -1,4 +1,10 @@
-// Phase 8 schema tests for image and 3D archetypes.
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Phase8 Archetype Tests behavior for release and regression validation.
+
+// Phase8 schema tests for image and 3D archetypes.
 
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +15,9 @@ using Unity.RerunSDK.Core;
 using Unity.RerunSDK.Encoding;
 using Xunit;
 using RerunLogMsg = Rerun.LogMsg.V1Alpha1;
-
+/// <summary>
+/// Regression tests for Phase8 Archetype Tests.
+/// </summary>
 public class Phase8ArchetypeTests
 {
     private static readonly List<RerunTimelineEntry> DefTl = new() {

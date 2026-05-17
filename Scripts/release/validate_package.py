@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Purpose: Validate release-facing Unity package structure and sample hygiene.
+
 """Release hygiene checks for the Unity2Rerun UPM package.
 
 This script is intentionally conservative: it checks public package metadata,

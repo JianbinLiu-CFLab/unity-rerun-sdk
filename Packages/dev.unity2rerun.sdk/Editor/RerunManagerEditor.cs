@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Editor
+// Purpose: Provides Unity Editor Inspector and build-time tooling for Unity2Rerun.
 
 using System;
 using System.IO;
@@ -9,14 +13,22 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Editor
 {
+    /// <summary>
+    /// Provides Unity Editor support for Rerun Manager Editor.
+    /// </summary>
     [CustomEditor(typeof(RerunManager))]
     public class RerunManagerEditor : UnityEditor.Editor
     {
+        /// <summary>
+        /// Requests repainting while Play Mode status values are changing.
+        /// </summary>
         public override bool RequiresConstantRepaint()
         {
             return Application.isPlaying;
         }
-
+        /// <summary>
+        /// Draws the custom Unity Inspector for the selected component.
+        /// </summary>
         public override void OnInspectorGUI()
         {
             var mgr = (RerunManager)target;

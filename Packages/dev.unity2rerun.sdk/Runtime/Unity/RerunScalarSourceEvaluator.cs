@@ -1,11 +1,18 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: Runtime/Unity
+// Purpose: Integrates managed Rerun logging with Unity runtime components.
+
 // Pure C# scalar source evaluator, testable without UnityEngine.
 
 using System;
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Provides Rerun Scalar Source Evaluator support for Unity2Rerun.
+    /// </summary>
     internal static class RerunScalarSourceEvaluator
     {
         /// Evaluate a scalar source and return the computed double value.
@@ -31,7 +38,9 @@ namespace Unity.RerunSDK.Unity
                 _ => constantValue,
             };
         }
-
+        /// <summary>
+        /// Handles the IsTransformSource workflow for this component.
+        /// </summary>
         public static bool IsTransformSource(RerunScalarSource source)
         {
             switch (source)

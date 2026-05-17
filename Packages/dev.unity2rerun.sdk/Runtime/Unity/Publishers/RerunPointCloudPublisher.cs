@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Publishers
+// Purpose: Provides a Unity Inspector publisher component for Rerun visualization data.
 
 using System.Collections.Generic;
 using Unity.RerunSDK.Unity;
@@ -6,9 +10,13 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Unity.Publishers
 {
+    /// <summary>
+    /// Provides Rerun Point Cloud Publisher support for Unity2Rerun.
+    /// </summary>
     [AddComponentMenu("Rerun/Publishers/Rerun Point Cloud Publisher")]
     public class RerunPointCloudPublisher : RerunPublisherBase
     {
+        /// <summary>Default entity path used for transform-derived point clouds.</summary>
         private const string DefaultPointCloudEntityPath = "world/point_cloud";
 
         [SerializeField, Tooltip("Transforms to publish as point positions.")]
@@ -27,7 +35,9 @@ namespace Unity.RerunSDK.Unity.Publishers
         private readonly List<Color> _colors = new();
         private readonly List<float> _radii = new();
         private bool _hasExplicitFrame;
-
+        /// <summary>
+        /// Sets runtime input used by subsequent publishing.
+        /// </summary>
         public void SetFrame(RerunPointCloudFrame frame)
         {
             _positions.Clear();
@@ -48,7 +58,9 @@ namespace Unity.RerunSDK.Unity.Publishers
             }
             _hasExplicitFrame = true;
         }
-
+        /// <summary>
+        /// Clears runtime input so the default publishing path is used again.
+        /// </summary>
         public void ClearFrame()
         {
             _positions.Clear();

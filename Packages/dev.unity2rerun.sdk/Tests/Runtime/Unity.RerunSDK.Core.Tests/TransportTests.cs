@@ -1,4 +1,10 @@
-// Transport layer unit tests — endpoint parsing, message identity, composite isolation
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Transport Tests behavior for release and regression validation.
+
+// Transport layer unit tests - endpoint parsing, message identity, composite isolation
 using System;
 using System.Net;
 using System.Net.Http;
@@ -13,10 +19,12 @@ using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.Transport;
 using Unity.RerunSDK.Transport.Grpc;
 using Xunit;
-
+/// <summary>
+/// Regression tests for Transport Tests.
+/// </summary>
 public class TransportTests
 {
-    // ── Endpoint parsing ──
+    // -- Endpoint parsing --
 
     [Fact]
     public void Default_endpoint_parses_correctly()
@@ -48,7 +56,7 @@ public class TransportTests
         Assert.Throws<ArgumentException>(() => RerunGrpcEndpoint.Parse("rerun+http://host/proxy"));
     }
 
-    // ── EncodedRerunMessage identity ──
+    // -- EncodedRerunMessage identity --
 
     [Fact]
     public void StoreInfo_message_has_Istrue_fields()
@@ -208,7 +216,7 @@ public class TransportTests
         Assert.NotNull(method);
 
         var ex = new RpcException(new Status(StatusCode.Internal,
-            "Bad gRPC response. Response protocol downgraded to HTTP/1.1."));
+            "Bad Grpc response. Response protocol downgraded to HTTP/1.1."));
 
         Assert.False((bool)method.Invoke(null, new object[] { ex })!);
     }
@@ -217,7 +225,7 @@ public class TransportTests
     public void Viewer_probe_accepts_tcp_listener()
     {
         // Probe is now TCP-only: any open port is considered "listening".
-        // The actual gRPC handshake is deferred to RerunGrpcClient background reconnect.
+        // The actual Grpc handshake is deferred to RerunGrpcClient background reconnect.
         var listener = new TcpListener(IPAddress.Loopback, 0);
         listener.Start();
         try
@@ -257,8 +265,10 @@ public class TransportTests
                 isStoreInfo: false, isStatic: false)));
     }
 
-    // ── test doubles ──
-
+    // -- test doubles --
+    /// <summary>
+    /// Regression tests for Counting Backend.
+    /// </summary>
     private class CountingBackend : IRerunBackend
     {
         public int WriteCount;
@@ -267,7 +277,9 @@ public class TransportTests
         public void Flush() { }
         public void Shutdown() { }
     }
-
+    /// <summary>
+    /// Regression tests for Throwing Backend.
+    /// </summary>
     private class ThrowingBackend : IRerunBackend
     {
         public void Initialize(RerunRuntime rt) => throw new InvalidOperationException("boom");
@@ -328,6 +340,9 @@ public class TransportTests
 
 namespace Cysharp.Net.Http
 {
+    /// <summary>
+    /// Regression tests for Yet Another Http Handler.
+    /// </summary>
     public sealed class YetAnotherHttpHandler : HttpMessageHandler
     {
         public bool? Http2Only { get; set; }

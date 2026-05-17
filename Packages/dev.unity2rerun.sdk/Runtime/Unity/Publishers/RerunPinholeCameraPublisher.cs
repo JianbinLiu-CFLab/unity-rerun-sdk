@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Publishers
+// Purpose: Provides a Unity Inspector publisher component for Rerun visualization data.
 
 using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.Unity;
@@ -6,9 +10,13 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Unity.Publishers
 {
+    /// <summary>
+    /// Provides Rerun Pinhole Camera Publisher support for Unity2Rerun.
+    /// </summary>
     [AddComponentMenu("Rerun/Publishers/Rerun Pinhole Camera Publisher")]
     public class RerunPinholeCameraPublisher : RerunPublisherBase
     {
+        /// <summary>Default entity path for static pinhole camera calibration data.</summary>
         private const string DefaultCameraEntityPath = "world/camera";
 
         [SerializeField, Tooltip("Camera to describe. Leave empty to use Camera.main.")]
@@ -51,7 +59,9 @@ namespace Unity.RerunSDK.Unity.Publishers
             get => _height;
             set => _height = Mathf.Max(1, value);
         }
-
+        /// <summary>
+        /// Handles the RepublishPinhole workflow for this component.
+        /// </summary>
         public void RepublishPinhole()
         {
             _pinholePublished = false;

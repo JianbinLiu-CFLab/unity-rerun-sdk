@@ -1,3 +1,9 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Rrd Smoke Tests behavior for release and regression validation.
+
 // RRD smoke tests with Arrow schema-level validation.
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +15,9 @@ using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.IO.Rrd;
 using Xunit;
 using RerunLogMsg = Rerun.LogMsg.V1Alpha1;
-
+/// <summary>
+/// Regression tests for RRD Smoke Tests.
+/// </summary>
 public class RrdSmokeTests
 {
     private static readonly List<RerunTimelineEntry> DefTl = new() {
@@ -127,7 +135,7 @@ public class RrdSmokeTests
     }
 
     [Fact]
-    public void Tuid_ids_are_unique_across_calls()
+    public void TUID_ids_are_unique_across_calls()
     {
         var ids = new HashSet<string>();
         var encoder = new ManagedRerunEncoder();
@@ -141,7 +149,7 @@ public class RrdSmokeTests
         }
     }
 
-    // ── helpers ──
+    // -- helpers --
 
     private delegate EncodedRerunMessage EncFn(ManagedRerunEncoder enc);
 

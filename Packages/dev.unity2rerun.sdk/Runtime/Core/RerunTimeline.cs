@@ -1,9 +1,16 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Core
+// Purpose: Defines core Rerun runtime concepts shared by encoding, transport, and Unity layers.
 
 using System.Collections.Generic;
 
 namespace Unity.RerunSDK.Core
 {
+    /// <summary>
+    /// Carries Rerun Timeline data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public readonly struct RerunTimeline
     {
         public string Name { get; }
@@ -17,9 +24,14 @@ namespace Unity.RerunSDK.Core
         }
 
         public static implicit operator RerunTimeline(string name) => new(name);
+        /// <summary>
+        /// Handles the ToString workflow for this component.
+        /// </summary>
         public override string ToString() => Name;
     }
-
+    /// <summary>
+    /// Enumerates supported Rerun Timeline Kind values.
+    /// </summary>
     public enum RerunTimelineKind
     {
         Sequence,
@@ -34,17 +46,23 @@ namespace Unity.RerunSDK.Core
             = new();
 
         private long _logTick;
-
+        /// <summary>
+        /// Sets runtime input used by subsequent publishing.
+        /// </summary>
         internal void Set(string name, long value, RerunTimelineKind kind)
         {
             _timelines[name] = (value, kind);
         }
-
+        /// <summary>
+        /// Sets runtime input used by subsequent publishing.
+        /// </summary>
         internal void SetLogTick(long tick)
         {
             _logTick = tick;
         }
-
+        /// <summary>
+        /// Returns the current runtime value or snapshot.
+        /// </summary>
         public long GetLogTick() => _logTick;
 
         public IEnumerable<(string Name, long Value, RerunTimelineKind Kind)> All()

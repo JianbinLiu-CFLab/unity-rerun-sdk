@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
 
 #nullable enable
 
@@ -6,7 +10,7 @@ namespace Unity.RerunSDK.Encoding
 {
     /// Transport envelope for a single Rerun message.
     /// Carries both the RRD inner payload (for .rrd file writing)
-    /// and the gRPC outer LogMsg oneof (for live transport).
+    /// and the Grpc outer LogMsg oneof (for live transport).
     internal readonly struct EncodedRerunMessage
     {
         /// RRD message kind: SetStoreInfo=1, ArrowMsg=2.
@@ -15,7 +19,7 @@ namespace Unity.RerunSDK.Encoding
         /// Protobuf-encoded inner message payload for RRD stream writing.
         public byte[] RrdPayload { get; }
 
-        /// Protobuf-encoded outer LogMsg oneof payload for gRPC WriteMessagesRequest.
+        /// Protobuf-encoded outer LogMsg oneof payload for Grpc WriteMessagesRequest.
         public byte[] GrpcLogMsgBytes { get; }
 
         /// Whether this message is a SetStoreInfo (needed for reconnect cache).

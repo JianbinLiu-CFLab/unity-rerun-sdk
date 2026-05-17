@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
 
 #nullable enable
 
@@ -9,6 +13,9 @@ using Unity.RerunSDK.Core;
 
 namespace Unity.RerunSDK.Encoding
 {
+    /// <summary>
+    /// Provides RRD Manifest Chunk Info support for Unity2Rerun.
+    /// </summary>
     internal sealed class RrdManifestChunkInfo
     {
         public string RecordingId { get; }
@@ -45,7 +52,9 @@ namespace Unity.RerunSDK.Encoding
             Timelines = timelines;
             Components = components;
         }
-
+        /// <summary>
+        /// Handles the FromSchema workflow for this component.
+        /// </summary>
         public static RrdManifestChunkInfo FromSchema(
             string recordingId,
             string applicationId,
@@ -113,7 +122,9 @@ namespace Unity.RerunSDK.Encoding
                 components);
         }
     }
-
+    /// <summary>
+    /// Carries RRD Manifest Timeline Info data across Unity2Rerun runtime boundaries.
+    /// </summary>
     internal readonly struct RrdManifestTimelineInfo
     {
         public string Name { get; }
@@ -129,7 +140,9 @@ namespace Unity.RerunSDK.Encoding
             DataType = dataType;
         }
     }
-
+    /// <summary>
+    /// Carries RRD Manifest Component Info data across Unity2Rerun runtime boundaries.
+    /// </summary>
     internal readonly struct RrdManifestComponentInfo
     {
         public string Archetype { get; }

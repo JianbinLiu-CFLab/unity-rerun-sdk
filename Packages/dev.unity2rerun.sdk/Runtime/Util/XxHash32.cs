@@ -1,5 +1,9 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: Runtime/Util
+// Purpose: Provides low-level utility code used by managed Rerun encoding.
+
 // Minimal xxHash32 matching Rust's xxhash_rust::xxh32.
 // CRC seed 7850921 = "RERUN" in base-26 (A=0..Z=25).
 
@@ -7,14 +11,20 @@ using System;
 
 namespace Unity.RerunSDK.Util
 {
+    /// <summary>
+    /// Implements the xxHash32 checksum used by Rerun footer and manifest validation.
+    /// </summary>
     public static class XxHash32
     {
+        // xxHash32 prime constants from the canonical algorithm definition.
         private const uint Prime1 = 2654435761u;
         private const uint Prime2 = 2246822519u;
         private const uint Prime3 = 3266489917u;
         private const uint Prime4 = 668265263u;
         private const uint Prime5 = 374761393u;
-
+        /// <summary>
+        /// Computes the xxHash32 checksum for the provided byte buffer.
+        /// </summary>
         public static uint Compute(byte[] data, uint seed)
         {
             int len = data.Length;

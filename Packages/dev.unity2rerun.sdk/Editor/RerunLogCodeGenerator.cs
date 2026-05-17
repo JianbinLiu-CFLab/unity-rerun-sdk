@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Editor
+// Purpose: Provides Unity Editor Inspector and build-time tooling for Unity2Rerun.
 
 using System;
 using System.Collections.Generic;
@@ -11,16 +15,23 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Editor
 {
+    /// <summary>
+    /// Provides Unity Editor support for Rerun Log Code Generator.
+    /// </summary>
     public static class RerunLogCodeGenerator
     {
         private const string OutputDir = "Assets/Scripts/Generated/RerunLog";
-
+        /// <summary>
+        /// Handles the GenerateSourceFiles workflow for this component.
+        /// </summary>
         public static List<string> GenerateSourceFiles()
         {
             var byType = CollectRerunLogTypes();
             return GenerateSourceFiles(byType, out _);
         }
-
+        /// <summary>
+        /// Handles the GenerateSourceFiles workflow for this component.
+        /// </summary>
         public static List<string> GenerateSourceFiles(
             Dictionary<Type, List<RerunSourceEmitter.LogEntry>> byType,
             out bool wroteAnyFiles)
@@ -90,7 +101,9 @@ namespace Unity.RerunSDK.Editor
 
             return result;
         }
-
+        /// <summary>
+        /// Handles the EmitLinkXml workflow for this component.
+        /// </summary>
         public static string EmitLinkXml(IEnumerable<Type> types)
         {
             var sb = new StringBuilder();
