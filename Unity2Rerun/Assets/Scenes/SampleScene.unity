@@ -432,6 +432,50 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &464378829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 464378831}
+  - component: {fileID: 464378830}
+  m_Layer: 0
+  m_Name: GeneratedRerunLogProbe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &464378830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464378829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe1672b765bf6840b6207028ad0a5af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GeneratedRerunLogProbe
+--- !u!4 &464378831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464378829}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &775325509
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,7 +507,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RerunSDK::Unity.RerunSDK.Unity.RerunManager
   _applicationId: unity_app
   _outputMode: 2
-  _outputPath: ../build/RRD/phase8_rerunlog_{TIMESTAMP}.rrd
+  _outputPath: ../build/RRD/phase12_rerunlog_{TIMESTAMP}.rrd
   _recordOnStart: 1
   _runInBackground: 1
   _writeViewCoordinates: 1
@@ -738,3 +782,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 775325512}
   - {fileID: 2143498620}
+  - {fileID: 464378831}
