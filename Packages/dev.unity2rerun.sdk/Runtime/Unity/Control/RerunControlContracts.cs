@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Control
+// Purpose: Implements local loopback sidecar control for interactive Unity samples.
 
 #nullable disable
 
@@ -8,6 +12,9 @@ using System.Text;
 
 namespace Unity.RerunSDK.Unity.Control
 {
+    /// <summary>
+    /// Enumerates supported Rerun Control Command Type values.
+    /// </summary>
     public enum RerunControlCommandType
     {
         SetPose,
@@ -15,9 +22,14 @@ namespace Unity.RerunSDK.Unity.Control
         SetColor,
         ResetPose
     }
-
+    /// <summary>
+    /// Provides Rerun Control Command Names support for Unity2Rerun.
+    /// </summary>
     public static class RerunControlCommandNames
     {
+        /// <summary>
+        /// Handles the ToWireName workflow for this component.
+        /// </summary>
         public static string ToWireName(RerunControlCommandType type)
         {
             switch (type)
@@ -35,7 +47,9 @@ namespace Unity.RerunSDK.Unity.Control
             }
         }
     }
-
+    /// <summary>
+    /// Carries Rerun Control Command Result data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public readonly struct RerunControlCommandResult
     {
         private RerunControlCommandResult(bool isSuccess, string message)
@@ -46,14 +60,20 @@ namespace Unity.RerunSDK.Unity.Control
 
         public bool IsSuccess { get; }
         public string Message { get; }
-
+        /// <summary>
+        /// Handles the Success workflow for this component.
+        /// </summary>
         public static RerunControlCommandResult Success(string message = "") =>
             new RerunControlCommandResult(true, message);
-
+        /// <summary>
+        /// Handles the Failure workflow for this component.
+        /// </summary>
         public static RerunControlCommandResult Failure(string message) =>
             new RerunControlCommandResult(false, message);
     }
-
+    /// <summary>
+    /// Carries Rerun Control Vector3 data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public readonly struct RerunControlVector3
     {
         public RerunControlVector3(float x, float y, float z)
@@ -67,7 +87,9 @@ namespace Unity.RerunSDK.Unity.Control
         public float Y { get; }
         public float Z { get; }
     }
-
+    /// <summary>
+    /// Carries Rerun Control Color data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public readonly struct RerunControlColor
     {
         public RerunControlColor(float r, float g, float b, float a)
@@ -83,7 +105,9 @@ namespace Unity.RerunSDK.Unity.Control
         public float B { get; }
         public float A { get; }
     }
-
+    /// <summary>
+    /// Carries Rerun Control Command data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public struct RerunControlCommand
     {
         public RerunControlCommandType Type { get; private set; }
@@ -95,7 +119,9 @@ namespace Unity.RerunSDK.Unity.Control
         public bool HasScale { get; private set; }
         public RerunControlColor Color { get; private set; }
         public bool HasColor { get; private set; }
-
+        /// <summary>
+        /// Parses the external representation into the SDK model.
+        /// </summary>
         public static bool TryParseJson(string json, out RerunControlCommand command, out string error)
         {
             command = default;
@@ -286,7 +312,9 @@ namespace Unity.RerunSDK.Unity.Control
             return json.Substring(start, end - start).Trim();
         }
     }
-
+    /// <summary>
+    /// Carries Rerun Control State data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public struct RerunControlState
     {
         public RerunControlVector3 Position { get; set; }
@@ -296,7 +324,9 @@ namespace Unity.RerunSDK.Unity.Control
         public int CommandCount { get; set; }
         public string LastCommand { get; set; }
         public string ControlUrl { get; set; }
-
+        /// <summary>
+        /// Handles the ToJson workflow for this component.
+        /// </summary>
         public string ToJson()
         {
             var sb = new StringBuilder(256);

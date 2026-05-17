@@ -1,9 +1,16 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Transport
+// Purpose: Coordinates Rerun live/file transport state and backend fan-out.
 
 using Unity.RerunSDK.Core;
 
 namespace Unity.RerunSDK.Transport
 {
+    /// <summary>
+    /// Carries Rerun Transport Stats Snapshot data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public readonly struct RerunTransportStatsSnapshot
     {
         public bool Supported { get; }

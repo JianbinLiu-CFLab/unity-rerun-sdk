@@ -1,13 +1,29 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
 
 using System;
 
 namespace Unity.RerunSDK.Encoding
 {
+    /// <summary>
+    /// Carries Rerun Pinhole data across Unity2Rerun runtime boundaries.
+    /// </summary>
     public readonly partial struct RerunPinhole
     {
+        /// <summary>
+        /// Rerun ViewCoordinates code for the camera-space right axis.
+        /// </summary>
         public const byte CameraXyzRight = 3;
+        /// <summary>
+        /// Rerun ViewCoordinates code for the camera-space down axis.
+        /// </summary>
         public const byte CameraXyzDown = 2;
+        /// <summary>
+        /// Rerun ViewCoordinates code for the camera-space forward axis.
+        /// </summary>
         public const byte CameraXyzForward = 5;
 
         public RerunPinhole(
@@ -41,7 +57,9 @@ namespace Unity.RerunSDK.Encoding
         public float ImagePlaneDistance { get; }
         public uint ColorRgba { get; }
         public float LineWidth { get; }
-
+        /// <summary>
+        /// Handles the FromVerticalFov workflow for this component.
+        /// </summary>
         public static RerunPinhole FromVerticalFov(
             int width,
             int height,

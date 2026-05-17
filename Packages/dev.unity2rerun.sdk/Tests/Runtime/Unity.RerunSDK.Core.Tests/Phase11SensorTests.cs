@@ -1,3 +1,9 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Phase11 Sensor Tests behavior for release and regression validation.
+
 using System;
 using System.IO;
 using Apache.Arrow;
@@ -6,7 +12,9 @@ using Apache.Arrow.Types;
 using Unity.RerunSDK.Encoding;
 using Xunit;
 using RerunLogMsg = Rerun.LogMsg.V1Alpha1;
-
+/// <summary>
+/// Regression tests for Phase11 Sensor Tests.
+/// </summary>
 public class Phase11SensorTests
 {
     [Fact]

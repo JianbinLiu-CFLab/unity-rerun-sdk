@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Editor
+// Purpose: Provides Unity Editor Inspector and build-time tooling for Unity2Rerun.
 
 using System;
 using System.IO;
@@ -9,10 +13,15 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Editor
 {
+    /// <summary>
+    /// Provides Unity Editor support for Rerun Log Build Preprocess.
+    /// </summary>
     public sealed class RerunLogBuildPreprocess : IPreprocessBuildWithReport
     {
         public int callbackOrder => -90;
-
+        /// <summary>
+        /// Handles the OnPreprocessBuild workflow for this component.
+        /// </summary>
         public void OnPreprocessBuild(BuildReport report)
         {
             Debug.Log("[RerunLogBuildPreprocess] Generating RerunLog Player fallback sources...");

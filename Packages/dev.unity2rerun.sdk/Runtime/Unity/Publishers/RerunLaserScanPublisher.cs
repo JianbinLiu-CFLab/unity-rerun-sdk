@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Publishers
+// Purpose: Provides a Unity Inspector publisher component for Rerun visualization data.
 
 using System.Collections.Generic;
 using Unity.RerunSDK.Encoding;
@@ -7,9 +11,13 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Unity.Publishers
 {
+    /// <summary>
+    /// Provides Rerun Laser Scan Publisher support for Unity2Rerun.
+    /// </summary>
     [AddComponentMenu("Rerun/Publishers/Rerun Laser Scan Publisher")]
     public class RerunLaserScanPublisher : RerunPublisherBase
     {
+        /// <summary>Default entity path for synthetic laser scan demo data.</summary>
         private const string DefaultLaserScanEntityPath = "world/laser_scan";
 
         [SerializeField, Tooltip("Number of scan beams for the synthetic demo scan.")]
@@ -50,7 +58,9 @@ namespace Unity.RerunSDK.Unity.Publishers
         private readonly List<Color> _colors = new();
         private readonly List<float> _radii = new();
         private bool _hasExternalRanges;
-
+        /// <summary>
+        /// Sets runtime input used by subsequent publishing.
+        /// </summary>
         public void SetRanges(IReadOnlyList<float> ranges)
         {
             _ranges.Clear();
@@ -64,7 +74,9 @@ namespace Unity.RerunSDK.Unity.Publishers
                 _ranges.Add(ranges[i]);
             _hasExternalRanges = true;
         }
-
+        /// <summary>
+        /// Clears runtime input so the default publishing path is used again.
+        /// </summary>
         public void ClearRanges()
         {
             _ranges.Clear();

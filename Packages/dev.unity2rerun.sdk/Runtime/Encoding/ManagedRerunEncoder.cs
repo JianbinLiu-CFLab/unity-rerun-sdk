@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
 
 using System;
 using System.Collections.Generic;
@@ -7,8 +11,14 @@ using static Unity.RerunSDK.IO.Rrd.RrdConstants;
 
 namespace Unity.RerunSDK.Encoding
 {
+    /// <summary>
+    /// Provides Managed Rerun Encoder support for Unity2Rerun.
+    /// </summary>
     internal class ManagedRerunEncoder : IRerunEncoder
     {
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeSetStoreInfoMessage(string recordingId, string applicationId)
         {
             var nowNs = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() * 1_000_000;
@@ -19,7 +29,9 @@ namespace Unity.RerunSDK.Encoding
                 MsgKindSetStoreInfo, rrdPayload, grpcPayload,
                 isStoreInfo: true, isStatic: false);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeTextLogMessage(
             string recordingId, string applicationId,
             string entityPath, string text, string level,
@@ -44,7 +56,9 @@ namespace Unity.RerunSDK.Encoding
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
                 isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeScalarMessage(
             string recordingId, string applicationId,
             string entityPath, double value,
@@ -69,7 +83,9 @@ namespace Unity.RerunSDK.Encoding
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
                 isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeTransform3DMessage(
             string recordingId, string applicationId,
             string entityPath,
@@ -97,7 +113,9 @@ namespace Unity.RerunSDK.Encoding
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
                 isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeViewCoordinatesMessage(
             string recordingId, string applicationId,
             string entityPath, byte x, byte y, byte z)
@@ -122,7 +140,9 @@ namespace Unity.RerunSDK.Encoding
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
                 isStoreInfo: false, isStatic: true, manifestChunkInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodePinholeMessage(
             string recordingId, string applicationId,
             string entityPath, RerunPinhole pinhole)
@@ -139,7 +159,9 @@ namespace Unity.RerunSDK.Encoding
             return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
                 isStatic: true, manifestInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeEncodedImageMessage(
             string recordingId, string applicationId,
             string entityPath, byte[] encodedBytes, string mediaType,
@@ -157,7 +179,9 @@ namespace Unity.RerunSDK.Encoding
             return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
                 isStatic: false, manifestInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeBoxes3DMessage(
             string recordingId, string applicationId,
             string entityPath, IReadOnlyList<RerunBox3D> boxes,
@@ -175,7 +199,9 @@ namespace Unity.RerunSDK.Encoding
             return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
                 isStatic: false, manifestInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodeLineStrips3DMessage(
             string recordingId, string applicationId,
             string entityPath, IReadOnlyList<RerunLineStrip3D> strips,
@@ -193,7 +219,9 @@ namespace Unity.RerunSDK.Encoding
             return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
                 isStatic: false, manifestInfo: manifestInfo);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public EncodedRerunMessage EncodePoints3DMessage(
             string recordingId, string applicationId,
             string entityPath, IReadOnlyList<RerunPoint3D> points,

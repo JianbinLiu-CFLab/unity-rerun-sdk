@@ -1,11 +1,19 @@
-// Phase 3 RRD writer â€” TextLog + Scalars + Transform3D + ViewCoordinates smoke.
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Phase3 Rrd Writer behavior for release and regression validation.
+
+// Phase3 RRD writer â€?TextLog + Scalars + Transform3D + ViewCoordinates smoke.
 using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.RerunSDK.Core;
 using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.IO.Rrd;
-
+/// <summary>
+/// Regression tests for Phase3 RRD Writer.
+/// </summary>
 public static class Phase3RrdWriter
 {
     public static void WritePhase3Rrd(string path)
@@ -37,7 +45,7 @@ public static class Phase3RrdWriter
             if (i % 20 == 0)
             {
                 WriteMsg(encoder.EncodeTextLogMessage(recordingId, appId, "logs/unity",
-                    $"Frame {i}: hello from Phase 3", "INFO", timelines));
+                    $"Frame {i}: hello from Phase3", "INFO", timelines));
             }
 
             WriteMsg(encoder.EncodeScalarMessage(recordingId, appId, "metrics/fps",

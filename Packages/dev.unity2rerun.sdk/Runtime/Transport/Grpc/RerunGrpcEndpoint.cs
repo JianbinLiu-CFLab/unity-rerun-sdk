@@ -1,10 +1,14 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Transport/Grpc
+// Purpose: Streams encoded Rerun messages to a live Rerun Viewer over Grpc.
 
 using System;
 
 namespace Unity.RerunSDK.Transport.Grpc
 {
-    /// Parsed Rerun gRPC endpoint: "rerun+http://host:port/proxy"
+    /// Parsed Rerun Grpc endpoint: "rerun+http://host:port/proxy"
     internal readonly struct RerunGrpcEndpoint
     {
         public string Host { get; }
@@ -19,13 +23,15 @@ namespace Unity.RerunSDK.Transport.Grpc
             Port = port;
             GrpcAddress = grpcAddress;
         }
-
+        /// <summary>
+        /// Parses the external representation into the SDK model.
+        /// </summary>
         public static RerunGrpcEndpoint Parse(string uri)
         {
             // Expect "rerun+http://host:port/proxy" or "rerun+https://host:port/proxy"
             var prefix = uri.StartsWith("rerun+https://") ? "rerun+https://" : "rerun+http://";
             if (!uri.StartsWith(prefix))
-                throw new ArgumentException($"Unsupported gRPC endpoint scheme: {uri}");
+                throw new ArgumentException($"Unsupported Grpc endpoint scheme: {uri}");
 
             var rest = uri[prefix.Length..];
             var pathIdx = rest.IndexOf('/');

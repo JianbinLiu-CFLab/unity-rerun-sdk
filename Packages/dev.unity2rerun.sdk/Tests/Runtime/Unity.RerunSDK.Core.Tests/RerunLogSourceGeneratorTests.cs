@@ -1,10 +1,18 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Rerun Log Source Generator Tests behavior for release and regression validation.
+
 using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Unity.RerunSDK.SourceGenerators;
 using Xunit;
-
+/// <summary>
+/// Regression tests for Rerun Log Source Generator Tests.
+/// </summary>
 public class RerunLogSourceGeneratorTests
 {
     [Fact]
@@ -13,8 +21,13 @@ public class RerunLogSourceGeneratorTests
         var source = TestStubs + @"
 namespace Game.Debug
 {
+    /// <summary>
+    /// Regression tests for Base Player.
+    /// </summary>
     public class BasePlayer : UnityEngine.MonoBehaviour {}
-
+    /// <summary>
+    /// Regression tests for Player Debug.
+    /// </summary>
     public partial class PlayerDebug : BasePlayer
     {
         [Unity.RerunSDK.Unity.RerunLog(""logs/status"", RateHz = 1f)]
@@ -42,6 +55,9 @@ namespace Game.Debug
     public void Generator_reports_clear_diagnostic_for_non_partial_type()
     {
         var source = TestStubs + @"
+/// <summary>
+/// Regression tests for Bad Debug.
+/// </summary>
 public class BadDebug : UnityEngine.MonoBehaviour
 {
     [Unity.RerunSDK.Unity.RerunLog(""logs/status"")]
@@ -57,6 +73,9 @@ public class BadDebug : UnityEngine.MonoBehaviour
     public void Generator_allows_user_lifecycle_methods()
     {
         var source = TestStubs + @"
+/// <summary>
+/// Regression tests for Lifecycle Debug.
+/// </summary>
 public partial class LifecycleDebug : UnityEngine.MonoBehaviour
 {
     [Unity.RerunSDK.Unity.RerunLog(""logs/status"")]
@@ -107,14 +126,26 @@ public partial class LifecycleDebug : UnityEngine.MonoBehaviour
     private const string TestStubs = @"
 namespace UnityEngine
 {
+    /// <summary>
+    /// Regression tests for Mono Behaviour.
+    /// </summary>
     public class MonoBehaviour { public Transform transform; }
+    /// <summary>
+    /// Regression tests for Transform.
+    /// </summary>
     public class Transform {}
+    /// <summary>
+    /// Regression tests for Game Object.
+    /// </summary>
     public class GameObject { public Transform transform; }
     namespace Scripting { public sealed class PreserveAttribute : System.Attribute {} }
 }
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Regression tests for Rerun Log Attribute.
+    /// </summary>
     public sealed class RerunLogAttribute : System.Attribute
     {
         public RerunLogAttribute(string entityPath) { EntityPath = entityPath; }
@@ -122,32 +153,47 @@ namespace Unity.RerunSDK.Unity
         public float RateHz { get; set; } = 10f;
         public string Level { get; set; } = ""INFO"";
     }
-
+    /// <summary>
+    /// Regression tests for Rerun Scalar Attribute.
+    /// </summary>
     public sealed class RerunScalarAttribute : System.Attribute
     {
         public RerunScalarAttribute(string entityPath) { EntityPath = entityPath; }
         public string EntityPath { get; }
         public float RateHz { get; set; } = 10f;
     }
-
+    /// <summary>
+    /// Regression tests for Rerun Transform Attribute.
+    /// </summary>
     public sealed class RerunTransformAttribute : System.Attribute
     {
         public RerunTransformAttribute(string entityPath) { EntityPath = entityPath; }
         public string EntityPath { get; }
         public float RateHz { get; set; } = 10f;
     }
-
+    /// <summary>
+    /// Regression tests for Rerun Generated Log Kind.
+    /// </summary>
     public enum RerunGeneratedLogKind { TextLog, Scalar, Transform3D }
+    /// <summary>
+    /// Regression tests for Rerun Generated Log Entry.
+    /// </summary>
     public readonly struct RerunGeneratedLogEntry
     {
         public RerunGeneratedLogEntry(string entityPath, RerunGeneratedLogKind kind, float rateHz, string level = ""INFO"") {}
     }
+    /// <summary>
+    /// Regression tests for IRerun Generated Log Source.
+    /// </summary>
     public interface IRerunGeneratedLogSource
     {
         int RerunLog_EntryCount { get; }
         RerunGeneratedLogEntry RerunLog_GetEntry(int index);
         void RerunLog_Publish(int index, RerunManager manager);
     }
+    /// <summary>
+    /// Regression tests for Rerun Manager.
+    /// </summary>
     public class RerunManager
     {
         public static void RegisterGeneratedLogSource(IRerunGeneratedLogSource source) {}

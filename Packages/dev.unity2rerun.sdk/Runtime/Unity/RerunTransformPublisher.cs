@@ -1,9 +1,16 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity
+// Purpose: Integrates managed Rerun logging with Unity runtime components.
 
 using UnityEngine;
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Provides Rerun Transform Publisher support for Unity2Rerun.
+    /// </summary>
     [AddComponentMenu("Rerun/Publishers/Rerun Transform Publisher")]
     public class RerunTransformPublisher : RerunPublisherBase
     {

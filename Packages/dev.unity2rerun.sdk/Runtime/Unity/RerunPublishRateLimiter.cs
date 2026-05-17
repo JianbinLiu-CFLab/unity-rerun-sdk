@@ -1,9 +1,16 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: Runtime/Unity
+// Purpose: Integrates managed Rerun logging with Unity runtime components.
+
 // Pure C# rate limiter, testable without UnityEngine.
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Provides Rerun Publish Rate Limiter support for Unity2Rerun.
+    /// </summary>
     internal class RerunPublishRateLimiter
     {
         private double _lastPublishTime = double.MinValue;
@@ -23,7 +30,9 @@ namespace Unity.RerunSDK.Unity
             }
             return false;
         }
-
+        /// <summary>
+        /// Handles the Reset workflow for this component.
+        /// </summary>
         public void Reset()
         {
             _lastPublishTime = double.MinValue;

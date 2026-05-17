@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Publishers
+// Purpose: Provides a Unity Inspector publisher component for Rerun visualization data.
 
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -6,12 +10,17 @@ using Unity.RerunSDK.Unity;
 
 namespace Unity.RerunSDK.Unity.Publishers
 {
+    /// <summary>
+    /// Enumerates supported Rerun Encoded Image Format values.
+    /// </summary>
     public enum RerunEncodedImageFormat
     {
         Jpeg,
         Png
     }
-
+    /// <summary>
+    /// Provides Rerun Camera Image Publisher support for Unity2Rerun.
+    /// </summary>
     [AddComponentMenu("Rerun/Publishers/Rerun Camera Image Publisher")]
     public class RerunCameraImagePublisher : RerunPublisherBase
     {

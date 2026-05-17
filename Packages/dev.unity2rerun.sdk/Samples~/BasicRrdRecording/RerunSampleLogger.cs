@@ -1,5 +1,9 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: Samples~/BasicRrdRecording
+// Purpose: Provides the Rerun Sample Logger Unity sample script for users importing the package.
+
 // Sample: TextLog + FPS scalar + moving transform .rrd recording.
 // Attach to a GameObject that also has a RerunManager component.
 
@@ -8,6 +12,9 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Samples
 {
+    /// <summary>
+    /// Sample MonoBehaviour for Rerun Sample Logger in Unity sample scene.
+    /// </summary>
     public class RerunSampleLogger : MonoBehaviour
     {
         private RerunManager _manager;

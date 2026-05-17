@@ -1,5 +1,9 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: UnityProject/Assets/Editor
+// Purpose: Adds Unity Editor build helpers for local validation builds.
+
 // Batchmode entrypoint for Unity2Rerun IL2CPP Player builds.
 
 using System;
@@ -8,18 +12,26 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
-
+/// <summary>
+/// Provides Unity Editor support for Rerun Build.
+/// </summary>
 public static class RerunBuild
 {
+    /// <summary>Sample scene used by the command-line build entry point.</summary>
     private const string DefaultScene = "Assets/Scenes/SampleScene.unity";
+    /// <summary>Default Windows IL2CPP player output path for local validation builds.</summary>
     private const string DefaultOutputPath = "build/Unity/WindowsIL2CPP/Unity2RerunDemo.exe";
-
+    /// <summary>
+    /// Builds the WindowsIl2Cpp result from the current inputs.
+    /// </summary>
     [MenuItem("Rerun/Build Windows IL2CPP")]
     public static void BuildWindowsIl2Cpp()
     {
         BuildIl2Cpp(DefaultOutputPath, developmentBuild: false);
     }
-
+    /// <summary>
+    /// Builds the Il2CppFromCommandLine result from the current inputs.
+    /// </summary>
     public static void BuildIl2CppFromCommandLine()
     {
         var outputPath = GetCommandLineValue("-rerunBuildOutput") ?? DefaultOutputPath;

@@ -1,3 +1,8 @@
+# Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Purpose: Tests Unity IL2CPP build command construction and failure handling.
+
 import argparse
 import sys
 import unittest

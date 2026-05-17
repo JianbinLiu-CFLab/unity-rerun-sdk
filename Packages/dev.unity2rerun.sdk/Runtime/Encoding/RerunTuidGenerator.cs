@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
 
 using System;
 using System.Threading;
@@ -35,7 +39,9 @@ namespace Unity.RerunSDK.Encoding
             return tuid.TimeNs.ToString("X16") + tuid.Inc.ToString("X16");
         }
     }
-
+    /// <summary>
+    /// Carries Rerun Tuid data across Unity2Rerun runtime boundaries.
+    /// </summary>
     internal readonly struct RerunTuid
     {
         public ulong TimeNs { get; }

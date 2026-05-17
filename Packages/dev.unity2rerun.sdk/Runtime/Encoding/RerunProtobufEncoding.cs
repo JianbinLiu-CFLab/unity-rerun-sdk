@@ -1,8 +1,12 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
+
 // Phase 2: Minimal hand-written protobuf encoder for Rerun transport messages.
 // Covers SetStoreInfo and ArrowMsg for TextLog only.
-// A full protobuf generation strategy is tracked for Phase 3+.
+// A full protobuf generation strategy is tracked for Phase3+.
 
 using System;
 using System.IO;
@@ -15,7 +19,7 @@ namespace Unity.RerunSDK.Encoding
     /// Covers the exact field set needed for Phase 2: SetStoreInfo + ArrowMsg(TextLog).
     internal static class RerunProtobufEncoding
     {
-        // ── Wire format helpers ──
+        // -- Wire format helpers --
 
         private static void WriteVarint(Stream s, ulong value)
         {
@@ -65,7 +69,7 @@ namespace Unity.RerunSDK.Encoding
             return ms.ToArray();
         }
 
-        // ── Tuid encoding ──
+        // -- Tuid encoding --
 
         /// Tuid has optional fixed64 fields: time_ns(1), inc(2)
         public static byte[] EncodeTuid(ulong timeNs, ulong inc)
@@ -76,7 +80,7 @@ namespace Unity.RerunSDK.Encoding
             return ms.ToArray();
         }
 
-        // ── StoreId encoding ──
+        // -- StoreId encoding --
 
         /// StoreId: kind(1, enum=int32), recording_id(2, string), application_id(3, msg)
         public static byte[] EncodeStoreId(int kind, string recordingId, string applicationId)
@@ -99,7 +103,7 @@ namespace Unity.RerunSDK.Encoding
             return ms.ToArray();
         }
 
-        // ── StoreSource encoding ──
+        // -- StoreSource encoding --
 
         /// StoreSource: kind(1), extra(2). Kind=6=Other.
         public static byte[] EncodeStoreSource(string extraPayload)
@@ -119,7 +123,7 @@ namespace Unity.RerunSDK.Encoding
             return ms.ToArray();
         }
 
-        // ── StoreVersion encoding ──
+        // -- StoreVersion encoding --
 
         /// StoreVersion: crate_version_bits(1, int32)
         private static byte[] EncodeStoreVersion()
@@ -129,7 +133,7 @@ namespace Unity.RerunSDK.Encoding
             return ms.ToArray();
         }
 
-        // ── SetStoreInfo encoding ──
+        // -- SetStoreInfo encoding --
 
         /// SetStoreInfo: row_id(1, Tuid), info(2, StoreInfo)
         public static byte[] EncodeSetStoreInfo(
@@ -174,7 +178,7 @@ namespace Unity.RerunSDK.Encoding
             return ms.ToArray();
         }
 
-        // ── ArrowMsg encoding ──
+        // -- ArrowMsg encoding --
 
         /// ArrowMsg: store_id(1), chunk_id(6, optional), compression(2), uncompressed_size(3),
         /// encoding(4), payload(5), is_static(7, optional)
@@ -218,10 +222,10 @@ namespace Unity.RerunSDK.Encoding
 
             return ms.ToArray();
         }
-        // ── gRPC LogMsg outer wrapper encoding ──
+        // -- Grpc LogMsg outer wrapper encoding --
 
         /// Wrap a SetStoreInfo inner payload as an outer LogMsg oneof.
-        /// RRD stream writes the inner payload directly; gRPC WriteMessagesRequest
+        /// RRD stream writes the inner payload directly; Grpc WriteMessagesRequest
         /// requires the outer LogMsg wrapper with oneof tag.
         public static byte[] WrapSetStoreInfoAsLogMsg(byte[] setStoreInfoInnerPayload)
         {

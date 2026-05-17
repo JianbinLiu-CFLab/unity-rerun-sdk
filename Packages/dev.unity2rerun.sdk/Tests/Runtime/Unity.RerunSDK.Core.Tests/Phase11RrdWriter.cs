@@ -1,10 +1,18 @@
-// Phase 11 RRD writer - sensor typed publisher smoke with Pinhole + scan/point cloud.
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Phase11 Rrd Writer behavior for release and regression validation.
+
+// Phase11 RRD writer - sensor typed publisher smoke with Pinhole + scan/point cloud.
 using System.Collections.Generic;
 using System.IO;
 using Unity.RerunSDK.Core;
 using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.IO.Rrd;
-
+/// <summary>
+/// Regression tests for Phase11 RRD Writer.
+/// </summary>
 public static class Phase11RrdWriter
 {
     public static void WritePhase11Rrd(string path)
@@ -71,9 +79,14 @@ public static class Phase11RrdWriter
 
         backend.Shutdown();
     }
-
+    /// <summary>
+    /// Regression tests for Math Constants.
+    /// </summary>
     private static class MathConstants
     {
+        /// <summary>
+        /// Conversion factor from degrees to radians for phase smoke geometry.
+        /// </summary>
         public const float Deg2Rad = 0.017453292519943295f;
     }
 

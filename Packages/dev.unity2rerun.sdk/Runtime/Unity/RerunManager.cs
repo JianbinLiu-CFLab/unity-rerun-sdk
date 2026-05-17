@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity
+// Purpose: Integrates managed Rerun logging with Unity runtime components.
 
 using System;
 using System.Collections.Generic;
@@ -12,11 +16,17 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Coordinates recording lifecycle, timelines, file output, live transport, and public log APIs.
+    /// </summary>
     [AddComponentMenu("Rerun/Rerun Manager")]
     public class RerunManager : MonoBehaviour
     {
+        /// <summary>Default relative RRD path used when the inspector field has not been customized.</summary>
         private const string DefaultOutputPath = "../build/RRD/unity_recording_{TIMESTAMP}.rrd";
+        /// <summary>Backward-compatible persistent-data token path retained for older scenes.</summary>
         private const string LegacyPersistentOutputPath = "{PERSISTENT}/unity_recording.rrd";
+        /// <summary>Polling interval for discovering generated log source components in active scenes.</summary>
         private const float GeneratedLogDiscoveryIntervalSeconds = 1f;
 
         [SerializeField, Tooltip("Application name shown in Rerun Viewer.")]
@@ -37,7 +47,7 @@ namespace Unity.RerunSDK.Unity
         [SerializeField, Tooltip("Write ViewCoordinates on world entity at recording start.")]
         private bool _writeViewCoordinates = true;
 
-        // ── Live settings ──
+        // -- Live settings --
 
         [SerializeField, Tooltip("Rerun gRPC endpoint for live transport.")]
         private string _liveEndpoint = "rerun+http://127.0.0.1:9876/proxy";
@@ -73,6 +83,7 @@ namespace Unity.RerunSDK.Unity
         private readonly Dictionary<IRerunGeneratedLogSource, float[]> _generatedLogTimers = new();
         private readonly List<IRerunGeneratedLogSource> _generatedLogSnapshot = new();
         private readonly List<IRerunGeneratedLogSource> _generatedLogStale = new();
+        /// <summary>Shared registry populated by generated log sources as they become active.</summary>
         private static readonly List<IRerunGeneratedLogSource> GeneratedLogSources = new();
         private float _generatedLogDiscoveryTimer;
         private bool _warnedBoxes3DRotationLengthMismatch;
@@ -85,7 +96,9 @@ namespace Unity.RerunSDK.Unity
         public RerunLiveState LiveState { get; private set; } = RerunLiveState.Disabled;
 
         public string ResolvedOutputPath => _resolvedPath;
-
+        /// <summary>
+        /// Returns the current runtime value or snapshot.
+        /// </summary>
         public RerunTransportStatsSnapshot GetTransportStatsSnapshot()
         {
             if (_grpcClient != null)
@@ -128,20 +141,26 @@ namespace Unity.RerunSDK.Unity
             if (_recordOnStart)
                 StartRecording();
         }
-
+        /// <summary>
+        /// Updates the generated logging source registry.
+        /// </summary>
         public static void RegisterGeneratedLogSource(IRerunGeneratedLogSource source)
         {
             if (source == null) return;
             if (!GeneratedLogSources.Contains(source))
                 GeneratedLogSources.Add(source);
         }
-
+        /// <summary>
+        /// Updates the generated logging source registry.
+        /// </summary>
         public static void UnregisterGeneratedLogSource(IRerunGeneratedLogSource source)
         {
             if (source == null) return;
             GeneratedLogSources.Remove(source);
         }
-
+        /// <summary>
+        /// Handles the StartRecording workflow for this component.
+        /// </summary>
         public void StartRecording()
         {
             if (IsRecording) return;
@@ -163,7 +182,7 @@ namespace Unity.RerunSDK.Unity
                 _generatedLogDiscoveryTimer = 0f;
                 DiscoverGeneratedLogSources();
                 Debug.Log($"[Rerun] Recording started mode={_outputMode}" +
-                    (_outputMode != RerunOutputMode.LiveOnly ? $" → {_resolvedPath}" : ""));
+                    (_outputMode != RerunOutputMode.LiveOnly ? $" -> {_resolvedPath}" : ""));
             }
             catch (Exception ex)
             {
@@ -222,7 +241,9 @@ namespace Unity.RerunSDK.Unity
             else
                 _backend = fileBackend!;
         }
-
+        /// <summary>
+        /// Handles the StopRecording workflow for this component.
+        /// </summary>
         public void StopRecording()
         {
             if (!IsRecording) return;
@@ -238,7 +259,7 @@ namespace Unity.RerunSDK.Unity
 
             CleanupResources();
             Debug.Log($"[Rerun] Recording stopped" +
-                (_outputMode != RerunOutputMode.LiveOnly ? $" → {_resolvedPath}" : ""));
+                (_outputMode != RerunOutputMode.LiveOnly ? $" -> {_resolvedPath}" : ""));
         }
 
         private void CleanupResources()
@@ -258,7 +279,7 @@ namespace Unity.RerunSDK.Unity
             LiveState = RerunLiveState.Disconnected;
         }
 
-        // ── Timeline API ──
+        // -- Timeline API --
 
         private void Update()
         {
@@ -377,36 +398,51 @@ namespace Unity.RerunSDK.Unity
                 _generatedLogTimers.Remove(stale);
             }
         }
-
+        /// <summary>
+        /// Updates the active Rerun timeline state used by later log calls.
+        /// </summary>
         public void SetTimeSequence(string name, long value)
         {
             if (_runtime == null || !IsRecording) return;
             _runtime.SetTimeline(name, value, RerunTimelineKind.Sequence);
         }
-
+        /// <summary>
+        /// Updates the active Rerun timeline state used by later log calls.
+        /// </summary>
         public void SetTimeTimestampNs(string name, long unixNs)
         {
             if (_runtime == null || !IsRecording) return;
             _runtime.SetTimeline(name, unixNs, RerunTimelineKind.TimestampNs);
         }
-
+        /// <summary>
+        /// Updates the active Rerun timeline state used by later log calls.
+        /// </summary>
         public void SetTimeDurationNs(string name, long durationNs)
         {
             if (_runtime == null || !IsRecording) return;
             _runtime.SetTimeline(name, durationNs, RerunTimelineKind.DurationNs);
         }
-
+        /// <summary>
+        /// Updates the active Rerun timeline state used by later log calls.
+        /// </summary>
         public void SetTime(string timelineName, long value)
         {
             if (_runtime == null || !IsRecording) return;
             _runtime.SetTime(new RerunTimeline(timelineName), value);
         }
-
+        /// <summary>
+        /// Updates the active Rerun timeline state used by later log calls.
+        /// </summary>
         public void ResetTime(string name) => _runtime?.ResetTime(name);
+        /// <summary>
+        /// Updates the active Rerun timeline state used by later log calls.
+        /// </summary>
         public void ResetAllTimes() => _runtime?.ResetAllTimes();
 
-        // ── Logging API ──
-
+        // -- Logging API --
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogText(string entityPath, string text, string level = "INFO")
         {
             if (_runtime == null || !IsRecording) return;
@@ -415,7 +451,9 @@ namespace Unity.RerunSDK.Unity
                 _runtime.RecordingId, _applicationId,
                 entityPath, text, level, snapshot.ToEntries()));
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogScalar(string entityPath, double value)
         {
             if (_runtime == null || !IsRecording) return;
@@ -424,13 +462,17 @@ namespace Unity.RerunSDK.Unity
                 _runtime.RecordingId, _applicationId,
                 entityPath, value, snapshot.ToEntries()));
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogTransform(string entityPath, Transform transform)
         {
             if (transform == null) return;
             LogTransform(entityPath, transform.position, transform.rotation);
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogTransform(string entityPath, Vector3 position, Quaternion rotation)
         {
             if (_runtime == null || !IsRecording) return;
@@ -442,7 +484,9 @@ namespace Unity.RerunSDK.Unity
                 entityPath, pos.x, pos.y, pos.z, rot.x, rot.y, rot.z, rot.w,
                 snapshot.ToEntries()));
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogEncodedImage(string entityPath, byte[] encodedBytes, string mediaType)
         {
             if (_runtime == null || !IsRecording) return;
@@ -453,7 +497,9 @@ namespace Unity.RerunSDK.Unity
                 _runtime.RecordingId, _applicationId,
                 entityPath, encodedBytes, mediaType, snapshot.ToEntries()));
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogPinhole(string entityPath, RerunPinhole pinhole)
         {
             if (_runtime == null || !IsRecording) return;
@@ -462,7 +508,9 @@ namespace Unity.RerunSDK.Unity
                 _runtime.RecordingId, _applicationId,
                 entityPath, pinhole));
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogBox3D(string entityPath, Transform target, Color color)
         {
             if (target == null) return;
@@ -472,7 +520,9 @@ namespace Unity.RerunSDK.Unity
                 Mathf.Abs(target.lossyScale.z) * 0.5f);
             LogBox3D(entityPath, target.position, halfSize, target.rotation, color);
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogBox3D(string entityPath, Vector3 center, Vector3 halfSize, Quaternion rotation, Color color)
         {
             LogBoxes3D(
@@ -482,7 +532,9 @@ namespace Unity.RerunSDK.Unity
                 new[] { rotation },
                 new[] { color });
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogBoxes3D(
             string entityPath,
             IReadOnlyList<Vector3> centers,
@@ -530,12 +582,16 @@ namespace Unity.RerunSDK.Unity
                 _runtime.RecordingId, _applicationId,
                 entityPath, boxes, snapshot.ToEntries()));
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogLineStrip3D(string entityPath, IReadOnlyList<Vector3> points, Color color)
         {
             LogLineStrips3D(entityPath, points, color);
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogLineStrips3D(string entityPath, IReadOnlyList<Vector3> points, Color color)
         {
             if (_runtime == null || !IsRecording) return;
@@ -551,7 +607,9 @@ namespace Unity.RerunSDK.Unity
                 _runtime.RecordingId, _applicationId,
                 entityPath, new[] { strip }, snapshot.ToEntries()));
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogPoints3D(string entityPath, IReadOnlyList<Vector3> positions, Color color, float radius = 0.03f)
         {
             if (_runtime == null || !IsRecording) return;
@@ -567,7 +625,9 @@ namespace Unity.RerunSDK.Unity
 
             LogPoints3D(entityPath, positions, colors, radii);
         }
-
+        /// <summary>
+        /// Logs the requested data under a Rerun entity path.
+        /// </summary>
         public void LogPoints3D(
             string entityPath,
             IReadOnlyList<Vector3> positions,

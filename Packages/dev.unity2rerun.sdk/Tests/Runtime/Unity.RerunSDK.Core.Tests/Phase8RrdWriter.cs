@@ -1,10 +1,18 @@
-// Phase 8 RRD writer - EncodedImage + Boxes3D + LineStrips3D smoke.
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Phase8 Rrd Writer behavior for release and regression validation.
+
+// Phase8 RRD writer - EncodedImage + Boxes3D + LineStrips3D smoke.
 using System.Collections.Generic;
 using System.IO;
 using Unity.RerunSDK.Core;
 using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.IO.Rrd;
-
+/// <summary>
+/// Regression tests for Phase8 RRD Writer.
+/// </summary>
 public static class Phase8RrdWriter
 {
     public static void WritePhase8Rrd(string path)

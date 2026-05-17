@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
 
 #nullable enable
 
@@ -16,8 +20,11 @@ namespace Unity.RerunSDK.Encoding
     /// Produces Arrow IPC stream bytes for Rerun archetype chunks.
     internal static class RerunArrowIpcEncoder
     {
+        /// <summary>Unity2Rerun currently writes each encoded component batch as a single Rerun row.</summary>
         private const int RowCount = 1;
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodeTextLogArrowIpc(
             string entityPath, string text, string level,
             RerunTuid rowId, RerunTuid chunkId,
@@ -25,7 +32,9 @@ namespace Unity.RerunSDK.Encoding
         {
             return EncodeTextLogArrowIpc(entityPath, text, level, rowId, chunkId, timelines, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodeTextLogArrowIpc(
             string entityPath, string text, string level,
             RerunTuid rowId, RerunTuid chunkId,
@@ -47,7 +56,9 @@ namespace Unity.RerunSDK.Encoding
             arrays.Add(CreateStringComponentColumn(level ?? "INFO"));
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodeScalarArrowIpc(
             string entityPath, double value,
             RerunTuid rowId, RerunTuid chunkId,
@@ -55,7 +66,9 @@ namespace Unity.RerunSDK.Encoding
         {
             return EncodeScalarArrowIpc(entityPath, value, rowId, chunkId, timelines, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodeScalarArrowIpc(
             string entityPath, double value,
             RerunTuid rowId, RerunTuid chunkId,
@@ -74,7 +87,9 @@ namespace Unity.RerunSDK.Encoding
             arrays.Add(CreateDoubleComponentColumn(value));
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodeTransform3DArrowIpc(
             string entityPath,
             float tx, float ty, float tz,
@@ -84,7 +99,9 @@ namespace Unity.RerunSDK.Encoding
         {
             return EncodeTransform3DArrowIpc(entityPath, tx, ty, tz, qx, qy, qz, qw, rowId, chunkId, timelines, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodeTransform3DArrowIpc(
             string entityPath,
             float tx, float ty, float tz,
@@ -110,14 +127,18 @@ namespace Unity.RerunSDK.Encoding
             arrays.Add(CreateFloatVectorComponentColumn(qx, qy, qz, qw));
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodeViewCoordinatesArrowIpc(
             string entityPath, byte x, byte y, byte z,
             RerunTuid rowId, RerunTuid chunkId)
         {
             return EncodeViewCoordinatesArrowIpc(entityPath, x, y, z, rowId, chunkId, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodeViewCoordinatesArrowIpc(
             string entityPath, byte x, byte y, byte z,
             RerunTuid rowId, RerunTuid chunkId,
@@ -137,14 +158,18 @@ namespace Unity.RerunSDK.Encoding
             };
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodePinholeArrowIpc(
             string entityPath, RerunPinhole pinhole,
             RerunTuid rowId, RerunTuid chunkId)
         {
             return EncodePinholeArrowIpc(entityPath, pinhole, rowId, chunkId, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodePinholeArrowIpc(
             string entityPath, RerunPinhole pinhole,
             RerunTuid rowId, RerunTuid chunkId,
@@ -188,7 +213,9 @@ namespace Unity.RerunSDK.Encoding
             };
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodeEncodedImageArrowIpc(
             string entityPath, byte[] encodedBytes, string mediaType,
             RerunTuid rowId, RerunTuid chunkId,
@@ -196,7 +223,9 @@ namespace Unity.RerunSDK.Encoding
         {
             return EncodeEncodedImageArrowIpc(entityPath, encodedBytes, mediaType, rowId, chunkId, timelines, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodeEncodedImageArrowIpc(
             string entityPath, byte[] encodedBytes, string mediaType,
             RerunTuid rowId, RerunTuid chunkId,
@@ -219,7 +248,9 @@ namespace Unity.RerunSDK.Encoding
             arrays.Add(CreateStringComponentColumn(mediaType ?? ""));
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodeBoxes3DArrowIpc(
             string entityPath, IReadOnlyList<RerunBox3D> boxes,
             RerunTuid rowId, RerunTuid chunkId,
@@ -227,7 +258,9 @@ namespace Unity.RerunSDK.Encoding
         {
             return EncodeBoxes3DArrowIpc(entityPath, boxes, rowId, chunkId, timelines, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodeBoxes3DArrowIpc(
             string entityPath, IReadOnlyList<RerunBox3D> boxes,
             RerunTuid rowId, RerunTuid chunkId,
@@ -258,7 +291,9 @@ namespace Unity.RerunSDK.Encoding
             arrays.Add(CreateUInt32ComponentColumn(boxes, b => b.ColorRgba));
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodeLineStrips3DArrowIpc(
             string entityPath, IReadOnlyList<RerunLineStrip3D> strips,
             RerunTuid rowId, RerunTuid chunkId,
@@ -266,7 +301,9 @@ namespace Unity.RerunSDK.Encoding
         {
             return EncodeLineStrips3DArrowIpc(entityPath, strips, rowId, chunkId, timelines, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodeLineStrips3DArrowIpc(
             string entityPath, IReadOnlyList<RerunLineStrip3D> strips,
             RerunTuid rowId, RerunTuid chunkId,
@@ -291,7 +328,9 @@ namespace Unity.RerunSDK.Encoding
             arrays.Add(CreateUInt32ComponentColumn(strips, s => s.ColorRgba));
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         public static byte[] EncodePoints3DArrowIpc(
             string entityPath, IReadOnlyList<RerunPoint3D> points,
             RerunTuid rowId, RerunTuid chunkId,
@@ -299,7 +338,9 @@ namespace Unity.RerunSDK.Encoding
         {
             return EncodePoints3DArrowIpc(entityPath, points, rowId, chunkId, timelines, out _);
         }
-
+        /// <summary>
+        /// Encodes the requested Rerun data into the managed transport representation.
+        /// </summary>
         internal static byte[] EncodePoints3DArrowIpc(
             string entityPath, IReadOnlyList<RerunPoint3D> points,
             RerunTuid rowId, RerunTuid chunkId,
@@ -327,8 +368,10 @@ namespace Unity.RerunSDK.Encoding
             return SerializeArrowIpc(schema, new RecordBatch(schema, arrays, RowCount));
         }
 
-        // ── field builders ──
-
+        // -- field builders --
+        /// <summary>
+        /// Creates the requested SDK helper object.
+        /// </summary>
         internal static Field CreateRowIdField()
         {
             var meta = new Dictionary<string, string> {
@@ -338,7 +381,9 @@ namespace Unity.RerunSDK.Encoding
             };
             return new Field("row_id", new FixedSizeBinaryType(16), false, meta);
         }
-
+        /// <summary>
+        /// Creates the requested SDK helper object.
+        /// </summary>
         internal static Field CreateTimelineFieldFor(RerunTimelineKind kind, string name)
         {
             var meta = new Dictionary<string, string> {
@@ -353,7 +398,9 @@ namespace Unity.RerunSDK.Encoding
             };
             return new Field(name, type, false, meta);
         }
-
+        /// <summary>
+        /// Creates the requested SDK helper object.
+        /// </summary>
         internal static Field CreateComponentField(string name, string archetype, string compType,
             IArrowType fieldType, bool isStatic = false)
         {
@@ -376,8 +423,10 @@ namespace Unity.RerunSDK.Encoding
             };
         }
 
-        // ── column builders ──
-
+        // -- column builders --
+        /// <summary>
+        /// Creates the requested SDK helper object.
+        /// </summary>
         internal static FixedSizeBinaryArray CreateTuidColumn(RerunTuid tuid)
         {
             return CreateFixedSizeBinaryColumn(16, RerunTuidGenerator.ToBytes(tuid));

@@ -1,7 +1,15 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Rerun Source Emitter Tests behavior for release and regression validation.
+
 using System.Collections.Generic;
 using Unity.RerunSDK.Editor;
 using Xunit;
-
+/// <summary>
+/// Regression tests for Rerun Source Emitter Tests.
+/// </summary>
 public class RerunSourceEmitterTests
 {
     [Fact]

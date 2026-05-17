@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Unity/Control
+// Purpose: Implements local loopback sidecar control for interactive Unity samples.
 
 using System.Collections.Generic;
 using Unity.RerunSDK.Unity.Control;
@@ -6,9 +10,13 @@ using UnityEngine;
 
 namespace Unity.RerunSDK.Unity
 {
+    /// <summary>
+    /// Provides Rerun Interactive Control Bridge support for Unity2Rerun.
+    /// </summary>
     [AddComponentMenu("Rerun/Control/Rerun Interactive Control Bridge")]
     public class RerunInteractiveControlBridge : MonoBehaviour
     {
+        /// <summary>Maximum number of warning messages forwarded to Rerun per frame.</summary>
         private const int MaxWarningsPerFrame = 10;
 
         [SerializeField, Tooltip("Target RerunManager for command logs and metrics.")]
@@ -68,7 +76,9 @@ namespace Unity.RerunSDK.Unity
             DrainCommands();
             RefreshState();
         }
-
+        /// <summary>
+        /// Handles the StartServer workflow for this component.
+        /// </summary>
         public void StartServer()
         {
             if (_server != null && _server.IsRunning)
@@ -81,7 +91,9 @@ namespace Unity.RerunSDK.Unity
             RefreshState();
             LogText($"Control server started at {_controlUrl}", "INFO");
         }
-
+        /// <summary>
+        /// Handles the StopServer workflow for this component.
+        /// </summary>
         public void StopServer()
         {
             if (_server == null)

@@ -1,10 +1,17 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Encoding
+// Purpose: Defines managed Rerun encoding primitives used by RRD files and live transport.
 
 using System.Collections.Generic;
 using Unity.RerunSDK.Core;
 
 namespace Unity.RerunSDK.Encoding
 {
+    /// <summary>
+    /// Defines the contract for IRerun Encoder.
+    /// </summary>
     internal interface IRerunEncoder
     {
         EncodedRerunMessage EncodeSetStoreInfoMessage(string recordingId, string applicationId);

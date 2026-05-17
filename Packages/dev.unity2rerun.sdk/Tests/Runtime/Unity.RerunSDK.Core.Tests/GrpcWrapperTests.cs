@@ -1,11 +1,19 @@
-// gRPC LogMsg wrapper roundtrip tests
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
+// SPDX-License-Identifier: Apache-2.0
+//
+// Module: Tests/Runtime/Unity.RerunSDK.Core.Tests
+// Purpose: Exercises Grpc Wrapper Tests behavior for release and regression validation.
+
+// Grpc LogMsg wrapper roundtrip tests
 using Google.Protobuf;
 using Unity.RerunSDK.Encoding;
 using Xunit;
 using RerunLogMsg = Rerun.LogMsg.V1Alpha1;
 using RerunCommon = Rerun.Common.V1Alpha1;
 using RerunSdkComms = Rerun.SdkComms.V1Alpha1;
-
+/// <summary>
+/// Regression tests for Grpc Wrapper Tests.
+/// </summary>
 public class GrpcWrapperTests
 {
     [Fact]

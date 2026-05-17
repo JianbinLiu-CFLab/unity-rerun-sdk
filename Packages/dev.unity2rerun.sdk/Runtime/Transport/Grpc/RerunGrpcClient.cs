@@ -1,6 +1,10 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Managed gRPC client for Rerun Viewer live transport.
+// Module: Runtime/Transport/Grpc
+// Purpose: Streams encoded Rerun messages to a live Rerun Viewer over Grpc.
+
+// Managed Grpc client for Rerun Viewer live transport.
 // Uses Grpc.Net.Client + System.Threading.Channels for bounded queue.
 
 #nullable enable
@@ -19,6 +23,9 @@ using RerunSdkComms = Rerun.SdkComms.V1Alpha1;
 
 namespace Unity.RerunSDK.Transport.Grpc
 {
+    /// <summary>
+    /// Provides Rerun Grpc Client support for Unity2Rerun.
+    /// </summary>
     internal class RerunGrpcClient : IDisposable
     {
 #if UNITY_5_3_OR_NEWER
@@ -309,7 +316,9 @@ namespace Unity.RerunSDK.Transport.Grpc
             if (dataCount <= 5)
                 LogInfo($"[RerunGrpcClient] Data message sent to live stream (kind={msg.RrdKind}, total={dataCount})");
         }
-
+        /// <summary>
+        /// Returns the current runtime value or snapshot.
+        /// </summary>
         internal RerunTransportStatsSnapshot GetStatsSnapshot()
         {
             bool hasPendingStoreInfo;
@@ -357,7 +366,7 @@ namespace Unity.RerunSDK.Transport.Grpc
             if (cysharpHandler != null)
                 return cysharpHandler;
 
-            LogWarning("[RerunGrpcClient] Cysharp YetAnotherHttpHandler was not found; falling back to HttpClientHandler. Unity live gRPC may downgrade to HTTP/1.1.");
+            LogWarning("[RerunGrpcClient] Cysharp YetAnotherHttpHandler was not found; falling back to HttpClientHandler. Unity live Grpc may downgrade to HTTP/1.1.");
             return new HttpClientHandler();
 #else
             return new SocketsHttpHandler
@@ -390,7 +399,7 @@ namespace Unity.RerunSDK.Transport.Grpc
                     LogWarning("[RerunGrpcClient] Cysharp YetAnotherHttpHandler loaded, but Http2Only property was not found.");
                 }
 
-                LogInfo("[RerunGrpcClient] Using Cysharp YetAnotherHttpHandler for HTTP/2 live gRPC");
+                LogInfo("[RerunGrpcClient] Using Cysharp YetAnotherHttpHandler for HTTP/2 live Grpc");
                 return handler;
             }
             catch (Exception ex)
@@ -435,7 +444,9 @@ namespace Unity.RerunSDK.Transport.Grpc
             await task.ConfigureAwait(false);
             return true;
         }
-
+        /// <summary>
+        /// Stops the component or service and releases owned runtime resources.
+        /// </summary>
         public void Dispose()
         {
             if (_disposed) return;

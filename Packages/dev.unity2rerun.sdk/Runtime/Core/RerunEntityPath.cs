@@ -1,4 +1,8 @@
+// Copyright (c) 2026 Jianbin Liu and Unity2Rerun contributors.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Module: Runtime/Core
+// Purpose: Defines core Rerun runtime concepts shared by encoding, transport, and Unity layers.
 
 using System;
 using System.Text;
@@ -16,7 +20,9 @@ namespace Unity.RerunSDK.Core
         {
             Value = string.IsNullOrEmpty(path) || path == "/" ? "/" : Normalize(path);
         }
-
+        /// <summary>
+        /// Handles the FromString workflow for this component.
+        /// </summary>
         public static RerunEntityPath FromString(string raw)
         {
             return new RerunEntityPath(raw);
@@ -61,7 +67,7 @@ namespace Unity.RerunSDK.Core
 
                 if (i > 0) sb.Append('/');
 
-                // First segment with __ prefix → reserved Rerun prefix
+                // First segment with __ prefix -> reserved Rerun prefix
                 if (i == 0 && part.StartsWith("__"))
                     sb.Append("_user").Append(part);
                 else
@@ -90,17 +96,28 @@ namespace Unity.RerunSDK.Core
                 }
                 else
                 {
-                    // Non-ASCII or special → escape
+                    // Non-ASCII or special -> escape
                     sb.Append('\\');
                     sb.Append((int)c);
                 }
             }
             return sb.ToString();
         }
-
+        /// <summary>
+        /// Handles the Equals workflow for this component.
+        /// </summary>
         public bool Equals(RerunEntityPath other) => Value == other.Value;
+        /// <summary>
+        /// Handles the Equals workflow for this component.
+        /// </summary>
         public override bool Equals(object obj) => obj is RerunEntityPath other && Equals(other);
+        /// <summary>
+        /// Returns the current runtime value or snapshot.
+        /// </summary>
         public override int GetHashCode() => Value?.GetHashCode() ?? 0;
+        /// <summary>
+        /// Handles the ToString workflow for this component.
+        /// </summary>
         public override string ToString() => Value;
 
         public static bool operator ==(RerunEntityPath a, RerunEntityPath b) => a.Value == b.Value;
