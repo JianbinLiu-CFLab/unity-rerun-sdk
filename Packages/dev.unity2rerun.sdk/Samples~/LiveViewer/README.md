@@ -1,40 +1,38 @@
 # Live Viewer Sample
 
-Requires Rerun Viewer listening on port 9876, or `Auto Launch Viewer` enabled.
+## Purpose
 
-## Prerequisites
+This sample verifies `FileAndLive` output: Unity writes a `.rrd` file while also streaming TextLog, Scalar, and Transform3D data to Rerun Viewer.
 
-- Cysharp `YetAnotherHttpHandler` installed with its native dependency package.
-  Add to `Packages/manifest.json`:
-  ```json
-  "com.cysharp.yetanotherhttphandler.dependencies": "https://github.com/Cysharp/YetAnotherHttpHandler.git?path=src/YetAnotherHttpHandler.Dependencies#1.11.5",
-  "com.cysharp.yetanotherhttphandler": "https://github.com/Cysharp/YetAnotherHttpHandler.git?path=src/YetAnotherHttpHandler#1.11.5"
-  ```
-- Rerun Viewer 0.31.4+ installed and on PATH, or `Viewer Executable Path` set.
+## Setup
 
-## Steps
+1. Install Cysharp `YetAnotherHttpHandler` and its native dependency package as described in `Documentation~/en/00_Prerequisites.md`.
+2. Ensure Rerun Viewer 0.31.4 or newer is installed and available on PATH, or set `Viewer Executable Path` in `RerunManager`.
+3. Add `RerunManager` to a GameObject.
+4. Set Output Mode to `FileAndLive`.
+5. Enable Auto Launch Viewer or start Rerun Viewer manually.
+6. Attach `RerunLiveViewerSample` to the same GameObject.
+7. Enter Play Mode.
 
-1. Add `RerunManager` to a GameObject.
-2. Set `Output Mode` to `File And Live`.
-3. Enable `Auto Launch Viewer` or start `rerun` manually.
-4. Attach `RerunLiveViewerSample.cs` to the same GameObject.
-5. Enter Play Mode.
-6. The cube transform, FPS scalar, and frame logs should appear live in the Viewer.
+FileOnly output does not require `YetAnotherHttpHandler`. Live gRPC output does.
 
-## Troubleshooting
+## Expected Output
 
-### HTTP/1.1 downgrade
+Live Viewer and the saved `.rrd` should show:
 
-```
-Bad gRPC response. Response protocol downgraded to HTTP/1.1.
-```
+- `logs/unity`
+- `metrics/fps`
+- `world/cube`
 
-Ensure `YetAnotherHttpHandler` is installed in `Packages/manifest.json`.
+## Manual Acceptance
 
-### Port already in use
+- Rerun Viewer opens or connects successfully.
+- Live TextLog, Scalar, and Transform3D updates appear while Play Mode runs.
+- Stopping Play Mode still leaves a verifiable `.rrd` file.
+- A live failure does not prevent FileAndLive file output from closing cleanly.
 
-```
-gRPC connection failed: 127.0.0.1:9876
-```
+## Troubleshooting Notes
 
-Stop any existing `rerun` process or change the port in `RerunManager`.
+- If the Console reports an HTTP/1.1 downgrade, install or repair `YetAnotherHttpHandler`.
+- If port `9876` is already used, stop the existing Rerun process or change the live endpoint.
+- If live output is not required, switch to `FileOnly` and verify the file path first.
