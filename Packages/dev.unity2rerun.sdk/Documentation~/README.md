@@ -1,36 +1,40 @@
 # Unity2Rerun SDK Documentation
 
-- [English](en/) - primary language
-- [中文](zh/) - synchronized
+This folder is the user manual entry point for the Unity2Rerun package.
 
-## Quick Links
+English documentation is the canonical documentation for this package line. Chinese documentation remains under `zh/` and is maintained separately.
 
-- [Prerequisites](en/00_Prerequisites.md)
-- [Installation & Quick Start](en/01_Installation_and_Quick_Start.md)
-- [Publisher Components](en/02_Publisher_Components.md)
-- [Output Modes & Live Troubleshooting](en/03_Output_Modes_and_Live_Troubleshooting.md)
-- [Architecture](en/04_Architecture.md)
-- [IL2CPP Build Guide](en/05_IL2CPP_Build_Guide.md)
-- [IL2CPP 构建指南](zh/05_IL2CPP构建指南.md)
-- [RerunLog Source Generator](en/06_RerunLog_Source_Generator.md)
-- [RerunLog Source Generator 中文](zh/06_RerunLog_Source_Generator.md)
-- [Interactive 3D Control](en/07_Interactive_3D_Control.md)
-- [RRD Compression](en/08_RRD_Compression.md)
-- [Rerun Type Coverage Matrix](../../../docs/releases/RERUN_TYPE_COVERAGE_MATRIX.md)
-- [Interactive 3D Control 中文](zh/07_Interactive_3D_Control.md)
+## Start Here
 
-## Release Validation
+- [Prerequisites](en/00_Prerequisites.md): install Unity, Rerun Viewer/CLI, and optional live transport dependencies.
+- [Installation and first recording](en/01_Installation_and_Quick_Start.md): install the package and write a first `.rrd` recording.
+- [Samples and demo project](en/09_Samples_and_Demo_Project.md): choose between your own project, the repository demo project, and package samples.
 
-RRD compression validation writes comparable None and LZ4 recordings, prints ArrowMsg compression evidence, and verifies both files with the Rerun CLI:
+## Runtime Publishing
 
-```powershell
-dotnet run --project Packages/dev.unity2rerun.sdk/Tests/Runtime/Unity.RerunSDK.Core.Tests/Unity.RerunSDK.Core.Tests.csproj -- --write-phase14-compression-comparison build/RRD/phase14_compression
-rerun rrd verify build/RRD/phase14_compression_none.rrd
-rerun rrd verify build/RRD/phase14_compression_lz4.rrd
-```
+- [Publisher components](en/02_Publisher_Components.md): use Inspector-driven TextLog, Scalar, Transform3D, camera, point, and scan publishers.
+- [RerunLog source generator](en/06_RerunLog_Source_Generator.md): publish fields with generated `[RerunLog]`, `[RerunScalar]`, and `[RerunTransform]` code.
+- [Interactive 3D control](en/07_Interactive_3D_Control.md): verify image, pinhole, 3D geometry, point-cloud, laser-scan, metrics, logs, and loopback control workflows.
 
-Rerun official type coverage is tracked by `docs/releases/RERUN_TYPE_COVERAGE_MATRIX.md` and checked with:
+## Recording, Live Output, and Builds
 
-```powershell
-python Scripts/release/check_rerun_type_coverage.py
-```
+- [Output modes and live troubleshooting](en/03_Output_Modes_and_Live_Troubleshooting.md): choose FileOnly, LiveOnly, or FileAndLive and diagnose live gRPC setup.
+- [RRD compression](en/08_RRD_Compression.md): understand file-recording compression and LZ4 evidence.
+- [IL2CPP build guide](en/05_IL2CPP_Build_Guide.md): build and verify standalone Players.
+
+## Advanced and Reference
+
+- [Architecture](en/04_Architecture.md): understand runtime modules, data flow, and Rerun type coverage boundaries.
+- [Inspector reference](en/10_Inspector_Reference.md): field-by-field reference for `RerunManager`, publishers, and sidecar control.
+- [Troubleshooting](en/11_Troubleshooting.md): symptom-based fixes for file output, live output, images, generated logs, sidecar control, and builds.
+- [Rerun type coverage matrix](../../../docs/releases/RERUN_TYPE_COVERAGE_MATRIX.md): audited coverage against official Rerun runtime archetypes and components.
+
+## Validation and Acceptance
+
+- [Validation and acceptance](en/12_Validation_and_Acceptance.md): automated checks, RRD evidence commands, and manual Unity acceptance steps.
+
+For release validation and manual acceptance, use the validation page rather than this entry page.
+
+## Other Languages
+
+- [Chinese documentation](zh/)

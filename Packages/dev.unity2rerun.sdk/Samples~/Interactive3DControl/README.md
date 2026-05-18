@@ -1,61 +1,34 @@
 # Interactive 3D Control Sample
 
-This sample demonstrates the Phase 8 loop:
+## Purpose
 
-- Unity Game View controls a cube.
-- Unity2Rerun publishes Transform3D, Boxes3D, LineStrips3D trajectory, optional Points3D, Pinhole camera metadata, EncodedImage, metrics, and TextLog.
-- A local sidecar panel controls Unity through `127.0.0.1` with action buttons and parameter-like state.
-- Rerun Viewer visualizes the result live or from a `.rrd` file.
+This sample is the broadest Unity2Rerun manual acceptance scene. It combines Unity Game view interaction, Rerun 3D visualization, camera image publishing, pinhole metadata, optional point-cloud and laser-scan publishers, metrics, text logs, and a local loopback sidecar control page.
 
-## Scene Setup
+## Setup
 
 1. Create a cube and add `RerunInteractiveCubeController`.
-2. Add `RerunManager` to the scene and choose `FileAndLive` or `FileOnly`.
+2. Add `RerunManager` to the scene and choose `FileOnly` or `FileAndLive`.
 3. Add `RerunInteractive3DPublisher` to the cube or a nearby driver object.
-4. Add `RerunInteractiveControlBridge` to the cube or a nearby driver object.
+4. Add `RerunInteractiveControlBridge` to the cube or a nearby driver object if sidecar control is needed.
 5. Add `RerunCameraImagePublisher` to a camera-facing object or the camera itself.
-6. Optional for Phase 11 sensor smoke: add `RerunPinholeCameraPublisher` to the same camera and set both camera publishers to the same entity path, such as `world/camera`.
-7. Optional: add `RerunPointCloudPublisher` or `RerunLaserScanPublisher` to a nearby GameObject for point-cloud or planar scan visualization.
+6. Add `RerunPinholeCameraPublisher` to the same camera and set both camera publishers to the same entity path, such as `world/camera`, when camera metadata should align with images.
+7. Optionally add `RerunPointCloudPublisher` or `RerunLaserScanPublisher` for point-cloud or planar scan visualization.
 
-Keep `Run In Background` enabled on `RerunManager`. Sidecar commands arrive on a loopback HTTP thread and are applied from Unity `Update`; if Unity stops updating while the browser has focus, commands will appear to apply only after returning to or stopping Play mode.
+Keep `Run In Background` enabled on `RerunManager` when using the sidecar page. Sidecar commands are received on a loopback HTTP thread and applied from Unity `Update`.
 
 ## Controls
 
-- Drag with left mouse button: rotate the cube in the Game View.
-- Drag with right mouse button: pan the cube in the camera plane.
-- Mouse wheel: zoom/scale the cube.
+- Left mouse drag: rotate the cube in the Game view.
+- Right mouse drag: pan the cube in the camera plane.
+- Mouse wheel: zoom or scale the cube.
 - `R`: reset the Unity-side pose.
 
-## Sidecar Panel
+## Expected Output
 
-The bridge defaults to `http://127.0.0.1:18765/`.
+Expected Rerun streams:
 
-If that port is busy, the server falls back to a random free loopback port. Use the `Control URL` field in the Inspector or the `logs/rerun/control` TextLog stream to find the actual URL.
-
-The sidecar is intentionally local-only:
-
-- no remote bind
-- no TLS
-- no auth
-- Windows Editor sample target for the current interactive control path
-
-The `/state` endpoint includes:
-
-- `actions`: reset pose, color presets, scale up/down/reset
-- `parameters`: writable `cube.color` and `cube.scale`
-- pose, current color, command count, last command, and control URL
-
-The sidecar page renders those actions/parameters dynamically and posts commands to `/command`. Accepted commands are logged back to Rerun as `logs/rerun/control` and update `metrics/interactive/command_count`.
-
-## Rerun Streams
-
-Expected streams:
-
-- `world/cube` (Transform3D + Boxes3D)
+- `world/cube` for Transform3D and Boxes3D
 - `world/cube_trajectory`
-- `world/points` if `RerunPoints3DPublisher` is added
-- `world/camera` if `RerunPinholeCameraPublisher` is added with the camera image entity path aligned
-- `world/laser_scan` and `world/laser_scan_outline` if `RerunLaserScanPublisher` is added
 - `camera/main`
 - `metrics/interactive/fps`
 - `metrics/interactive/trajectory_points`
@@ -63,27 +36,38 @@ Expected streams:
 - `logs/rerun/control`
 - `logs/rerun/image`
 
-If the Viewer shows old panels such as `metrics/fps` or `metrics/generated_fps`, that is a persisted Viewer blueprint rather than Phase 8 data. Run `rerun reset` or create a fresh layout, then reopen the recording.
+Optional streams:
 
-## Recommended Rerun Layout
+- `world/points` if `RerunPoints3DPublisher` is added
+- `world/camera` if `RerunPinholeCameraPublisher` is aligned with the camera image entity path
+- `world/laser_scan`
+- `world/laser_scan_outline`
 
-Use a manual grid layout for Phase 10:
+## Sidecar Control
 
-- 3D view: `world`
-- Image view: `camera/main`
-- Time series: `metrics/interactive/fps`
-- Time series: `metrics/interactive/command_count`
-- Time series: `metrics/interactive/trajectory_points`
-- Text log: `logs/rerun/control`
+The bridge defaults to `http://127.0.0.1:18765/`. If that port is busy, it falls back to a random free loopback port. Use the runtime Control URL field in the Inspector, or the `logs/rerun/control` TextLog stream, to find the actual URL.
 
-Rerun Desktop does not currently provide a Foxglove-style Parameters or Service Call panel for arbitrary Unity callbacks. The sidecar page is the supported control surface for this sample.
+The sidecar is intentionally local-only:
 
-## Acceptance Notes
+- no remote bind
+- no TLS
+- no authentication
+- intended for local Editor sample control
 
-Record a short local acceptance pass before publishing a release:
+The sidecar exposes action buttons, writable `cube.color` and `cube.scale` state, pose state, current color, command count, last command, and the current control URL.
 
-- Rerun Viewer screenshot with 3D cube, trajectory, image, plots, and logs.
-- Unity Game View control smoke.
-- Sidecar panel control smoke.
-- FileOnly replay smoke.
-- Unity Profiler samples for image encode and spatial publish paths.
+## Manual Acceptance
+
+- Move the cube in the Unity Game view and confirm `world/cube` and `world/cube_trajectory` update.
+- Confirm `camera/main` displays the camera image when the camera publisher is enabled.
+- Confirm `world/camera` appears when pinhole metadata is enabled and entity paths are aligned.
+- Confirm metrics update while Play Mode runs.
+- Open the sidecar URL, apply a color or scale command, and confirm `logs/rerun/control` and `metrics/interactive/command_count` update.
+- Stop Play Mode and verify the generated `.rrd` file.
+
+## Troubleshooting Notes
+
+- If old metrics appear in the Viewer, reset the Viewer layout or open a fresh layout.
+- If sidecar commands do not apply while the browser has focus, enable Run In Background.
+- If the camera image is missing, confirm an active camera exists and Max Encoded Bytes is not too low.
+- If point or scan streams are missing, confirm the optional publishers are present and enabled.
