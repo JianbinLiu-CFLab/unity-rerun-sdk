@@ -28,6 +28,14 @@ This Unity package uses third-party open source software and public specificatio
 - License: Apache-2.0
 - Usage: managed gRPC live transport to Rerun Viewer.
 
+## K4os LZ4
+
+- URL: https://github.com/MiloszKrajewski/K4os.Compression.LZ4
+- License: MIT
+- Usage: optional raw LZ4 block compression for `.rrd` file Arrow payloads:
+  - `K4os.Compression.LZ4.dll`
+  - `K4os.Hash.xxHash.dll`
+
 ## Microsoft .NET support libraries
 
 - URL: https://dot.net/

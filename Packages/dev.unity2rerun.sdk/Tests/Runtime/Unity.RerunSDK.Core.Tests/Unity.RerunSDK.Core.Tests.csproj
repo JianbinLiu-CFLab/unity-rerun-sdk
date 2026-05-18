@@ -13,6 +13,7 @@
     <PackageReference Include="Grpc.Net.Client" Version="2.76.0" />
     <PackageReference Include="Grpc.Core.Api" Version="2.76.0" />
     <PackageReference Include="Grpc.Net.Common" Version="2.76.0" />
+    <PackageReference Include="K4os.Compression.LZ4" Version="1.3.8" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
@@ -30,6 +31,7 @@
     <Compile Include="../../../Runtime/Core/RerunTimeline.cs" Link="Core/RerunTimeline.cs" />
     <Compile Include="../../../Runtime/Core/RerunTimelineEntry.cs" Link="Core/RerunTimelineEntry.cs" />
     <Compile Include="../../../Runtime/Core/RerunLiveState.cs" Link="Core/RerunLiveState.cs" />
+    <Compile Include="../../../Runtime/Core/RerunRecordingCompression.cs" Link="Core/RerunRecordingCompression.cs" />
     <Compile Include="../../../Runtime/Encoding/IRerunEncoder.cs" Link="Encoding/IRerunEncoder.cs" />
     <Compile Include="../../../Runtime/Encoding/RerunTuidGenerator.cs" Link="Encoding/RerunTuidGenerator.cs" />
     <Compile Include="../../../Runtime/Encoding/RerunGeometry.cs" Link="Encoding/RerunGeometry.cs" />
@@ -38,6 +40,7 @@
     <Compile Include="../../../Runtime/Encoding/Protos/Common.cs" Link="Encoding/Common.cs" />
     <Compile Include="../../../Runtime/Encoding/Protos/LogMsg.cs" Link="Encoding/LogMsg.cs" />
     <Compile Include="../../../Runtime/Encoding/RerunProtobufEncoding.cs" Link="Encoding/RerunProtobufEncoding.cs" />
+    <Compile Include="../../../Runtime/Encoding/RerunArrowPayloadCompression.cs" Link="Encoding/RerunArrowPayloadCompression.cs" />
     <Compile Include="../../../Runtime/Encoding/EncodedRerunMessage.cs" Link="Encoding/EncodedRerunMessage.cs" />
     <Compile Include="../../../Runtime/Encoding/RrdManifestChunkInfo.cs" Link="Encoding/RrdManifestChunkInfo.cs" />
     <Compile Include="../../../Runtime/Transport/Grpc/Protos/SdkComms.cs" Link="Grpc/SdkComms.cs" />

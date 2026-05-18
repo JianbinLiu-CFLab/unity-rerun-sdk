@@ -17,7 +17,7 @@ namespace Unity.RerunSDK.Unity
                 Application.runInBackground = true;
 
             MigrateLegacyOutputPath();
-            _encoder = new ManagedRerunEncoder();
+            _encoder = new ManagedRerunEncoder(_recordingCompression);
         }
 
         private void OnValidate()

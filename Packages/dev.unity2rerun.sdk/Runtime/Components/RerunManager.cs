@@ -36,6 +36,9 @@ namespace Unity.RerunSDK.Unity
         [SerializeField, Tooltip(".rrd output file path. Relative paths resolve from the Unity project root. Use {PERSISTENT} and/or {TIMESTAMP}.")]
         private string _outputPath = DefaultOutputPath;
 
+        [SerializeField, Tooltip("Compression for .rrd file recording only. Live gRPC output remains uncompressed.")]
+        private RerunRecordingCompression _recordingCompression = RerunRecordingCompression.None;
+
         [SerializeField, Tooltip("Automatically start recording on Start.")]
         private bool _recordOnStart = true;
 
@@ -94,5 +97,11 @@ namespace Unity.RerunSDK.Unity
         public RerunLiveState LiveState { get; private set; } = RerunLiveState.Disabled;
 
         public string ResolvedOutputPath => _resolvedPath;
+
+        public RerunRecordingCompression RecordingCompression
+        {
+            get => _recordingCompression;
+            set => _recordingCompression = value;
+        }
     }
 }

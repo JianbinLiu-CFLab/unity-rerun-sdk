@@ -10,7 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
-- Nothing yet.
+- Optional LZ4 compression for `.rrd` file Arrow payloads through `RerunManager.RecordingCompression`.
+- Phase 13 LZ4 smoke `.rrd` writer covering TextLog, Scalar, Transform3D, Points3D, and ViewCoordinates chunks.
+- Bundled minimal K4os LZ4 runtime DLLs and third-party notice coverage for RRD compression.
+
+### Changed
+
+- Live gRPC output is encoded from uncompressed Arrow messages even when `.rrd` file recording uses LZ4.
 
 ## 0.4.0 - 2026-05-17
 

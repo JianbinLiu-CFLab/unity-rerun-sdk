@@ -11,6 +11,7 @@ The central hub. One per scene, typically on a dedicated `Rerun` GameObject.
 | Application Id | Name shown in Rerun Viewer |
 | Output Mode | FileOnly / LiveOnly / FileAndLive |
 | Output Path | `.rrd` file path. Use `{TIMESTAMP}` for auto-naming |
+| Recording Compression | `.rrd` file payload compression: None or Lz4. Live output remains uncompressed |
 | Record On Start | Start recording automatically on Play |
 | Write View Coordinates | Write `RIGHT_HAND_Y_UP` on `world` entity |
 

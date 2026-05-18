@@ -49,7 +49,16 @@ else if (args[0] == "--write-phase11-rrd")
     Console.WriteLine($"Phase11 .rrd written to: {Path.GetFullPath(outPath)}");
     Console.WriteLine($"Size: {new FileInfo(outPath).Length} bytes");
 }
+else if (args[0] == "--write-phase13-lz4-rrd")
+{
+    var outPath = args.Length > 1 ? args[1] : "out/phase13_lz4_smoke.rrd";
+    var dir = Path.GetDirectoryName(outPath);
+    if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+    Phase13RrdWriter.WritePhase13Lz4Rrd(outPath);
+    Console.WriteLine($"Phase13 LZ4 .rrd written to: {Path.GetFullPath(outPath)}");
+    Console.WriteLine($"Size: {new FileInfo(outPath).Length} bytes");
+}
 else
 {
-    Console.WriteLine("Usage: dotnet run [--write-phase3-rrd <output-path>] [--write-phase8-rrd <output-path>] [--write-phase10-rrd <output-path>] [--write-phase11-rrd <output-path>]");
+    Console.WriteLine("Usage: dotnet run [--write-phase3-rrd <output-path>] [--write-phase8-rrd <output-path>] [--write-phase10-rrd <output-path>] [--write-phase11-rrd <output-path>] [--write-phase13-lz4-rrd <output-path>]");
 }

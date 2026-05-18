@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Unity.RerunSDK.Core;
 using static Unity.RerunSDK.IO.Rrd.RrdConstants;
+using RerunCommon = Rerun.Common.V1Alpha1;
 
 namespace Unity.RerunSDK.Encoding
 {
@@ -16,6 +17,18 @@ namespace Unity.RerunSDK.Encoding
     /// </summary>
     internal class ManagedRerunEncoder : IRerunEncoder
     {
+        private readonly RerunRecordingCompression _recordingCompression;
+
+        public ManagedRerunEncoder()
+            : this(RerunRecordingCompression.None)
+        {
+        }
+
+        public ManagedRerunEncoder(RerunRecordingCompression recordingCompression)
+        {
+            _recordingCompression = recordingCompression;
+        }
+
         /// <summary>
         /// Encodes the requested Rerun data into the managed transport representation.
         /// </summary>
@@ -46,15 +59,8 @@ namespace Unity.RerunSDK.Encoding
                 recordingId, applicationId, entityPath, chunkId, isStatic: false,
                 arrowIpc, schema, timelines);
 
-            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
-                recordingId, applicationId,
-                chunkId.TimeNs, chunkId.Inc,
-                compression: 1, (ulong)arrowIpc.Length, arrowIpc);
-
-            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
-
-            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: false, manifestInfo: manifestInfo);
         }
         /// <summary>
         /// Encodes the requested Rerun data into the managed transport representation.
@@ -73,15 +79,8 @@ namespace Unity.RerunSDK.Encoding
                 recordingId, applicationId, entityPath, chunkId, isStatic: false,
                 arrowIpc, schema, timelines);
 
-            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
-                recordingId, applicationId,
-                chunkId.TimeNs, chunkId.Inc,
-                compression: 1, (ulong)arrowIpc.Length, arrowIpc);
-
-            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
-
-            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: false, manifestInfo: manifestInfo);
         }
         /// <summary>
         /// Encodes the requested Rerun data into the managed transport representation.
@@ -103,15 +102,8 @@ namespace Unity.RerunSDK.Encoding
                 recordingId, applicationId, entityPath, chunkId, isStatic: false,
                 arrowIpc, schema, timelines);
 
-            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
-                recordingId, applicationId,
-                chunkId.TimeNs, chunkId.Inc,
-                compression: 1, (ulong)arrowIpc.Length, arrowIpc);
-
-            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
-
-            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: false, manifestChunkInfo: manifestInfo);
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: false, manifestInfo: manifestInfo);
         }
         /// <summary>
         /// Encodes the requested Rerun data into the managed transport representation.
@@ -129,16 +121,8 @@ namespace Unity.RerunSDK.Encoding
                 recordingId, applicationId, entityPath, chunkId, isStatic: true,
                 arrowIpc, schema, Array.Empty<RerunTimelineEntry>());
 
-            var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
-                recordingId, applicationId,
-                chunkId.TimeNs, chunkId.Inc,
-                compression: 1, (ulong)arrowIpc.Length, arrowIpc,
-                isStatic: true);
-
-            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
-
-            return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
-                isStoreInfo: false, isStatic: true, manifestChunkInfo: manifestInfo);
+            return EncodeArrowMessage(recordingId, applicationId, chunkId, arrowIpc,
+                isStatic: true, manifestInfo: manifestInfo);
         }
         /// <summary>
         /// Encodes the requested Rerun data into the managed transport representation.
@@ -245,13 +229,22 @@ namespace Unity.RerunSDK.Encoding
             RerunTuid chunkId, byte[] arrowIpc, bool isStatic,
             RrdManifestChunkInfo manifestInfo)
         {
+            var rrdArrowPayload = RerunArrowPayloadCompression.EncodeForRecording(
+                arrowIpc, _recordingCompression, out var rrdCompression);
+
             var rrdPayload = RerunProtobufEncoding.EncodeArrowMsg(
                 recordingId, applicationId,
                 chunkId.TimeNs, chunkId.Inc,
-                compression: 1, (ulong)arrowIpc.Length, arrowIpc,
+                compression: (int)rrdCompression, (ulong)arrowIpc.Length, rrdArrowPayload,
                 isStatic: isStatic);
 
-            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(rrdPayload);
+            var grpcArrowPayload = RerunProtobufEncoding.EncodeArrowMsg(
+                recordingId, applicationId,
+                chunkId.TimeNs, chunkId.Inc,
+                compression: (int)RerunCommon.Compression.None, (ulong)arrowIpc.Length, arrowIpc,
+                isStatic: isStatic);
+
+            var grpcPayload = RerunProtobufEncoding.WrapArrowMsgAsLogMsg(grpcArrowPayload);
 
             return new EncodedRerunMessage(MsgKindArrowMsg, rrdPayload, grpcPayload,
                 isStoreInfo: false, isStatic: isStatic, manifestChunkInfo: manifestInfo);

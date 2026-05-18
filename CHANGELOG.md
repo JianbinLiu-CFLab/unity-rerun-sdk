@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
+## Unreleased
+
+### Added
+
+- Optional LZ4 compression for Rerun `.rrd` file Arrow payloads through `RerunManager.RecordingCompression`.
+- Phase 13 LZ4 smoke `.rrd` writer for repeatable Rerun CLI validation.
+
+### Changed
+
+- Live gRPC output remains explicitly uncompressed even when `.rrd` file recording uses LZ4.
+
 ## 0.4.0 - 2026-05-17
 
 ### Added

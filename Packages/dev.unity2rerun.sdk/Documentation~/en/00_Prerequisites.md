@@ -34,8 +34,10 @@ Add to `Packages/manifest.json`:
 }
 ```
 
+## RRD Compression
+
+Optional `.rrd` LZ4 recording compression uses bundled K4os runtime DLLs in the Unity package. It does not add extra project-level setup for file recording, and it does not compress live gRPC payloads.
+
 ## Known Limitations
 
-- `.rrd` files do not yet contain a footer manifest (`rerun rrd verify` will fail).
-  Files are still valid and open correctly in Rerun Viewer and `rerun rrd stats/print`.
 - `LiveOnly` mode requires a running Viewer; auto-launch is recommended.
