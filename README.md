@@ -12,7 +12,7 @@ Unity2Rerun is a Unity-native SDK for [Rerun](https://rerun.io). It records Unit
 
 ## Status
 
-The current public release is v0.4.0. The package focuses on runtime logging, `.rrd` output with official-compatible footer/manifests, live Viewer output, publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, Pinhole camera metadata, 3D boxes, trajectories, point clouds, planar laser scans, and local sidecar control.
+The current public release is v0.4.0. The package focuses on runtime logging, `.rrd` output with official-compatible footer/manifests, live Viewer output, publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, Pinhole camera metadata, 3D boxes, trajectories, point clouds, planar laser scans, and local sidecar control. The current development branch adds optional LZ4 compression for `.rrd` file recording while keeping live gRPC payloads uncompressed.
 
 ## Version Requirements
 

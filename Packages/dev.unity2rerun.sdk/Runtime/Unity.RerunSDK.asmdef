@@ -4,6 +4,8 @@
     "references": [
         "Apache.Arrow",
         "Google.Protobuf",
+        "K4os.Compression.LZ4",
+        "K4os.Hash.xxHash",
         "Grpc.Net.Client",
         "Grpc.Core.Api",
         "Grpc.Net.Common",

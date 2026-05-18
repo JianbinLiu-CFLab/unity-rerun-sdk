@@ -15,11 +15,12 @@
 - [RerunLog Source Generator](en/06_RerunLog_Source_Generator.md)
 - [RerunLog Source Generator 中文](zh/06_RerunLog_Source_Generator.md)
 - [Interactive 3D Control](en/07_Interactive_3D_Control.md)
+- [RRD Compression](en/08_RRD_Compression.md)
 - [Interactive 3D Control 中文](zh/07_Interactive_3D_Control.md)
 
 ## Release Validation
 
-Phase 9 `.rrd` output writes RRD footer/manifests by default. Generated files are expected to pass:
+Phase 13 `.rrd` output writes RRD footer/manifests by default and can optionally compress file Arrow payloads with LZ4. Generated files are expected to pass:
 
 ```powershell
 rerun rrd verify <file.rrd>

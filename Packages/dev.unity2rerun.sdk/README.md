@@ -11,7 +11,7 @@ Unity native SDK for [Rerun](https://rerun.io): log Unity runtime data to `.rrd`
 
 ## Status
 
-Phase 11 - `.rrd` and live output, official-compatible RRD footer/manifests, Publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, 3D boxes, trajectories, Points3D, Pinhole camera metadata, laser-scan/point-cloud publishers, local sidecar controls, and live transport health diagnostics.
+Phase 13 development - `.rrd` and live output, official-compatible RRD footer/manifests, optional LZ4 compression for `.rrd` file recording, Publisher components, IL2CPP build support, `[RerunLog]` source generation, EncodedImage, 3D boxes, trajectories, Points3D, Pinhole camera metadata, laser-scan/point-cloud publishers, local sidecar controls, and live transport health diagnostics.
 
 ## Quick install
 
@@ -65,6 +65,7 @@ public partial class PlayerDebug : MonoBehaviour
 ## Features
 
 - Rerun `.rrd` file recording with footer/manifests verified by `rerun rrd verify`
+- Optional LZ4 compression for `.rrd` file Arrow payloads through `RerunManager.RecordingCompression`
 - Live Rerun Viewer output through gRPC
 - Read-only live transport health snapshot in `RerunManager` and the Inspector
 - TextLog, Scalar, Transform3D, EncodedImage, Pinhole, Boxes3D, LineStrips3D, and Points3D publishing
@@ -83,8 +84,8 @@ Runtime/
   Encoding/     ManagedRerunEncoder, RerunProtobufEncoding, RerunArrowIpcEncoder
   IO/Rrd/       RrdWriter - low-level RRD binary framing
   Transport/    gRPC live transport and backend fan-out
-  Unity/        RerunManager, Publishers, RerunLog attributes, loopback control
-  Plugins/      Apache.Arrow.dll, Google.Protobuf.dll, gRPC dependencies
+  Components/   RerunManager, publishers, RerunLog attributes, loopback control
+  Plugins/      Apache.Arrow.dll, Google.Protobuf.dll, gRPC and compression dependencies
 Editor/
   SourceGenerators/  RerunLog Roslyn analyzer layout
   Shared/            Shared source emitter for Editor and Player fallback

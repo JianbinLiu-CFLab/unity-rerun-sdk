@@ -1,4 +1,26 @@
-# Unity2Rerun SDK 0.4.0 Release Notes
+# Unity2Rerun SDK Release Notes
+
+## Unreleased - Phase 13 RRD LZ4 Recording Closeout
+
+Phase 13 adds optional LZ4 compression for Rerun `.rrd` file recording. The setting is exposed as `RerunManager.RecordingCompression` and in the Inspector under RRD Output.
+
+Compatibility notes:
+
+- Existing scenes keep the default `None` behavior.
+- `RecordingCompression = Lz4` affects `.rrd` file Arrow payloads only.
+- Live gRPC output remains uncompressed in this phase.
+- `SetStoreInfo` messages remain uncompressed.
+
+Validation targets:
+
+```powershell
+dotnet test Packages/dev.unity2rerun.sdk/Tests/Runtime/Unity.RerunSDK.Core.Tests/Unity.RerunSDK.Core.Tests.csproj --no-restore
+dotnet run --project Packages/dev.unity2rerun.sdk/Tests/Runtime/Unity.RerunSDK.Core.Tests/Unity.RerunSDK.Core.Tests.csproj -- --write-phase13-lz4-rrd build/RRD/phase13_lz4_smoke.rrd
+rerun rrd verify build/RRD/phase13_lz4_smoke.rrd
+rerun rrd stats build/RRD/phase13_lz4_smoke.rrd
+```
+
+## Unity2Rerun SDK 0.4.0 Release Notes
 
 Date: 2026-05-17
 

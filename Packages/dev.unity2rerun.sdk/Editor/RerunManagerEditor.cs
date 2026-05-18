@@ -74,6 +74,9 @@ namespace Unity.RerunSDK.Editor
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("RRD Output", EditorStyles.boldLabel);
             DrawOutputPathPicker();
+            DrawProperty("_recordingCompression", new GUIContent(
+                "Recording Compression",
+                "Compression for .rrd file recording only. Live gRPC output remains uncompressed."));
         }
 
         private void DrawLiveViewerSection()
@@ -186,6 +189,18 @@ namespace Unity.RerunSDK.Editor
             }
 
             EditorGUILayout.PropertyField(prop);
+        }
+
+        private void DrawProperty(string propertyName, GUIContent label)
+        {
+            var prop = serializedObject.FindProperty(propertyName);
+            if (prop == null)
+            {
+                DrawMissing(propertyName);
+                return;
+            }
+
+            EditorGUILayout.PropertyField(prop, label);
         }
 
         private static void DrawMissing(string propertyName)

@@ -7,6 +7,7 @@
 using System;
 using System.IO;
 using Unity.RerunSDK.Core;
+using Unity.RerunSDK.Encoding;
 using Unity.RerunSDK.IO.Rrd;
 using Unity.RerunSDK.Transport;
 using Unity.RerunSDK.Transport.Grpc;
@@ -51,6 +52,7 @@ namespace Unity.RerunSDK.Unity
 
             try
             {
+                _encoder = new ManagedRerunEncoder(_recordingCompression);
                 BuildBackend();
                 _runtime = new RerunRuntime(_applicationId, _backend);
                 _runtime.Start();

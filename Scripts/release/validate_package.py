@@ -69,6 +69,8 @@ REQUIRED_FILES = [
     PACKAGE / "Runtime" / "Plugins" / "Apache.Arrow.dll",
     PACKAGE / "Runtime" / "Plugins" / "Google.Protobuf.dll",
     PACKAGE / "Runtime" / "Plugins" / "Grpc.Net.Client.dll",
+    PACKAGE / "Runtime" / "Plugins" / "compression" / "K4os.Compression.LZ4.dll",
+    PACKAGE / "Runtime" / "Plugins" / "compression" / "K4os.Hash.xxHash.dll",
 ]
 
 PUBLIC_TEXT_ROOTS = [
@@ -105,6 +107,16 @@ THIRD_PARTY_REQUIREMENTS = {
     "Runtime/Plugins/Apache.Arrow.dll": ("Apache Arrow", "Apache-2.0", "Arrow IPC"),
     "Runtime/Plugins/Google.Protobuf.dll": ("Google.Protobuf", "BSD-3-Clause"),
     "Runtime/Plugins/Grpc.Net.Client.dll": ("grpc-dotnet", "Apache-2.0"),
+    "Runtime/Plugins/compression/K4os.Compression.LZ4.dll": (
+        "K4os LZ4",
+        "MIT",
+        "K4os.Compression.LZ4.dll",
+    ),
+    "Runtime/Plugins/compression/K4os.Hash.xxHash.dll": (
+        "K4os LZ4",
+        "MIT",
+        "K4os.Hash.xxHash.dll",
+    ),
     "Runtime/Plugins/Microsoft.Bcl.AsyncInterfaces.dll": (
         "Microsoft .NET support libraries",
         "MIT",
