@@ -9,97 +9,22 @@ Unity-native SDK for [Rerun](https://rerun.io): record Unity runtime data to `.r
 - Rerun Viewer / CLI 0.31.4+
 - Optional live transport dependency: Cysharp `YetAnotherHttpHandler` 1.11.5 with its native dependency package. FileOnly `.rrd` output does not require it.
 
-## Quick Install
+## Installation
 
-Add this package to `Packages/manifest.json` when using the repository layout:
+Install the package through Unity Package Manager by selecting `Packages/dev.unity2rerun.sdk/package.json`, or by using the repository Git URL with the package path suffix `?path=/Packages/dev.unity2rerun.sdk`.
 
-```json
-{
-  "dependencies": {
-    "dev.unity2rerun.sdk": "file:../../Packages/dev.unity2rerun.sdk"
-  }
-}
-```
+For live gRPC output, install Cysharp `YetAnotherHttpHandler` 1.11.5 as described in [Prerequisites](Documentation~/en/00_Prerequisites.md). FileOnly `.rrd` output does not require that dependency.
 
-Or install from the repository with a Git URL:
+## Usage Paths
 
-```text
-https://github.com/JianbinLiu-CFLab/unity-rerun-sdk.git?path=/Packages/dev.unity2rerun.sdk
-```
-
-For live gRPC output, also install Cysharp `YetAnotherHttpHandler` 1.11.5 as described in `Documentation~/en/00_Prerequisites.md`.
-
-## Minimal Usage
-
-### File Recording
-
-```csharp
-using Unity.RerunSDK.Unity;
-using UnityEngine;
-
-public class MinimalRerunRecorder : MonoBehaviour
-{
-    private RerunManager _rerun;
-
-    private void Awake()
-    {
-        _rerun = gameObject.AddComponent<RerunManager>();
-        _rerun.StartRecording();
-    }
-
-    private void Update()
-    {
-        if (!_rerun.IsRecording)
-            return;
-
-        _rerun.SetTimeSequence("frame", Time.frameCount);
-        _rerun.LogText("logs/unity", "Hello from Unity");
-        _rerun.LogScalar("metrics/fps", 1.0 / Time.deltaTime);
-        _rerun.LogTransform("world/object", transform);
-    }
-
-    private void OnDestroy()
-    {
-        _rerun?.StopRecording();
-    }
-}
-```
-
-After Play Mode stops, open the generated file:
-
-```powershell
-rerun path/to/recording.rrd
-```
-
-### 3D, Sensor, And Image Publishing
-
-```csharp
-mgr.LogEncodedImage("camera/main", jpegBytes, "image/jpeg");
-mgr.LogPinhole("camera/main", RerunPinhole.FromVerticalFov(640, 480, 60f));
-mgr.LogTransform("world/cube", cubeTransform);
-mgr.LogBox3D("world/cube", Vector3.zero, cubeTransform.lossyScale * 0.5f, Quaternion.identity, Color.green);
-mgr.LogLineStrips3D("world/cube_trajectory", trajectoryPoints, Color.yellow);
-mgr.LogPoints3D("world/points", pointPositions, Color.cyan, radius: 0.03f);
-```
-
-### Attribute-Driven Publishing
-
-```csharp
-using Unity.RerunSDK.Unity;
-using UnityEngine;
-
-public partial class PlayerDebug : MonoBehaviour
-{
-    [RerunLog("logs/player", RateHz = 1f)]
-    private string _status = "ready";
-
-    [RerunScalar("metrics/player_fps", RateHz = 10f)]
-    private float _fps;
-
-    [RerunTransform("world/player", RateHz = 30f)]
-    private Transform _playerTransform;
-}
-```
+| Goal | Recommended path |
+|------|------------------|
+| Record a first `.rrd` file | Follow the [installation and first recording guide](Documentation~/en/01_Installation_and_Quick_Start.md). |
+| Avoid writing code | Use [Publisher components](Documentation~/en/02_Publisher_Components.md). |
+| Stream to a running Viewer | Read [Output modes and live troubleshooting](Documentation~/en/03_Output_Modes_and_Live_Troubleshooting.md). |
+| Add image, camera, point-cloud, scan, or 3D geometry logging | Use [Interactive 3D control](Documentation~/en/07_Interactive_3D_Control.md) and the matching samples. |
+| Add attribute-driven field logging | Use [RerunLog source generator](Documentation~/en/06_RerunLog_Source_Generator.md). |
+| Build a standalone Player | Use [IL2CPP build guide](Documentation~/en/05_IL2CPP_Build_Guide.md). |
 
 ## Output Modes
 
@@ -125,19 +50,17 @@ public partial class PlayerDebug : MonoBehaviour
 
 ## Package Structure
 
-```text
-Runtime/
-  Core/         Backend contracts, runtime state, entity paths, timelines, compression modes
-  Encoding/     ManagedRerunEncoder, RerunArrowIpcEncoder, protobuf wrapping, payload compression
-  IO/Rrd/       RrdWriter and RRD file backend
-  Transport/    Backend fan-out and gRPC live transport
-  Components/   RerunManager, publishers, RerunLog attributes, loopback control
-  Utilities/    Shared runtime helpers
-  Plugins/      Apache.Arrow.dll, Google.Protobuf.dll, gRPC and compression dependencies
-Editor/
-  SourceGenerators/  RerunLog Roslyn analyzer layout
-  Shared/            Shared source emitter for Editor and Player fallback
-```
+| Path | Purpose |
+|------|---------|
+| `Runtime/Core` | Backend contracts, runtime state, entity paths, timelines, and compression modes. |
+| `Runtime/Encoding` | Managed Rerun encoding, Arrow IPC chunks, protobuf wrapping, and payload compression. |
+| `Runtime/IO/Rrd` | RRD writer and file backend. |
+| `Runtime/Transport` | Backend fan-out and gRPC live transport. |
+| `Runtime/Components` | `RerunManager`, publishers, attributes, and loopback control components. |
+| `Runtime/Utilities` | Shared runtime helpers. |
+| `Runtime/Plugins` | Apache Arrow, Google Protobuf, gRPC, and compression dependencies. |
+| `Editor/SourceGenerators` | RerunLog Roslyn analyzer layout. |
+| `Editor/Shared` | Shared source emitter for Editor and Player fallback. |
 
 ## Samples
 
@@ -151,11 +74,7 @@ Editor/
 
 ## Type Coverage
 
-Unity2Rerun implements a curated Rerun runtime subset instead of mirroring every official schema at once. The current encoder surface covers 9 runtime archetypes and 16 emitted components. The public coverage matrix lives at `../../../docs/releases/RERUN_TYPE_COVERAGE_MATRIX.md` and can be checked from the repository root with:
-
-```powershell
-python Scripts/release/check_rerun_type_coverage.py
-```
+Unity2Rerun implements a curated Rerun runtime subset instead of mirroring every official schema at once. The current encoder surface covers 9 runtime archetypes and 16 emitted components. The public coverage matrix lives at `../../../docs/releases/RERUN_TYPE_COVERAGE_MATRIX.md`.
 
 ## Supported Platforms
 
