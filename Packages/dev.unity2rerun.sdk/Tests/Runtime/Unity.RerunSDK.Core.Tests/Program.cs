@@ -58,7 +58,15 @@ else if (args[0] == "--write-phase13-lz4-rrd")
     Console.WriteLine($"Phase13 LZ4 .rrd written to: {Path.GetFullPath(outPath)}");
     Console.WriteLine($"Size: {new FileInfo(outPath).Length} bytes");
 }
+else if (args[0] == "--write-phase14-compression-comparison")
+{
+    var outPrefix = args.Length > 1 ? args[1] : "out/phase14_compression";
+    var comparison = Phase14RrdWriter.WriteCompressionComparison(outPrefix);
+    Console.WriteLine($"Phase14 None .rrd written to: {comparison.NonePath}");
+    Console.WriteLine($"Phase14 LZ4 .rrd written to: {comparison.Lz4Path}");
+    Console.WriteLine(Phase14RrdWriter.FormatComparisonSummary(comparison));
+}
 else
 {
-    Console.WriteLine("Usage: dotnet run [--write-phase3-rrd <output-path>] [--write-phase8-rrd <output-path>] [--write-phase10-rrd <output-path>] [--write-phase11-rrd <output-path>] [--write-phase13-lz4-rrd <output-path>]");
+    Console.WriteLine("Usage: dotnet run [--write-phase3-rrd <output-path>] [--write-phase8-rrd <output-path>] [--write-phase10-rrd <output-path>] [--write-phase11-rrd <output-path>] [--write-phase13-lz4-rrd <output-path>] [--write-phase14-compression-comparison <output-prefix>]");
 }
